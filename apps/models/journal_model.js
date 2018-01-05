@@ -14,7 +14,8 @@ Journal = function() {
 
     self.fetchJournal = function(id, callback) {
         console.log("JournalModel.fetchJournal",id);
-        Database.fetchJournal(id, function(err, data) {
+        //generalize: the bookmark channel can send in bookmarks
+        CommonModel.fetchNode(id, function(err, data) {
             return callback(err, data);            
         });
     };

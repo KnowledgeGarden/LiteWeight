@@ -3,6 +3,7 @@ var router = express.Router();
 var helper = require('./helper');
 var constants = require('../apps/constants');
 var ChannelModel = require('../apps/models/channel_model');
+var BookmarkModel = require('../apps/models/bookmark_model');
 
 
 /* GET home page. */
@@ -35,6 +36,11 @@ router.get('/newjournal/:id', function(req, res, next) {
 });
 */
 
+/**
+ * Fetch the contents of a channel.
+ * All channels get their content from journals
+ * except 'bookmarks'
+ */
 router.get('/:id', function(req, res, next) {
     var id = req.params.id,
         data = helper.startData(req),
@@ -43,6 +49,9 @@ router.get('/:id', function(req, res, next) {
     console.log("Channels.getChannel",id);
     ChannelModel.fetchChannel(id, function(err, result) {
         var clist = result.journals;
+        if (!clist) {
+            clist = result.bookmarks;
+        }
         if (!clist) {
             clist = [];
         }

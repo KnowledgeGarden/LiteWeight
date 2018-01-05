@@ -31,8 +31,9 @@
     vertical-align: middle;
 }
 
+/* 	width: 958px;
+*/
 #topbox {
-	width: 958px;
     border: 1px solid black;
 	background: white;    
     margin: 12px;

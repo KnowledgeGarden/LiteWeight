@@ -27,7 +27,7 @@ Bookmark = function() {
         //fetch the bookmark channe
         Database.fetchChannel(constants.BOOKMARK_CHANNEL, function(err, channel) {
             //create a new node
-            CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, isPrivate, details, function(node) {
+            CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, details, isPrivate, function(node) {
                 node.url = url;
                 CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, node, channel);
                 channel.version = CommonModel.newId();

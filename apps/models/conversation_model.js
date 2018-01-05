@@ -25,7 +25,7 @@ Conversation = function() {
      */
     self.fetchView = function(viewId, callback) {
         console.log("ConversationModel.fetchView",viewId);
-        Database.fetchNode(viewId, function(err, data) {
+        Database.fetchData(viewId, function(err, data) {
             console.log("ConversationModel.fetchView++",err,data);
             return callback(err, data);            
         });
@@ -82,6 +82,7 @@ Conversation = function() {
                 //update parent's version
                 parent.version = CommonModel.newId();
                 //save the parent
+                console.log("ConversationModel.newResponseNode-2",parent,node);
                 Database.saveData(parentId, parent, function(err) {
                     //save the response node
                     Database.saveNodeData(node.id, node, function(ex) {
@@ -186,6 +187,11 @@ Conversation = function() {
         if (snappers) {
             result = result.concat(snappers);
         }
+        snappers = node.relations;
+        if (snappers) {
+            result = result.concat(snappers);
+        }
+
         return result;
     };
 

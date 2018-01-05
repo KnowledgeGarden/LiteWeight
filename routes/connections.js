@@ -84,12 +84,10 @@ router.get('/:id', function(req, res, next) {
     var id = req.params.id,
         data = helper.startData(req),
         isAuth = data.isAuthenticated;
-    ConnectionModel.fetchConnection(id, function(err, data) {
-        //odd unresolved bug: isAuthenticated disappears during fetch
-        data.isAuthenticated = isAuth;
+    ConnectionModel.fetchConnection(id, function(err, node) {
         console.log("Connections.get",data.isAuthenticated);
         data.isRelation = true;
-        data.result = data;
+        data.result = node;
         return res.render('view',data);
     });
 

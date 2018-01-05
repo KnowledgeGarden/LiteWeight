@@ -49,7 +49,7 @@ Common = function() {
     };
 
     /**
-     * Utility
+     * Utility to fetch any kind of node
      * @param {*} nodeId 
      * @param {*} callback err data
      */
