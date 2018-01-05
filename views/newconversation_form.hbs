@@ -1,0 +1,66 @@
+<script>
+    function validateForm() {
+        var x = document.forms["rootform"]["title"].value;
+        if (x === "") {
+            alert("Conversation Title must be filled out");
+            return false;
+        }
+        x = document.forms["rootform"]["roottitle"].value;
+        if (x === "") {
+            alert("Conversation Title must be filled out");
+            return false;
+        }
+        x = document.getElementById("hidden_1").val();
+        if (!x || x === "") {
+            alert("Node type must be selected");
+            return false;
+        }
+    };
+
+    function doRadio(val) {
+        var e = document.getElementById("hidden_1");
+        e.value = val;
+    };
+</script>
+
+<div id="topbox" >
+    <h2 style="margin-left: 20px;"><img style="margin-right: 4px;" src="/images/ibis/map.png">Create a New Conversation and its Root Node</h2>
+    <form name="rootform" method="post" action="/conversation/newconversation" onsubmit="return validateForm()">
+        <input type="hidden" name="hidden_1" id="hidden_1" value="" >
+        <p style="margin-left: 20px">
+            <b>Conversation Label</b><br/>
+            <input type="text" size="100" name="title" placeholder="Enter a conversation label" value="{{conversationlabel}}">
+        </p>
+        <p style="margin-left: 20px">
+            <b>Conversation Details</b><br/>
+            <textarea name="details" id="editor1" placeholder="Enter conversation description" rows="10" cols="100">
+                {{conversationdetails}}
+            </textarea>
+            <script>
+              CKEDITOR.replace( 'editor1' );
+            </script>
+        </p>
+        <p style="margin-left: 20px">
+            <span style="color: red;"><b>Select a Node Type First</b></span><br/>
+            <img src="/images/ibis/issue.png"><input type="radio"   name="roottype" value="" onclick="doRadio('QuestionNodeType')"/>
+            <img src="/images/ibis/position.png"><input type="radio"  name="roottype" value=""  onclick="doRadio('AnswerNodeType')"/>
+        </p>
+        <p style="margin-left: 20px">
+            <b>Root Node Label</b><br/>
+            <input type="text" size="100" name="roottitle" placeholder="Enter a root node label" value="{{nodelabel}}">
+        </p>
+        <p style="margin-left: 20px">
+            <b>Root Node Details</b><br/>
+            <textarea name="rootdetails" id="editor2" placeholder="Enter root node description" rows="10" cols="100">
+                {{nodedetails}}
+            </textarea>
+            <script>
+              CKEDITOR.replace( 'editor2' );
+            </script>
+        </p>
+        <p style="margin-left: 20px">
+            <button type="submit" class="btn btn-success">Save</button>
+            &nbsp;<a href="/" title="cancel" class="btn">Cancel</a>
+        </p>
+    </form>
+</div>

@@ -1,0 +1,42 @@
+<div style="height:400px" id="topbox">
+    <img style="margin-left=20px;" src="/images/help.png" onclick="javascript:location.href='/aboutdbpedia'">
+  <div class="ui-widget">
+      <img src="http://wiki.dbpedia.org/sites/default/files/DBpediaLogo.png" alt="[DBpedia logo]" />
+      <h1>DBpedia Lookup</h1>
+      <label for="topics">Topic: </label>
+      <input id="topics" />
+      <button id="submit"/>Go</button>
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+  <script>
+      var topics = {},
+              $topics = $("#topics").autocomplete({
+                  autoFocus: true,
+                  source: function(request, callback) {
+                      $.ajax({ //PrefixSearch gives autocompletion
+                          url: "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch",
+                          data: { MaxHits: 10, QueryString: request.term },
+                          dataType: "json",
+                          success: function (response) {
+                              callback(response.results.map(function (m) {
+                                  topics[m.label] = m.uri;
+                                  return m.label;
+                              }));
+                          }
+                      });
+                  }
+              }).keyup(function (event) {
+                  if (event.keyCode === 13)
+                      navigateToTopic();
+              });
+      $('button').click(navigateToTopic);
+
+      function navigateToTopic() {
+          var label = $topics.val();
+          if (label) {
+            window.open(topics[label] ||"http://dbpedia.org/page/" + encodeURIComponent(label));
+          }
+      };
+  </script>
+</div>

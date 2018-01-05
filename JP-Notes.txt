@@ -1,0 +1,65 @@
+GOALS
+    Lightest weight possible portal app
+    Slack-like
+REFERENCES
+    [1] Save to Pocket Extension: 
+        https://github.com/Pocket/extension-save-to-pocket
+    [2] Pocket New Tab Extension: 
+        https://github.com/Pocket/extension-pocket-new-tab
+    [3] Extension Build Tools:
+        https://github.com/Pocket/front-end-build-tools
+
+FEATURES
+    Channels
+        Journal Entries
+            Structured Conversation
+            Tagging
+            Crosslinking
+        Bookmarks Channels
+            Bookmarks like Journal Entries
+                Structured Conversation
+                Tagging
+                Crosslinking
+    Users are just Channels
+PRIVACY POLICIES
+    ALL NODES in a PRIVATE Channel are PRIVATE
+    ALL NODES in a PUBLIC Channel are PUBLIC
+        THIS MEANS, must check parent node for privacy
+SCENARIOS
+MASTER TODO
+    Check parent nodes for privacy in all response nodes
+    ADD INDEX to Channels file and keep channels sorted
+        in alphabetcal order. Fetch from that index
+    BORROW CSS from TQPortal
+    NO Channel_View as AJAX Call to Channels 
+        Otherwise, it must repaint the channel view
+    DID ON BOOT Check to see if we have Bookmarks and General channels
+        Bookmarks are entries in the Bookmark channel
+        ADD THAT CALL TO environment.js at the bottom
+            ChannelModel.bootstrap();
+    PAINTING a Channel 
+        SLACK etc is last on the bottom
+            That way replies can be below
+        US: last on top
+            All you see is the hyperlink to the entry itself
+            Entry replaces the index space
+BUGS
+    20180104
+        MenuBar doing a terrible job of showing the curcon stuff
+        CurrentCono for the menu bar assumes conversation: needs curcontype
+        TreeView not painting
+        Poor Radio UX
+        Journals from Channels are supposed to follow their Channel's 
+            privacy. Still, privacy radios are showing
+            HAH!!! THEY DO. BUT, NOT other child nodes.
+            BIG POLICY ISSUE
+        FIXT convo.js post newnode does a poor job of returning
+            It assumed a conversation node. Now return the convo node
+MUSINGS
+    20180104
+        First cut started with express --view=hbs myapp
+        Copied ColCom in
+        It boots!
+        Can paint the Channels view
+        NEXT
+            Figure out what to do when a channel is selected

@@ -1,0 +1,249 @@
+/**from jquery-ui.css*/
+.ui-widget {
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 1em;
+}
+
+.mcontainer {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.bar1, .bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background-color: #333;
+    color: rgb(80, 76, 76);
+    margin: 6px 0;
+    transition: 0.4s;
+}
+ 
+.wrapper {
+	width: 980px;
+	background: silver;
+	margin: 0 auto;
+}
+
+#homebar {
+    width: 958px;
+    margin: 12px;
+    height: 32px;
+    vertical-align: middle;
+}
+
+#topbox {
+	width: 958px;
+    border: 1px solid black;
+	background: white;    
+    margin: 12px;
+    font-family:pragmatica-web,sans-serif;
+    border-radius: 3px;
+}
+
+/*
+    column-count:2;
+    overflow-x: hidden; 
+    overflow-y: scroll;
+
+*/
+
+.channels {    
+    height:600px;
+    width:100%;
+     
+}
+/*
+    float:left;
+    box-sizing: content-box;
+    position: relative;
+    min-height: 1px;
+    padding-right: 1px;
+    padding-left: 1px;
+*/
+.channelleft {
+    width: 500px;
+    background: rgb(204, 203, 203);
+    height:100%;
+    vertical-align: text-top;
+}
+/*
+    float:left;
+    position: relative;
+        height:100%;
+    width:100%;
+    overflow-x: scroll; 
+    overflow-y: hidden;
+    width:100%;
+    right: 100%;
+
+*/
+.channelright {
+    height:100%;
+    vertical-align: text-top;
+}
+
+#newtagview {
+    column-count:2;
+    margin-left:10px;
+}
+#tagform {
+    column-width:70%;
+    height:500px;
+}
+#taglist {
+    border: 1px solid black;
+    column-width:29%;
+    white-space:nowrap;
+    overflow-x: scroll; 
+    overflow-y: hidden;
+    height:500px;   
+}
+
+.relationscroller {
+    border: 1px solid black;
+    width: 960;
+    white-space:nowrap;
+    overflow-x: scroll; 
+    overflow-y: hidden;
+    margin: 12px;
+    border-radius: 3px;
+}
+.relationcolumn {
+    float:left;
+    white-space:normal;
+    border: 1px solid black;
+    width: 200px;
+    height: 40px;
+    background: rgb(240, 234, 234);
+    border-radius: 3px;
+    margin-left: 4px;
+    margin-right: 4px;
+    font-family:pragmatica-web,sans-serif;    
+}
+
+/**
+ * Enable columns to scroll right and left
+ */
+.columnscroller {
+    border: 1px solid black;
+    width: 960;
+    white-space:nowrap;
+    overflow-x: scroll; 
+    overflow-y: hidden;
+    margin: 12px;
+    border-radius: 3px;
+}
+
+/**
+ * width is set to accomodate lots of columns.
+ * If they wrap when adding more columns, then
+ * width must increase.
+ * The formula seems to be column width * num colums + 100px
+ */
+.columncontainer {
+	width: 2500px;
+}
+.datacontainer {
+    width: 2500px;
+}
+
+.headerimage {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+.column {
+    float:left;
+    white-space:normal;
+    border: 1px solid black;
+    width: 300px;
+    height: 34px;
+    background: rgb(240, 234, 234);
+    border-radius: 3px;
+    margin-left: 4px;
+    margin-right: 4px;
+    font-family:pragmatica-web,sans-serif;    
+}
+.datacolumn {
+    height: 400px; 
+    float:left;
+    border: 1px solid white;
+    width: 300px;
+    background: white;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    break-inside: avoid;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+ 
+#viewfooter {
+    clear: both;
+    margin-top: 10px;
+	width: 958px;
+    border: 1px solid black;
+	background: white;    
+    margin: 12px;    
+}
+
+.node {
+    margin-top: 4px;
+    float: top;
+    border: 1px solid black;
+    border-radius: 3px;
+    min-height: 40px;
+    word-wrap: normal;
+    font-family:pragmatica-web,sans-serif;
+}
+.node:hover {
+    background-color: rgba(255, 255, 0, 0.801);
+}
+
+.respond {
+    float: right;
+    margin-right: 4px;
+}
+
+/* Dropdown Button */
+/* https://www.w3schools.com/howto/howto_css_dropdown.asp */
+.dropbtn {
+    margin-left:20px;
+    cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    overflow:auto;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}

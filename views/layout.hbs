@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="msapplication-config" content="none"> 
+    <meta name="theme-color" content="#2c343d"> 
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/css/colcon.css' />
+
+    <link href="/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="/css/font-awesome.min.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <style>
+      .flashMsg {
+        border: 8px solid #272525;
+        border-radius: 14px;
+        width: 960px;
+        font-size: 150%;
+        background: white;
+      }
+    </style>
+ </head>
+  <body>
+    {{> webmenubar}}
+    <div class="container">
+      {{#if flashMsg}}
+          <p class="flashMsg">{{{flashMsg}}}</p>
+      {{/if}}
+      {{{body}}}
+      {{> footer}}
+    </div> <!-- /container -->
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+</body>
+</html>

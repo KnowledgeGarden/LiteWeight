@@ -1,0 +1,23 @@
+<div class="home col-xs-12 ">
+
+    <div style="margin-left:20px;">
+        <h1 style="font-family:Comic Sans MS;" >{{title}}</h1>
+        <img  src="/images/earthrise2.png">
+        <h3><i>We don't stop playing because we grow old, we grow old because we stop playing.</i></h3><h4>    -George Bernard Shaw</h4>
+        {{#if isAuthenticated}}
+            <form><h3>Recent Additions  <form><input type="button" style="margin-left: 20px"  onclick="window.location.href='/journal/new'" value="New Journal Entry" /> </h3></form>
+        {{else}}
+            <h3>Recent Additions</h3>
+        {{/if}}
+        <div style="overflow-y: auto; height:300px;">
+            <table >
+                {{#each recentlist}}
+                    <tr>
+                        <td style="width: 30px;"><img style="align:left;" src="{{img}}"></td>
+                        <td><a href="/fetch/{{id}}/{{type}}">{{statement}}</a></td>
+                        <td style="float:right;">{{createdDate}}</td></tr>
+                {{/each}}
+            </table>
+        </div>
+    </div>
+</div>

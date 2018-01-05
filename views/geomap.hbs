@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="/css/leaflet.css">
+<script src="/js/leaflet.js"></script>
+<img style="margin-left=20px;" src="/images/help.png" onclick="javascript:location.href='/aboutgeomap'">
+
+<div class="wrapper">
+    <div id="mapparams" x="{{x}}" y="{{y}}" z="{{z}}"></div>
+    <div id="map" style="width: 980px; height: 600px; position: relative;" class="leaflet-container leaflet-fade-anim" tabindex="0"></div>
+
+    <script>
+        var x = parseFloat($("#mapparams").attr("x"));
+        var y =  parseFloat($("#mapparams").attr("y"));
+        var z =  parseInt($("#mapparams").attr("z"));
+        var map = L.map('map').setView([x, y], z);
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+        var popup = L.popup();
+
+        function onMapClick(e) {
+            popup
+                    .setLatLng(e.latlng)
+                    .setContent("You clicked the map at " + e.latlng.toString())
+                    .openOn(map);
+        }
+
+        map.on('click', onMapClick);
+
+    </script>
+    <p><b><a href="https://github.com/Leaflet/Leaflet">Open Source</a></b></p>
+</div>

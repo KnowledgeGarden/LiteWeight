@@ -1,0 +1,57 @@
+<div id="topbox">
+    <div id="newtagview">
+        <div id="tagform">
+            <h2>Add Tags</h2>
+            <form method="post" action="/tags/newnode">
+                <input type="hidden" name="hidden_1" value="{{hidden_1}}">
+                <input type="hidden" name="hidden_2" value="{{hidden_2}}">
+                <p style="margin-left: 20px">
+                    <b>Tag Label</b><br/>
+                    <input type="text" size="100" name="title" placeholder="{{labelplaceholder}}" value="{{formlabel}}">
+                </p>
+                <p style="margin-left: 20px">
+                    <b>Selected Tags</b><br/>
+                    <input id="selectedtags" type="text" size="100" name="selectedtags">
+                </p>
+                <p>
+                    Options:<br/>
+                    <ul>
+                        <li>Enter a new tag label</li>
+                        <li>Select from the list of existing tags</li>
+                        <li>Enter a new tag and select from the list</li>
+                        <li>Remove a selected tag by removing it from the Selected Tags field</li>
+                    </ul>
+                </p>
+                <p>
+                    Note: Tag labels cannot include characters such as ' @ # $. They can include spaces.<br/>
+                    If a tag such as "My First Tag" is new, that is the tag which will prevail, even if 
+                    e.g. "my first Tag" is later entered.<br/><br/>
+                    Tags are important markers of topics: in that case using upper case such as "My Topic"<br/>
+                    is a reasonable policy.
+                </p>
+                <p>
+                    <button type="submit" class="btn btn-success">Save</button>
+                    &nbsp;<a href="/" title="cancel" class="btn">Cancel</a>
+                </p>
+            </form>
+        </div>
+        <div id="taglist">
+            <h2>Existing Tags</h2>
+            {{#each taglist}}
+                <a href="#" onclick="onTagSelect(this);">{{statement}}</a><br/>
+            {{/each}}
+        </div>
+    </div>
+</div>
+<script>
+    function onTagSelect(name) {
+        var x = name.innerHTML;
+        var y = $('#selectedtags').val();
+        if (y === '') {
+            y = x;
+        } else {
+            y += ', '+x;
+        }
+        $('#selectedtags').val(y);
+    }
+</script>

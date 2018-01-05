@@ -1,0 +1,57 @@
+<script>
+    function validateForm() {
+        var x = document.forms["rootform"]["title"].value;
+        if (x === "") {
+            alert("Label must be filled out");
+            return false;
+        }
+        x = document.getElementById("private").val();
+        if (!x || x === "") {
+            alert("Node Privacy must be seleted");
+            return false;
+        }
+    };
+    function doRadio(val) {
+        var e = document.getElementById("private");
+        e.value = val;
+    };
+
+</script>
+<div id="topbox">
+    <h2 style="margin-left: 20px">{{formtitle}}</h2>
+    <form name="rootform" method="post" action="{{action}}" onsubmit="return validateForm()">
+        <input type="hidden" name="hidden_1" value="{{hidden_1}}">
+        <input type="hidden" name="hidden_2" value="{{hidden_2}}">
+        <input type="hidden" id="private" name="private" value="{{private}}">
+        {{#if checkPrivate}}
+            <div style="margin-left: 20px">
+                <span style="color: red;"><b>Select Private or Public</b></span><br/>
+                <input type="radio"   name="private" value="Public"  onclick="doRadio('false')" /> <b>Public</b>
+                <input style="margin-left:30px;" type="radio"  name="private" value="Private" onclick="doRadio('true')" /> <b>Private</b>
+            </div>
+        {{/if}}
+        {{#if url}}
+            <div style="margin-left: 20px">
+                <b>URL:</b> <input id="url" type="text" name="url" size="100" value="{{url}}" >
+            </div>
+        {{/if}}
+        <div style="margin-left: 20px">
+            <b>Label</b><br/>
+            <input type="text" size="100" name="title" placeholder="{{labelplaceholder}}" value="{{formlabel}}">
+        </dkv>
+        <div style="margin-left: 20px; ">
+
+            <b>Details</b><br/>
+            <textarea rows="10" cols="100" name="details" id="editor1" placeholder="{{detailsplaceholder}}" >
+                {{{formdetails}}}
+            </textarea>
+            <script>
+              CKEDITOR.replace( 'editor1' );
+            </script>
+        </div>
+        <div style="margin-left: 20px">
+            <button type="submit" class="btn btn-success">Save</button>
+            &nbsp;<a href="/" title="cancel" class="btn">Cancel</a>
+        </div>
+    </form>
+</div>

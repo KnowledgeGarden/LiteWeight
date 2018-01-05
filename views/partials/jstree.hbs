@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="/css/style.min.css" />
+<div id="topbox">
+    <div style="margin-left: 10px;">
+        <div id="ajax"></div>
+    </div>
+</div>
+<script src="/js/jstree.min.js"></script>
+<script>
+    window.onload = function() {
+        $('#ajax').jstree({
+            'core' : {
+                'data' : {
+                    "url" : "/conversation/ajaxtree/{{ajaxid}}",
+                    "dataType" : "json" 
+                }
+            }
+        });   
+    };
+    $('#ajax')
+		.on("select_node.jstree", function (e, data) {
+            //https://stackoverflow.com/questions/25481538/get-selected-jstree-node-values-jquery/29748794
+            var selectedId = $("#ajax").jstree("get_selected", true)[0].id;
+			//alert("Clicked"+selectedId);
+            window.location.href = "/conversation/"+selectedId;
+		});
+</script>

@@ -1,0 +1,14 @@
+{
+    "brand": "LiteWeight Test Portal",
+    "isPrivatePortal":false,
+    "secretPassword":"SomeSecret!",
+    "validHandles": [
+        "joe", "sue"
+    ],
+    "viewerHandles":[
+        "sam"
+    ],
+    "viewerPassword":"ExtraSecret!",
+    "admin":"joe",
+    "adminPassword":"AnotherSecret!"
+}
