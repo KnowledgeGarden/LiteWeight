@@ -37,6 +37,7 @@ router.get('/fromchannel/:id', function(req, res, next) {
     });
 });
 
+
 router.get('/new', function(req, res, next) {
     var data = helper.startData(req)
     data.formtitle = "New Journal Entry";
@@ -47,11 +48,10 @@ router.get('/new', function(req, res, next) {
 });
 
 router.get('/:id', function(req, res, next) {
-    var data = helper.startData(req),
-        id = req.params.id;
-//    console.log("Bookmark.get",id);
+    var id = req.params.id;
     JournalModel.fetchJournal(id, function(err, result) {
         req.session.curCon = result.id;
+        var data = helper.startData(req);
         console.log("Model returned "+result);
         data.result = result;
         return res.render('view', data);

@@ -293,7 +293,7 @@ Common = function() {
                 result = node.decisions;
             } else if (type === constants.RELATION_NODE_TYPE) {
                 result = node.relations;
-            } else if (type === constants.BOOKMARKS_NODE_TYPE) {
+            } else if (type === constants.BOOKMARK_NODE_TYPE) {
                 result = node.bookmarks;
             } else if (type === constants.BLOG_NODE_TYPE) {
                 result = node.journals;
@@ -330,7 +330,7 @@ Common = function() {
             node.decisions = list;
         } else if (type === constants.RELATION_NODE_TYPE) {
             node.relations = list;
-        } else if (type === constants.BOOKMARKS_NODE_TYPE) {
+        } else if (type === constants.BOOKMARK_NODE_TYPE) {
             node.bookmarks = list;
         } else if (type === constants.BLOG_NODE_TYPE) {
             node.journals = list;

@@ -21,7 +21,7 @@ Channel = function() {
     self.bootstrapBookmarks = function(callback) {
         Database.fetchChannel("bookmarks", function(err, data) {
             if (!data) {
-                CommonModel.newNode("bookmarks", "system", 
+                CommonModel.newNode(constants.BOOKMARK_CHANNEL, "system", 
                     constants.CHANNEL_NODE_TYPE, "Bookmarks", "", false, function(json) {
                         Database.saveChannelData(json.id, json, function(err) {
                             return callback(err);
@@ -33,9 +33,9 @@ Channel = function() {
         });
     };
     self.bootstrapGeneral = function(callback) {
-        Database.fetchChannel("general", function(err, data) {
+        Database.fetchChannel(constants.GENERAL_CHANNEL, function(err, data) {
             if (!data) {
-                CommonModel.newNode("general", "system", 
+                CommonModel.newNode(constants.GENERAL_CHANNEL, "system", 
                     constants.CHANNEL_NODE_TYPE, "General", "", false, function(json) {
                         Database.saveChannelData(json.id, json, function(err) {
                             return callback(err);

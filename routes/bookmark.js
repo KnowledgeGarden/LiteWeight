@@ -8,12 +8,13 @@ var constants = require('../apps/constants');
 var BookmarkModel = require('../apps/models/bookmark_model');
 var helper = require('./helper');
 
-router.get("/bookmarkindex", helper.isPrivate, function(req, res, next) {
+//Bookmarks is not an app: it's a Channel
+/*router.get("/bookmarkindex", helper.isPrivate, function(req, res, next) {
     req.session.curCon = null;
     var data = helper.startData(req);
     data.bookmarklist = BookmarkModel.listBookmarks();
     res.render('bookmark_index', data);
-});
+});*
 
 /**
  * Paint a bookmark form
@@ -41,15 +42,15 @@ router.get('/new', function(req, res, next) {
  * Fetch and paint a bookmark
  */
 router.get("/:id", function(req, res, next) {
-    var data = helper.startData(req),
-        id = req.params.id;
+    var id = req.params.id;
 //    console.log("Bookmark.get",id);
     BookmarkModel.fetchBookmark(id, function(err, result) {
+        req.session.curCon = result.id;
+        var data = helper.startData(req);
         console.log("Model returned "+result);
         data.result = result;
         return res.render('view', data);
     });
-    
 });
 
 
@@ -62,9 +63,8 @@ router.post("/newnode", function(req, res, next) {
         creatorId = req.session.theUser; //constants.TEST_CREATOR; //ToDo
     if (url) {
 //        console.log("NB", eq.body);
-        BookmarkModel.newBookmark(creatorId, url, statement, details, isPrivate, function(err) {
-            //TODO err must be undefined; otherwise, missing url
-            return res.redirect('/bookmark/bookmarkindex');
+        BookmarkModel.newBookmark(creatorId, url, statement, details, isPrivate, function(err, node) {
+            return res.redirect('/bookmark/'+node.id);
         });
     } else {
         //That's not good!

@@ -1,7 +1,6 @@
 var constants = require('../constants');
 var Database = require('../drivers/file_database_driver');
-const environment = require('../environment');
-var CommonModel; // = environment.CommonModel;
+var CommonModel;
 var Bookmark,
     instance;
 
@@ -21,15 +20,25 @@ Bookmark = function() {
      * @param {*} statement 
      * @param {*} details
      * @param isPrivate
-     * @param {*} callback err
+     * @param {*} callback err, node
      */
     self.newBookmark = function(creatorId, url, statement, details, isPrivate, callback) {
 //        console.log("BookmarkModel.newBookmark",creatorId,url,statement);
-        CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, isPrivate, details, function(node) {
-            node.url = url;
-    //        console.log("BookmarkModel.newBookmark-1"+node);
-            Database.saveBookmarkData(node.id, node, function(err) {
-                return callback(err);
+        //fetch the bookmark channe
+        Database.fetchChannel(constants.BOOKMARK_CHANNEL, function(err, channel) {
+            //create a new node
+            CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, isPrivate, details, function(node) {
+                node.url = url;
+                CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, node, channel);
+                channel.version = CommonModel.newId();
+                console.log("BookmarkModel.newBookmark-1",node,channel);
+
+                Database.saveBookmarkData(node.id, node, function(err) {
+                    Database.saveChannelData(channel.id, channel, function(err2) {
+                        console.log("BookmarkModel.newBookmark-2",node);
+                        return callback(err2, node);
+                    });
+                 });
             });
         });
     };

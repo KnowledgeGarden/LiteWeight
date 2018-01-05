@@ -1,9 +1,5 @@
-const DataPath = "../../data/";
-const TagPath = DataPath+"tags/";
 var Database = require('../drivers/file_database_driver');
-const environment = require('../environment');
-var CommonModel; // = environment.CommonModel;
-var uuid = require('uuid');
+var CommonModel;
 var constants = require('../constants');
 var Tags,
     instance;

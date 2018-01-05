@@ -57,7 +57,8 @@ router.get('/:id', function(req, res, next) {
                 clist.push(newentry);
             }
         }
-        //TODO reverse this list?
+        //latest on top
+        clist = clist.reverse();
         data.journallist = clist;
         data.channelid = result.id;
         data.channellist = ChannelModel.listChannels(creatorId);

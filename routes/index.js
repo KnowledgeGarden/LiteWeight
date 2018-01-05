@@ -3,6 +3,7 @@ var router = express.Router();
 var helper = require('./helper');
 var constants = require('../apps/constants');
 var EventModel = require('../apps/models/eventlog_model');
+var CommonModel = require('../apps/models/common_model');
 
 
 /* GET home page. */
@@ -33,12 +34,37 @@ router.get('/fetch/:id/:type', helper.isPrivate,function(req, res, next) {
     return res.redirect('/connections/'+id);
   } else if (type === constants.BLOG_NODE_TYPE) {
     return res.redirect('/journal/'+id);
+  } else if (type === constants.CHANNEL_NODE_TYPE) {
+    return res.redirect('/channels/'+id);
   } else {
     return res.redirect('/conversation/'+id);
   }
   
 });
 
+router.get('/confetch/:id', function(req, res, next) {
+  var id = req.params.id;
+  CommonModel.fetchNode(id, function(err, node) {
+    var type = node.type;
+    console.log("Index.confetch",id);
+    if (type === constants.BOOKMARK_NODE_TYPE) {
+      return res.redirect('/bookmark/'+id);
+    } else if (type === constants.TAG_NODE_TYPE) {
+      return res.redirect('/tags/gettag/'+id);
+    } else if (type === constants.CONVERSATION_NODE_TYPE) {
+      return res.redirect('/conversation/fetchconversation/'+id);
+    } else if (type === constants.RELATION_NODE_TYPE) {
+      return res.redirect('/connections/'+id);
+    } else if (type === constants.BLOG_NODE_TYPE) {
+      return res.redirect('/journal/'+id);
+    } else if (type === constants.CHANNEL_NODE_TYPE) {
+      return res.redirect('/channels/'+id);
+    } else {
+      return res.redirect('/conversation/'+id);
+    }  
+  });
+
+});
 router.get('/login', function(req, res, next) {
   var data = helper.startData(req);
   return res.render("login_form", data);

@@ -16,6 +16,9 @@ module.exports.REFERENCE_SUFFIX             = "_REF";
 module.exports.DECISION_SUFFIX              = "_DN";
 module.exports.RELATION_SUFFIX              = "_RLN";
 
+/** initial channels */
+module.exports.BOOKMARK_CHANNEL            = "bookmarks";
+module.exports.GENERAL_CHANNEL             = "general";
 
 /** Node Types */
 module.exports.CONVERSATION_NODE_TYPE       = "ConversationNodeType";

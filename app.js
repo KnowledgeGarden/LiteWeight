@@ -41,7 +41,7 @@ app.use(session({
 
 //routes
 var Indx = require('./routes/index');
-var Conv = require('./routes/convo');
+var Conv = require('./routes/conversation');
 var users = require('./routes/users');
 var Tags = require('./routes/tags');
 var Bmk = require('./routes/bookmark')

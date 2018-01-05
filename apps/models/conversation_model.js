@@ -205,7 +205,7 @@ Conversation = function() {
             childNode,
             childStruct;
         //fetch this parent
-        self.fetchView(rootNodeId, function(err, data) {
+        CommonModel.fetchNode(rootNodeId, function(err, data) {
             console.log("ConversationModel.toJsTree-1",rootNodeId,data);            
             //craft thisNode
             thisNode = {};

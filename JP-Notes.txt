@@ -20,7 +20,16 @@ FEATURES
                 Structured Conversation
                 Tagging
                 Crosslinking
-    Users are just Channels
+        Users are Private Channels (DM)
+    Threads
+        IBIS, connections, etc all in one
+            SLACK gives threads over to a tiny column
+    RECENT CHANGES
+        A History Channel (like bookmarks, not editable)
+            MOVE from front page?
+        Recent changes on the user's object (dynamic)
+            SLACK changes the color of things you haven't seen
+                but it's a pain wandering through them
 PRIVACY POLICIES
     ALL NODES in a PRIVATE Channel are PRIVATE
     ALL NODES in a PUBLIC Channel are PUBLIC
@@ -44,10 +53,13 @@ MASTER TODO
             All you see is the hyperlink to the entry itself
             Entry replaces the index space
 BUGS
+    20180105
+        *label_details_form.hbs not validating privacy
+        *webmenubar Tree painting wrong
     20180104
-        MenuBar doing a terrible job of showing the curcon stuff
-        CurrentCono for the menu bar assumes conversation: needs curcontype
-        TreeView not painting
+        FIXT MenuBar doing a terrible job of showing the curcon stuff
+        FIXT CurrentCono for the menu bar assumes conversation: needs curcontype
+        FIXT TreeView not painting
         Poor Radio UX
         Journals from Channels are supposed to follow their Channel's 
             privacy. Still, privacy radios are showing
@@ -62,4 +74,6 @@ MUSINGS
         It boots!
         Can paint the Channels view
         NEXT
-            Figure out what to do when a channel is selected
+            FIX BUGS
+            WIRE BOOKMARKS to always save to Bookmarks
+            REVERSE LIST in Channels: last on top
