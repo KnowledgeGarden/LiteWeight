@@ -19,6 +19,11 @@ Common = function() {
         return uuid.v4();
     };
 
+    //https://stackoverflow.com/questions/23593052/format-javascript-date-to-yyyy-mm-dd
+    self.newDate = function() {
+        return new Date().toISOString().slice(0,10);
+    };
+
     //https://stackoverflow.com/questions/1137436/what-are-useful-javascript-methods-that-extends-built-in-objects/1137579#1137579
     String.prototype.replaceAll = function(search, replace)
     {
@@ -168,7 +173,7 @@ Common = function() {
         }
         result.id = ix;
         result.creatorId = creatorId;
-        result.createdDate = new Date();
+        result.createdDate = self.newDate(); //new Date();
         result.version = self.newId();
         result.type = type;
         result.img = self.nodeTolargeIcon(type);
@@ -378,13 +383,15 @@ Common = function() {
         }
         snappers.push(targetNode.id);
         theChildNode.snappers = snappers;
-        //DANGER: assuming one parent
-        struct= {};
-        struct.id = targetNode.id;
-        struct.img = targetNode.imgsm;
-        struct.creatorId = targetNode.creatorId;
-        struct.statement = targetNode.statement;
-        theChildNode.parent = struct;
+        if (theChildNode.type !== constants.TAG_NODE_TYPE) {
+            //DANGER: assuming one parent
+            struct= {};
+            struct.id = targetNode.id;
+            struct.img = targetNode.imgsm;
+            struct.creatorId = targetNode.creatorId;
+            struct.statement = targetNode.statement;
+            theChildNode.parent = struct;
+        }
     };
 };
 //noticed that if you call a class > 1 times, best to
