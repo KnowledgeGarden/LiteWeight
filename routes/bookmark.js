@@ -14,8 +14,24 @@ var helper = require('./helper');
     var data = helper.startData(req);
     data.bookmarklist = BookmarkModel.listBookmarks();
     res.render('bookmark_index', data);
-});*
+});*/
 
+router.get('/stash', function(req, res, next) {
+    var data = helper.startData(req),
+        query = req.query,
+        creatorId = req.session.theUser;
+    //Must be logged in
+    if (!creatorId) {
+        return res.render("login_form", data);
+    }
+    if (query.url) {
+        console.log("Bookmark.stash", query);
+        BookmarkModel.stashBookmark(creatorId, query.url, query.title, function(err, node) {
+            return res.redirect(query.url);
+        });
+    }
+    // else ignore it
+});
 /**
  * Paint a bookmark form
  */
@@ -34,9 +50,18 @@ router.get('/new', function(req, res, next) {
     data.checkPrivate = true;
     data.private = "";
     data.action = "/bookmark/newnode";
-//    console.log("Bookmark.new",data,"X",query.title);
-    return res.render('newnode_form', data);    
+    if (query.url) {
+    //        console.log("NB", eq.body);
+        BookmarkModel.newBookmark(creatorId, url, statement, details, isPrivate, function(err, node) {
+            return res.redirect('/bookmark/'+node.id);
+        });
+    } else {
+        //That's not good!
+        req.flash("error", "Missing URL");
+        return res.redirect("/");
+    }
 });
+    
 
 /**
  * Fetch and paint a bookmark

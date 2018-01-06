@@ -11,7 +11,39 @@ Bookmark = function() {
         CommonModel = commModel;
     //    console.log("BookmarkModel",environment,CommonModel);        
     };
-//    console.log("Bookmark",CommonModel);
+
+    /**
+     * Stash this bookmark
+     * @param {*} creatorId 
+     * @param {*} url 
+     * @param {*} statement 
+     * @param {*} callback err
+     */
+    self.stashBookmark = function(creatorId, url, statement, callback) {
+    //        console.log("BookmarkModel.newBookmark",creatorId,url,statement);
+        //fetch the bookmark channe
+        Database.fetchChannel(constants.BOOKMARK_CHANNEL, function(err, channel) {
+            //create a new node
+            var lbl = statement;
+            if (lbl === "") {
+                lbl = "label missing from"+url;
+            }
+            CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, lbl, "Stashed", false, function(node) {
+                node.url = url;
+                CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
+                channel.version = CommonModel.newId();
+                console.log("BookmarkModel.newBookmark-1",node,channel);
+
+                Database.saveBookmarkData(node.id, node, function(err) {
+                    Database.saveChannelData(channel.id, channel, function(err2) {
+                        console.log("BookmarkModel.newBookmark-2",node);
+                        return callback(err2);
+                    });
+                    });
+            });
+        });
+    };
+
     /**
      * Create a new bookmark (aka WebClip)
      * Caller must pay attention to returned error in case the USL is missing
