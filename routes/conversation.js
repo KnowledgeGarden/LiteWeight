@@ -87,78 +87,109 @@ router.get("/newquestion/:id", function(req, res, next) {
     var data = helper.startData(req),
         id = req.params.id;
     console.log("NewQuestion",id);
-    data.hidden_1 = id;
-    data.hidden_2 = constants.QUESTION_NODE_TYPE;
-    data.formtitle = "New Question Node";
-    data.action = "/conversation/newnode";
-    data.checkPrivate = true;
-    data.private = "";
-    return res.render('newnode_form', data);
+    ConversationModel.fetchView(id, function(err, parent) {
+        data.respondimg = parent.imgsm;
+        data.respondlabel = parent.statement;
+        data.responddetails = parent.details;
+
+        data.hidden_1 = id;
+        data.hidden_2 = constants.QUESTION_NODE_TYPE;
+        data.formtitle = "New Question Node";
+        data.action = "/conversation/newnode";
+        data.checkPrivate = true;
+        data.private = "";
+        return res.render('newnode_form', data);
+    });
 });
 
 router.get("/newanswer/:id", function(req, res, next) {
     var data = helper.startData(req),
         id = req.params.id;
     console.log("NewAnswer",id);
-    data.hidden_1 = id;
-    data.hidden_2 = constants.ANSWER_NODE_TYPE;
-    data.formtitle = "New Answer Node";
-    data.action = "/conversation/newnode";
-    data.checkPrivate = true;
-    data.private = "";
-    return res.render('newnode_form', data);
+    ConversationModel.fetchView(id, function(err, parent) {
+        data.respondimg = parent.imgsm;
+        data.respondlabel = parent.statement;
+        data.responddetails = parent.details;
+        data.hidden_1 = id;
+        data.hidden_2 = constants.ANSWER_NODE_TYPE;
+        data.formtitle = "New Answer Node";
+        data.action = "/conversation/newnode";
+        data.checkPrivate = true;
+        data.private = "";
+        return res.render('newnode_form', data);
+    });
 });
 
 router.get("/newpro/:id", function(req, res, next) {
     var data = helper.startData(req),
         id = req.params.id;
     console.log("NewPro",id);
-    data.hidden_1 = id;
-    data.hidden_2 = constants.PRO_NODE_TYPE;
-    data.formtitle = "New Pro Argument Node";
-    data.action = "/conversation/newnode";
-    data.checkPrivate = true;
-    data.private = "";
-    return res.render('newnode_form', data);
+    ConversationModel.fetchView(id, function(err, parent) {
+        data.respondimg = parent.imgsm;
+        data.respondlabel = parent.statement;
+        data.responddetails = parent.details;
+        data.hidden_1 = id;
+        data.hidden_2 = constants.PRO_NODE_TYPE;
+        data.formtitle = "New Pro Argument Node";
+        data.action = "/conversation/newnode";
+        data.checkPrivate = true;
+        data.private = "";
+        return res.render('newnode_form', data);
+    });
 });
 
 router.get("/newcon/:id", function(req, res, next) {
     var data = helper.startData(req),
         id = req.params.id;
     console.log("NewCon",id);
-    data.hidden_1 = id;
-    data.hidden_2 = constants.CON_NODE_TYPE;
-    data.formtitle = "New Con Argument Node";
-    data.action = "/conversation/newnode";
-    data.checkPrivate = true;
-    data.private = "";
-    return res.render('newnode_form', data);
+    ConversationModel.fetchView(id, function(err, parent) {
+        data.respondimg = parent.imgsm;
+        data.respondlabel = parent.statement;
+        data.responddetails = parent.details;
+        data.hidden_1 = id;
+        data.hidden_2 = constants.CON_NODE_TYPE;
+        data.formtitle = "New Con Argument Node";
+        data.action = "/conversation/newnode";
+        data.checkPrivate = true;
+        data.private = "";
+        return res.render('newnode_form', data);
+    });
 });
 
 router.get("/newnote/:id", function(req, res, next) {
     var data = helper.startData(req),
         id = req.params.id;
     console.log("NewNote",id);
-    data.hidden_1 = id;
-    data.checkPrivate = true;
-    data.private = "";
-    data.hidden_2 = constants.NOTE_NODE_TYPE;
-    data.formtitle = "New Note Node";
-    data.action = "/conversation/newnode";
-    return res.render('newnode_form', data);
+    ConversationModel.fetchView(id, function(err, parent) {
+        data.respondimg = parent.imgsm;
+        data.respondlabel = parent.statement;
+        data.responddetails = parent.details;
+        data.hidden_1 = id;
+        data.checkPrivate = true;
+        data.private = "";
+        data.hidden_2 = constants.NOTE_NODE_TYPE;
+        data.formtitle = "New Note Node";
+        data.action = "/conversation/newnode";
+        return res.render('newnode_form', data);
+    });
 });
 
 router.get("/newreference/:id", function(req, res, next) {
     var data = helper.startData(req),
         id = req.params.id;
     console.log("NewReference",id);
-    data.hidden_1 = id;
-    data.hidden_2 = constants.REFERENCE_NODE_TYPE;
-    data.formtitle = "New Reference Node";
-    data.action = "/conversation/newnode"
-    data.checkPrivate = true;
-    data.private = "";
-    return res.render('newnode_form', data);
+    ConversationModel.fetchView(id, function(err, parent) {
+        data.respondimg = parent.imgsm;
+        data.respondlabel = parent.statement;
+        data.responddetails = parent.details;
+        data.hidden_1 = id;
+        data.hidden_2 = constants.REFERENCE_NODE_TYPE;
+        data.formtitle = "New Reference Node";
+        data.action = "/conversation/newnode"
+        data.checkPrivate = true;
+        data.private = "";
+        return res.render('newnode_form', data);
+    });
 });
 
 /**

@@ -341,21 +341,29 @@ Common = function() {
         }
     };
 
+    //////////////////////////
+    // How many times can a child have a parent?
+    //  If it is transcluded, many
+    //  If not, just one
+    /////////////////////////
 
     /**
      * Add a child struct to a given node
      * @param {*} childType 
+     * @param creatorId
      * @param {*} theChildNode 
      * @param {*} targetNode 
      */
-    self.addStructToNode = function(childType, theChildNode, targetNode) {
+    self.addStructToNode = function(childType, creatorId, theChildNode, targetNode) {
         console.log("CommonModel.addStructToNode",childType,theChildNode,targetNode);
         var struct = {},
             type = theChildNode.type,
-            img = self.nodeToSmallIcon(type);
+            img = theChildNode.imgsm;
         struct.id = theChildNode.id;
         struct.img = img;
         struct.type = type;
+        //creatorId is NOT related to the node but to whom credit is given for this struct
+        struct.creatorId = creatorId;
         struct.statement = theChildNode.statement;
         var kids = self.getChildList(childType, targetNode);
         if (!kids) {
@@ -370,6 +378,13 @@ Common = function() {
         }
         snappers.push(targetNode.id);
         theChildNode.snappers = snappers;
+        //DANGER: assuming one parent
+        struct= {};
+        struct.id = targetNode.id;
+        struct.img = targetNode.imgsm;
+        struct.creatorId = targetNode.creatorId;
+        struct.statement = targetNode.statement;
+        theChildNode.parent = struct;
     };
 };
 //noticed that if you call a class > 1 times, best to

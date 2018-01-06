@@ -2,6 +2,9 @@
 <div id="topbox">
     <span style="float:right; font-size:small;">{{result.creatorId}} {{result.createdDate}}</span>
     <div style="margin-left: 4px;">
+        {{#if result.parent}}
+        <h4>Responds to <img style="margin-right:4px;" src="{{result.parent.img}}"><a href="/conversation/{{result.parent.id}}">{{result.parent.statement}}</a></h4>
+        {{/if}}
         <h2><img style="margin-right:4px;" src="{{result.img}}">{{result.statement}}</h2>
         {{#if result.url}}
             <p>

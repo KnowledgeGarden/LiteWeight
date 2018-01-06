@@ -33,7 +33,7 @@ Journal = function() {
         Database.fetchChannel(channelId, function(err, channel) {
             console.log("JournalModel.createFromChannel",channel,statement);
             CommonModel.newNode(null, creatorId, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
-                CommonModel.addStructToNode(constants.BLOG_NODE_TYPE, node, channel);
+                CommonModel.addStructToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel);
                 console.log("JournalModel.createFromChannel-1",node,channel);
                 channel.version = CommonModel.newId();
                 Database.saveJournalData(node.id, node, function(err) {

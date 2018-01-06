@@ -78,7 +78,7 @@ Conversation = function() {
             CommonModel.newNode(null, creatorId, type, statement, details, isPrivate, function(node) {
                 console.log("ConversationModel.newResponseNode-1",type,node);
                 //wire them together
-                CommonModel.addStructToNode(type, node, parent);
+                CommonModel.addStructToNode(type, creatorId, node, parent);
                 //update parent's version
                 parent.version = CommonModel.newId();
                 //save the parent

@@ -50,14 +50,15 @@ Tags = function() {
      * Wire tag to node
      * Don't save the node data since it will be saved
      * by the calling stack
-     * @param {*} tag 
+     * @param {*} tag
+     * @param creatorId
      * @param {*} node 
      * @param {*} callback 
      */
-    function wireTagNode(tag, node, callback) {
+    function wireTagNode(tag, creatorId, node, callback) {
         console.log("TagModel.wireTagNode", node, tag);
-        CommonModel.addStructToNode(constants.TAG_NODE_TYPE, node, tag);
-        CommonModel.addStructToNode(constants.TAG_NODE_TYPE, tag, node);
+        CommonModel.addStructToNode(constants.TAG_NODE_TYPE, creatorId, node, tag);
+        CommonModel.addStructToNode(constants.TAG_NODE_TYPE, creatorId, tag, node);
         console.log("TagModel.wireTagNode-1",tag,node);
         Database.saveTagData(tag.id, tag, function(err) {
             return callback(err);
@@ -84,13 +85,13 @@ Tags = function() {
         Database.fetchTag(id, function(err, aTag) {
             console.log("TagModel.newTag",tagLabel,id,aTag);
             if (aTag) {
-                wireTagNode(aTag, node, function(err) {
+                wireTagNode(aTag, creatorId, node, function(err) {
                     console.log("TagModel.newTag-1",aTag);
                     return callback(err);
                 });
             } else { // new tag
                 CommonModel.newNode(id, creatorId, constants.TAG_NODE_TYPE, tagLabel, "", false, function(theTag) {
-                    wireTagNode(theTag, node, function(err) {
+                    wireTagNode(theTag, creatorId, node, function(err) {
                         console.log("TagModel.newTag-2",theTag,node);
                         return callback(err);
                     });

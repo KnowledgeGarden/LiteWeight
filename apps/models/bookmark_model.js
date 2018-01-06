@@ -29,7 +29,7 @@ Bookmark = function() {
             //create a new node
             CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, details, isPrivate, function(node) {
                 node.url = url;
-                CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, node, channel);
+                CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
                 channel.version = CommonModel.newId();
                 console.log("BookmarkModel.newBookmark-1",node,channel);
 

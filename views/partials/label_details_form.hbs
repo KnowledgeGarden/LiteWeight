@@ -19,6 +19,19 @@
 </script>
 <div class="home col-xs-12 ">
     <h2 style="margin-left: 20px">{{formtitle}}</h2>
+    {{#if respondlabel}}
+        <div style="margin-left: 20px">
+            <b><img style="margin-right:4px" src={{respondimg}}>Respond to Label</b><br/>
+            <span><h4>{{respondlabel}}</h4></span>
+        </div>
+        <div style="margin-left: 20px; ">
+            <b>Respond to Details</b><br/>
+            <div style="overflow-y: scroll; height:100px;">
+                {{{responddetails}}}
+            </div>
+        </div>
+        <hr>
+    {{/if}}
     <form name="rootform" method="post" action="{{action}}" onsubmit="return validateForm()">
         <input type="hidden" name="hidden_1" value="{{hidden_1}}">
         <input type="hidden" name="hidden_2" value="{{hidden_2}}">
@@ -38,7 +51,7 @@
         <div style="margin-left: 20px">
             <b>Label</b><br/>
             <input type="text" size="100" name="title" placeholder="{{labelplaceholder}}" value="{{formlabel}}">
-        </dkv>
+        </div>
         <div style="margin-left: 20px; ">
 
             <b>Details</b><br/>
