@@ -10,6 +10,7 @@ var CommonModel = require('../apps/models/common_model');
 /* GET home page. */
 router.get('/', helper.isPrivate, function(req, res, next) {
   var userId = req.session.theUser;
+  req.session.curCon = null;
 
 //  console.log("Home",req.session);
   EventModel.listRecentEvents(userId, 50, function(events) {
