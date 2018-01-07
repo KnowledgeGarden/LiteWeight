@@ -3,7 +3,7 @@
     "isPrivatePortal":false,
     "secretPassword":"SomeSecret!",
     "validHandles": [
-        "joe", "sue"
+        "joe", "sue", "sam"
     ],
     "viewerHandles":[
         "sam"

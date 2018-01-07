@@ -21,7 +21,9 @@ Common = function() {
 
     //https://stackoverflow.com/questions/23593052/format-javascript-date-to-yyyy-mm-dd
     self.newDate = function() {
-        return new Date().toISOString().slice(0,10);
+        return new Date().toLocaleString(); //  1/6/2018, 1:35:11 PM
+        //toLocaleDateString(); 1/6/2018
+        //toISOString().slice(0,10); 2018-01-06
     };
 
     //https://stackoverflow.com/questions/1137436/what-are-useful-javascript-methods-that-extends-built-in-objects/1137579#1137579
@@ -35,6 +37,7 @@ Common = function() {
     
         return this.replace(new RegExp('[' + search + ']', 'g'), replace);
     };
+
     /**
      * 
      * @param {*} str 
@@ -51,6 +54,35 @@ Common = function() {
     self.newId = function() {
         var d = new Date();
         return d.getTime().toString();
+    };
+
+    /**
+     * Return <code>true</code> if this user can see the given node
+     * @param {*} userId 
+     * @param {*} node 
+     */
+    self.canShow = function(userId, node) {
+        var canSee = true;
+        if (node.isPrivate) {
+            if (!userId) {
+                // no userId, no way, jose.
+                canSee = false;
+                // does this user own this node?
+            } else if (userId !== node.creatorId) {
+                // look now for ACLs
+                var acls = node.acls;
+                if (acls) {
+                    console.log("CANSEE-2",userId, acls);
+                    if (acls && acls.indexOf(userId) == -1) {
+                    canSee = false;
+                    }
+                } else {
+                    //poof! It's private. Full stop.
+                    canSee = false;
+                }
+            }
+        }
+        return canSee;
     };
 
     /**
@@ -81,7 +113,7 @@ Common = function() {
         } else {
             return callback();
         }
-    }
+    };
 
     self.nodeToSmallIcon = function(type) {
         if (type === constants.ANSWER_NODE_TYPE) {
@@ -179,6 +211,7 @@ Common = function() {
         result.img = self.nodeTolargeIcon(type);
         result.imgsm = self.nodeToSmallIcon(type);
         result.statement = statement;
+        result.isPrivate = isPrivate;
         result.details = details;
         EventLogModel.registerEvent(creatorId, constants.NEW_NODE_EVENT, result, function(err) {
             console.log("CommonModel.newNode",creatorId,type,result);
@@ -383,7 +416,12 @@ Common = function() {
         }
         snappers.push(targetNode.id);
         theChildNode.snappers = snappers;
-        if (theChildNode.type !== constants.TAG_NODE_TYPE) {
+        var canDo = true;
+        if (targetNode.type === constants.TAG_NODE_TYPE ||
+            targetNode.type === constants.CHANNEL_NODE_TYPE) {
+            canDo = false;
+        }
+        if (canDo) {
             //DANGER: assuming one parent
             struct= {};
             struct.id = targetNode.id;

@@ -40,7 +40,9 @@ EventLog = function() {
         struct.id = node.id;
         struct.img = CommonModel.nodeToSmallIcon(type);
         struct.statement = node.statement;
+        struct.creatorId = creatorId;
         struct.createdDate = node.createdDate;
+        struct.isPrivate = node.isPrivate;
         struct.type = type; // used for a common fetch mechanism
         struct.eventType = eventType;
         Database.saveHistory(struct, function(err) {
@@ -65,10 +67,53 @@ EventLog = function() {
         });
     };
 
-    self.listRecentEvents = function(count, callback) {
+    /**
+     * We must filter on private nodes
+     * @param userId
+     * @param {*} count 
+     * @param {*} callback 
+     */
+    self.listRecentEvents = function(userId, count, callback) {
         Database.listRecents(count, function(json) {
-            console.log("EventModel.listRecentEvents"+json);
-            return callback(json);
+            var result = [];
+            console.log("EventModel.listRecentEvents",json);
+            if (json) {
+                json.forEach(function(fx) {
+                    console.log("EventModel.listRecentEvents-1",fx);
+                    CommonModel.fetchNode(fx.id, function(err, node) {
+                        console.log("EventModel.listRecentEvents-2",userId,node);
+                        var canSee = CommonModel.canShow(userId, node);
+                        /*
+                        if (node.isPrivate) {
+                            if (!userId) {
+                                // no userId, no way, jose.
+                                canSee = false;
+                                // does this user own this node?
+                            } else if (userId !== node.creatorId) {
+                                // look now for ACLs
+                                var acls = node.acls;
+                                if (acls) {
+                                    console.log("CANSEE-2",userId, acls);
+                                    if (acls && acls.indexOf(userId) == -1) {
+                                     canSee = false;
+                                    }
+                                } else {
+                                    //poof! It's private. Full stop.
+                                    canSee = false;
+                                }
+                            }
+                        }
+                        */
+                        console.log("EventModel.listRecentEvents-3",userId,canSee,fx);
+                        if (canSee) {
+                            result.push(fx);
+                        }       
+                    });
+                });
+                return callback(result);
+            } else {
+                return callback(result)
+            }
         });
     };
 

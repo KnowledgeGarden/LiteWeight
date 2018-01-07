@@ -8,8 +8,10 @@ var CommonModel = require('../apps/models/common_model');
 
 /* GET home page. */
 router.get('/', helper.isPrivate, function(req, res, next) {
+  var userId = req.session.theUser;
+
 //  console.log("Home",req.session);
-  EventModel.listRecentEvents(50, function(events) {
+  EventModel.listRecentEvents(userId, 50, function(events) {
     var data = helper.startData(req);
     data.recentlist = events;    
     return res.render('index', data);
@@ -17,10 +19,36 @@ router.get('/', helper.isPrivate, function(req, res, next) {
 });
 
 /**
+ * Face it: this platform passes around nodes of all sorts, and it's
+ * non-trivial to know how to paint them. So, here we are. A hack.
+ */
+router.get('/grab/:id', helper.isPrivate, function(req, res, next) {
+  var id = req.params.id
+  CommonModel.fetchNode(id, function(err, node) {
+    var type = node.type;
+    if (type === constants.BOOKMARK_NODE_TYPE) {
+      return res.redirect('/bookmark/'+id);
+    } else if (type === constants.TAG_NODE_TYPE) {
+      return res.redirect('/tags/gettag/'+id);
+    } else if (type === constants.CONVERSATION_NODE_TYPE) {
+      return res.redirect('/conversation/fetchconversation/'+id);
+    } else if (type === constants.RELATION_NODE_TYPE) {
+      return res.redirect('/connections/'+id);
+    } else if (type === constants.BLOG_NODE_TYPE) {
+      return res.redirect('/journal/'+id);
+    } else if (type === constants.CHANNEL_NODE_TYPE) {
+      return res.redirect('/channels/'+id);
+    } else {
+      return res.redirect('/conversation/'+id);
+    }  
+  });
+});
+
+/**
  * This turns out to be an important vehicle for fetching a node
  * when you only know its id and its type.
  */
-router.get('/fetch/:id/:type', helper.isPrivate,function(req, res, next) {
+router.get('/fetch/:id/:type', helper.isPrivate, function(req, res, next) {
   var id = req.params.id,
       type = req.params.type;
   console.log("Index.fetch",id,req.body);

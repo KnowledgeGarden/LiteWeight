@@ -74,12 +74,16 @@ Conversation = function() {
         //fetch the parent
         Database.fetchData(parentId, function(err, parent) {
             console.log("ConversationModel.newResponseNode",type,parentId,parent);
+            var acls = parent.acls;
             //create the response node
             CommonModel.newNode(null, creatorId, type, statement, details, isPrivate, function(node) {
                 console.log("ConversationModel.newResponseNode-1",type,node);
                 //wire them together
                 CommonModel.addStructToNode(type, creatorId, node, parent);
                 //update parent's version
+                if (acls) {
+                    node.acls = acls;
+                }
                 parent.version = CommonModel.newId();
                 //save the parent
                 console.log("ConversationModel.newResponseNode-2",parent,node);
@@ -191,6 +195,10 @@ Conversation = function() {
         if (snappers) {
             result = result.concat(snappers);
         }
+        snappers = node.tags;
+        if (snappers) {
+            result = result.concat(snappers);
+        }
 
         return result;
     };
@@ -216,6 +224,7 @@ Conversation = function() {
             //craft thisNode
             thisNode = {};
             thisNode.id = data.id;
+            thisNode.type = data.type;
             if (!parentNode) {
                 var state = {};
                 state.opened = true;
@@ -228,23 +237,25 @@ Conversation = function() {
             if (!parentKids) {
                 parentKids = [];
             }
+            if (data.type !== constants.TAG_NODE_TYPE) {
             var snappers = fetchAllkidStructs(data);
-            if (snappers) {
-                var len = snappers.length;
-                while (len > 0) {      
-                    childStruct = snappers.pop();
-                    len = snappers.length;
-                    if (childStruct) {
-                        //recurse
-                        self.toJsTree(childStruct.id, thisNode, function(tree) {
-                            console.log("ConversationModel.toJsTree-2",rootNodeId,data);            
-                            parentKids.push(tree);
-                        });
+                if (snappers) {
+                    var len = snappers.length;
+                    while (len > 0) {      
+                        childStruct = snappers.pop();
+                        len = snappers.length;
+                        if (childStruct) {
+                            //recurse
+                            self.toJsTree(childStruct.id, thisNode, function(tree) {
+                                console.log("ConversationModel.toJsTree-2",rootNodeId,data);            
+                                parentKids.push(tree);
+                            });
+                        }
+                        console.log("ConversationModel.toJsTree-3",len,parentKids);
                     }
-                    console.log("ConversationModel.toJsTree-3",len,parentKids);
-                }
-                if (parentKids.length > 0) {
-                    thisNode.children = parentKids;                    
+                    if (parentKids.length > 0) {
+                        thisNode.children = parentKids;                    
+                    }
                 }
             }
             console.log("ConversationModel.toJsTree++",thisNode);

@@ -24,9 +24,10 @@ router.get("/newtag/:id", function(req, res, next) {
 router.get("/gettag/:id", function(req, res, next) {
     var id = req.params.id,
         data = helper.startData(req);
-    console.log("Tags.getTag",id);
+    //console.log("Tags.getTag",id);
     TagModel.fetchTag(id, function(err, result) {
         data.result = result;
+        console.log("Tags.getTag",result);
         return res.render('tag_view', data);
     });
 });

@@ -31,10 +31,12 @@ Journal = function() {
      */
     self.createJournalFromChannel = function(creatorId, channelId, statement, details, isPrivate, callback) {
         Database.fetchChannel(channelId, function(err, channel) {
-            console.log("JournalModel.createFromChannel",channel,statement);
+            var acls = channel.acls;
+            console.log("JournalModel.createFromChannel",isPrivate,channel,statement);
             CommonModel.newNode(null, creatorId, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
                 CommonModel.addStructToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel);
                 console.log("JournalModel.createFromChannel-1",node,channel);
+                node.acls = acls;
                 channel.version = CommonModel.newId();
                 Database.saveJournalData(node.id, node, function(err) {
                     Database.saveChannelData(channel.id, channel, function(err2) {

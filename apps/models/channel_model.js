@@ -55,6 +55,28 @@ Channel = function() {
     };
 
     /**
+     * @param {*} channelId 
+     * @param {*} newMemberId 
+     * @param {*} creatorId 
+     * @param {*} callback 
+     */
+    self.addMemberToChannel = function(channelId, newMemberId, creatorId, callback) {
+        //TODO
+    };
+
+    /**
+     * NOTE: this removes from the channel's ACL and must be propagated
+     * Along all private channel entries and children
+     * @param {*} channelId 
+     * @param {*} removeMemberId 
+     * @param {*} creatorId 
+     * @param {*} callback 
+     */
+    self.removeMemberFromChannel = function(channelId, removeMemberId, creatorId, callback) {
+        //TODO
+    };
+
+    /**
      * @param creatorId
      * @param statement
      * @param members if is private
@@ -64,7 +86,9 @@ Channel = function() {
     self.createChannel = function(creatorId, statement, members, isPrivate, callback) {
         var id = CommonModel.replaceAll(statement, ' ', '_');
         id = id.toLowerCase();
-        CommonModel.newNode(id, creatorId, constants.CHANNEL_NODE_TYPE, statement, isPrivate, "", function(node) {
+        CommonModel.newNode(id, creatorId, constants.CHANNEL_NODE_TYPE, statement, "", isPrivate, function(node) {
+            console.log("ChannelModel.createChannel",id,isPrivate,members,node);
+
             if (isPrivate) {
                 var mlist = [];
                 mlist.push(creatorId);
@@ -74,8 +98,10 @@ Channel = function() {
                         mlist.push(ta[i].trim());
                     }
                 }
+                node.acls = mlist;
             }
-            node.acls = mlist;
+            console.log("ChannelModel.createChannel-2",node);
+            
             Database.saveChannelData(node.id, node, function(err) {
                 return callback(err, node);
             });
@@ -101,14 +127,21 @@ Channel = function() {
             if (fx) {
                 if (!fx.includes(".DS_Store")) { // mac file system
                     self.fetchChannel(fx, function(err, thecon) {
-                        var canSee = true;
+                        var canSee = CommonModel.canShow(userId,thecon);
+                        /*
                         if (thecon.isPrivate) {
-                            var acls = thecon.acls;
-                            if (acls.indexOf(userId) == -1) {
+                            if (!userId) {
                                 canSee = false;
+                            } else {
+                                var acls = thecon.acls;
+                                if (acls && acls.indexOf(userId) == -1) {
+                                    canSee = false;
+                                }
                             }
 
                         }
+                        */
+                        console.log("ChannelModel.listChannels-2",canSee, thecon, userId);
                         if (canSee) {
                             CommonModel.validateNodeImage(thecon, function() {
                                 console.log("FCH", fx, thecon);

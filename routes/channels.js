@@ -82,6 +82,7 @@ router.post('/new', function(req, res, next) {
         isPrivate = (isPrivate === 'true');
         members = req.body.members;
         creatorId = req.session.theUser;
+        console.log("Channels.post.net",isPrivate,members,title);
     ChannelModel.createChannel(creatorId, title, members, isPrivate, function(err, node) {
         return res.redirect('/channels');
     });

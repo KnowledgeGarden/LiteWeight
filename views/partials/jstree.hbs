@@ -18,9 +18,11 @@
     };
     $('#ajax')
 		.on("select_node.jstree", function (e, data) {
-            //https://stackoverflow.com/questions/25481538/get-selected-jstree-node-values-jquery/29748794
-            var selectedId = $("#ajax").jstree("get_selected", true)[0].id;
-			//alert("Clicked"+selectedId);
-            window.location.href = "/conversation/"+selectedId;
+            //https://groups.google.com/forum/#!topic/jstree/1j47o8s-tc8
+            var node = selectedNode= $('#ajax').jstree(true).get_selected(true);
+            node = node[0];
+            var selectedId = node.id;
+            
+            window.location.href = "/grab/"+selectedId;
 		});
 </script>

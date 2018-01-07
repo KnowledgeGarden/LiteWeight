@@ -131,7 +131,7 @@ FileDatabase = function() {
                                             } else {
                                                 self.fetchChannel(nodeId, function(err5, data5) {
 
-                                                    return callback(err4, data4);
+                                                    return callback(err4, data5);
                                                     //NOTE: if other models are added you must add
                                                     // their fetch methods here
 
