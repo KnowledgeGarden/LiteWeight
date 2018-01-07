@@ -1,4 +1,5 @@
 /**
+ * @author park
  * Two kinds of event logs:
  *  A raw event log -- timeline history-- which includes event type,
  *   the node, who did it

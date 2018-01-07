@@ -1,3 +1,4 @@
+/* @author park */
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
 var constants = require('../constants');
@@ -172,14 +173,12 @@ Tags = function() {
         fileNames.forEach(function(fx) {
             if (!fx.includes(".DS_Store")) { // mac file system
                 self.fetchTag(fx, function(err, thecon) {
-                    CommonModel.validateNodeImage(thecon, function() {
-                        console.log("TFE", fx, thecon);
-                        con = {};
-                        con.id = thecon.id;
-                        con.img = thecon.imgsm;
-                        con.statement = thecon.statement;
-                        result.push(con);
-                    });
+                    console.log("TFE", fx, thecon);
+                    con = {};
+                    con.id = thecon.id;
+                    con.img = thecon.imgsm;
+                    con.statement = thecon.statement;
+                    result.push(con);
                 });
             }
         });

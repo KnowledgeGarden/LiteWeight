@@ -1,4 +1,7 @@
-/** A route for node editing */
+/**
+ * @author park
+ * A route for node editing
+ */
 var express = require('express');
 var router = express.Router();
 var helper = require('./helper');

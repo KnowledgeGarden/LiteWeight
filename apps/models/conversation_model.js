@@ -1,6 +1,4 @@
-const DataPath = "../../data/";
-const environment = require('../environment');
-const ConversationPath = DataPath+"conversations/";
+/* @author park */
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
 var EventModel;
@@ -15,7 +13,6 @@ Conversation = function() {
     self.inject = function(commModel, eventModel) {
         CommonModel = commModel;
         EventModel = eventModel;
-    //    console.log("ConversationModel",environment,CommonModel,EventModel);
     };
 
     /**
@@ -97,69 +94,7 @@ Conversation = function() {
         });
     };
 
-    /**
-     * Create a new conversation and its root node
-     * @param creatorId
-     * @param {*} title
-     * @param {*} details 
-     * @param {*} type 
-     * @param {*} roottitle 
-     * @param {*} rootdetails 
-     * @param {*} callback returns new conversation's id
-     * /
-    self.newConversation = function(creatorId, title, details, type, roottitle, rootdetails, callback) {
-        //first, create the root node
-        CommonModel.newNode(null, creatorId, type, roottitle, rootdetails, function(json) {
-            var id = json.id,
-                xroot;
-            console.log("ConversationModel.newConversation",type);
-            Database.saveNodeData(json.id, json, function(err) {
-                //now create the conversation
-                xroot = {};
-                xroot.id = id;
-                xroot.type = type;
-                xroot.statement = roottitle;
-                CommonModel.(null,creatorId, constants.CONVERSATION_NODE_TYPE, title, details, function(json1) {
-                    json1.rootNode = xroot;
-                    Database.saveConversationData(json1.id, json1, function(err) {
-                        console.log("ConversationModel.newConversation-1", title, err);            
-                        return callback(id);
-                    });
-                });
-            });
-        });
-    };
 
-    /**
-     * List all conversations
-     * @return
-     * /
-    self.listConversations = function() {
-        var fileNames= Database.listConversations();
-        console.log("LISTS",fileNames);
-        var result = [],
-            temp,
-            con;
-        if (fileNames.length === 0) {
-            return result;
-        }
-        fileNames.forEach(function(fx) {
-            if (!fx.includes(".DS_Store")) { // mac file system
-                self.fetchConversation(fx, function(thecon) {
-                    CommonModel.validateNodeImage(thecon, function() {
-                        console.log("FE", fx, thecon);
-                        con = {};
-                        con.id = thecon.id;
-                        con.img = thecon.imgsm;
-                        con.statement = thecon.statement;
-                        result.push(con);
-                    });
-                });
-            }
-        });
-        return result;
-    };
-*/
     function fetchAllkidStructs(node) {
         //There really is a better way to do this
         var result = [];

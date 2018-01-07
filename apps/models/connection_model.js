@@ -1,3 +1,4 @@
+/* @author park */
 var constants = require('../constants');
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
@@ -32,14 +33,12 @@ Connection = function() {
             if (fx) {
                 if (!fx.includes(".DS_Store")) { // mac file system
                     self.fetchConnection(fx, function(err, thecon) {
-                        CommonModel.validateNodeImage(thecon, function() {
-                            console.log("FC", fx, thecon);
-                            con = {};
-                            con.id = thecon.id;
-                            con.img = thecon.imgsm;
-                            con.statement = thecon.statement;
-                            result.push(con);
-                        });
+                        console.log("FC", fx, thecon);
+                        con = {};
+                        con.id = thecon.id;
+                        con.img = thecon.imgsm;
+                        con.statement = thecon.statement;
+                        result.push(con);
                     });
                 }
             }

@@ -1,4 +1,4 @@
-//var ConversationModel = require('../apps/models/conversation_model');
+/* @author park */
 var config = require('../config/config');
 var Helper,
     instance;

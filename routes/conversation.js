@@ -1,3 +1,4 @@
+/* @author park */
 var express = require('express');
 var router = express.Router();
 var constants = require('../apps/constants');
@@ -47,41 +48,8 @@ router.get('/ajaxtree/:id', function (req, res, next) {
     //    console.log("Convo.jstree",id,tree);
         return res.json(tree);
     });
-
 });
 
-/**
-router.get("/conversationindex", helper.isPrivate, function(req, res, next) {
-    req.session.curCon = null;
-    var data = helper.startData(req);
-    var nd = ConversationModel.listConversations();
-    //list conversations: 
-    data.conlist = nd;
-
-    res.render("conversation_index", data);
-});
-router.get("/newconversation", function(req, res, next) {
-    console.log("New Conversation");
-    var data = helper.startData(req);
-    data.hidden_1 = constants.CONVERSATION_NODE_TYPE;
-    return res.render("newconversation_form", data);
-});
-
-router.get("/fetchconversation/:id", function(req, res, next) {
-    var data = helper.startData(req),
-        id = req.params.id;
-    console.log("FetchingCon",id);
-    ConversationModel.fetchConversation(id, function(result) {
-        console.log("Model returned "+result);
-        req.session.curCon = result.rootNode.id;
-        data.result = result;
-        data.img = "/images/ibis/map.png";
-        data.rootimg = typeToLargeImage(result.rootNode.type);
-        data.rootnode = result.rootNode;
-        return res.render('view_conversation', data);
-    });
-});
-*/
 
 router.get("/newquestion/:id", function(req, res, next) {
     var data = helper.startData(req),
@@ -219,29 +187,11 @@ router.post("/newnode", function(req, res, next) {
         parentId = req.body.hidden_1,
         type = req.body.hidden_2,
         creatorId = req.session.theUser;
-    //TODO
     console.log("NN", JSON.stringify(req.body));
     ConversationModel.newResponseNode(creatorId, parentId, type, title, details, isPrivate, function(err, node) {
         res.redirect(node.id);
     });
  
 });
-
-/*
- // Creates a new conversation node as well as its root node
-router.post("/newconversation", function(req, res, next) {
-    console.log("XXXX",JSON.stringify(req.body));
-    var title = req.body.title
-        details = req.body.details,
-        type = req.body.hidden_1,
-        roottitle = req.body.roottitle,
-        rootdetails = req.body.rootdetails,
-        creatorId = req.session.theUser;
-    console.log("PostNewCon", type,title,details,  roottitle, rootdetails);
-    ConversationModel.newConversation(creatorId, title, details, type, roottitle, rootdetails, function(id) {
-        return res.redirect("/conversation/"+id);
-    });
-});
-*/
 
 module.exports = router;

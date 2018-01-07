@@ -1,4 +1,7 @@
-/** Constants to tidy up code */
+/**
+ * @author park
+ * Constants to tidy up code
+ * */
 //a user identity for testing
 module.exports.TEST_CREATOR                 = "TestUser";
 /**

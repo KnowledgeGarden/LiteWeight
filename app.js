@@ -1,3 +1,4 @@
+/* @author park */
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -34,7 +35,7 @@ app.use(session({
   genid: function(req) {
     return uuid.v4(); // use UUIDs for session IDs
   },
-  secret: "collaborative sauce",
+  secret: "collaborative sauce", //TODO ChangeMe
   resave: true,
   saveUninitialized: true
 }));

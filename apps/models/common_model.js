@@ -1,3 +1,4 @@
+/* @author park */
 var constants = require('../constants');
 var environment = require('../environment');
 var Database = require('../drivers/file_database_driver');
@@ -96,24 +97,6 @@ Common = function() {
         });
     };
 
-    /**
-     * A temporary patch to be removed soon
-     * @param node
-     * @param callback ()
-     */
-    self.validateNodeImage = function(node, callback) {
-        var smallImage = node.imgsm;
-        if (!smallImage) {
-            smallImage = self.nodeToSmallIcon(node.type);
-            node.imgsm = smallImage;
-            node.version = self.newId();
-            Database.saveData(node.id, node, function(err) {
-                return callback();
-            });
-        } else {
-            return callback();
-        }
-    };
 
     self.nodeToSmallIcon = function(type) {
         if (type === constants.ANSWER_NODE_TYPE) {

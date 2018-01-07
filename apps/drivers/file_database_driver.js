@@ -1,10 +1,10 @@
+/* @author park */
 var fs = require('fs');
 var constants = require('../constants');
 
 /** Paths */
 const DataPath = "./data/";
 const ResourcePath = "./resources/";
-//const ConversationPath = DataPath+"conversations/";
 const JournalPath = DataPath+"journals/";
 const BookmarkPath = DataPath+"bookmarks/";
 const ConnectionPath = DataPath+"connections/";
@@ -65,33 +65,7 @@ FileDatabase = function() {
         return filelist;
     };
 
-    ////////////////////////
-    // Conversations
-    ////////////////////////
-/*    self.fetchConversation = function(conId, callback) {
-        var path = ConversationPath+conId;
-        readFile(path, function(err, data) {
-            return callback(err, data);
-        });
-        
-    };
-    /**
-     * Save conversation data
-     * @param {*} id 
-     * @param {*} json 
-     * @param {*} callback err
-     * /
-    self.saveConversationData = function(id, json, callback) {
-        console.log("DatabaseSaveConversationData",id,json);
-        fs.writeFile(ConversationPath+id, 
-                JSON.stringify(json), function(err) {
-            return callback(err);
-        }); 
-    };
 
-    /**
-     * @return does not return <code>null</code>
-     * */
     ////////////////////////
     // General purpose
     //  To INTERPRET any node which can be in a conversation

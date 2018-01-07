@@ -1,4 +1,10 @@
+/* @author park */
+
+// Web clips -- user enters annotation
 // javascript:location.href='http://localhost:3000/bookmark/new?url='+
+//     encodeURIComponent(location.href)+'&title='+ encodeURIComponent(document.title)
+// Stash a bookmark without any editing -- very quick
+// javascript:location.href='http://localhost:3000/bookmark/stash?url='+
 //     encodeURIComponent(location.href)+'&title='+ encodeURIComponent(document.title)
 
 
@@ -9,13 +15,6 @@ var BookmarkModel = require('../apps/models/bookmark_model');
 var helper = require('./helper');
 
 //Bookmarks is not an app: it's a Channel
-/*router.get("/bookmarkindex", helper.isPrivate, function(req, res, next) {
-    req.session.curCon = null;
-    var data = helper.startData(req);
-    data.bookmarklist = BookmarkModel.listBookmarks();
-    res.render('bookmark_index', data);
-});*/
-
 router.get('/stash', function(req, res, next) {
     var data = helper.startData(req),
         query = req.query,

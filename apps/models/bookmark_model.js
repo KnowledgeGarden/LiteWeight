@@ -1,3 +1,4 @@
+/* @author park */
 var constants = require('../constants');
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
@@ -94,13 +95,11 @@ Bookmark = function() {
         fileNames.forEach(function(fx) {
             if (!fx.includes(".DS_Store")) { // mac file system
                 self.fetchBookmark(fx, function(err, thecon) {
-                    CommonModel.validateNodeImage(thecon, function() {
-                        con = {};
-                        con.id = thecon.id;
-                        con.img = thecon.imgsm;
-                        con.statement = thecon.statement;
-                        result.push(con);
-                    });
+                    con = {};
+                    con.id = thecon.id;
+                    con.img = thecon.imgsm;
+                    con.statement = thecon.statement;
+                    result.push(con);
                 });
             }
         });

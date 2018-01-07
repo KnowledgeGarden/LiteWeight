@@ -1,3 +1,4 @@
+/* @author park */
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
 var EventModel;
@@ -143,14 +144,12 @@ Channel = function() {
                         */
                         console.log("ChannelModel.listChannels-2",canSee, thecon, userId);
                         if (canSee) {
-                            CommonModel.validateNodeImage(thecon, function() {
-                                console.log("FCH", fx, thecon);
-                                con = {};
-                                con.id = thecon.id;
-                                con.img = thecon.imgsm;
-                                con.statement = thecon.statement;
-                                result.push(con);
-                            });
+                            console.log("FCH", fx, thecon);
+                            con = {};
+                            con.id = thecon.id;
+                            con.img = thecon.imgsm;
+                            con.statement = thecon.statement;
+                            result.push(con);
                         }
                     });
                 }

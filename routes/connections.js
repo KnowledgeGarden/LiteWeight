@@ -1,4 +1,5 @@
 /**
+ * @author park
  * We are using req.session.transclude to save remembered node identities.
  * This serves node transclusion and node connections
  */

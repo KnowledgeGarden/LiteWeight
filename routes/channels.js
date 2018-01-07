@@ -1,3 +1,4 @@
+/* @author park */
 var express = require('express');
 var router = express.Router();
 var helper = require('./helper');
@@ -7,7 +8,7 @@ var BookmarkModel = require('../apps/models/bookmark_model');
 
 
 /* GET home page. */
-//TODO this belongs in index.js along with its homepage get
+//TODO this belongs in index.js along with its homepage get ????
 router.get('/', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
     creatorId = req.session.theUser;
@@ -23,18 +24,6 @@ router.get("/new", function(req, res, next) {
     return res.render('newchannel_form', data);
 });
 
-/** handled in journal.js
-router.get('/newjournal/:id', function(req, res, next) {
-    var id = req.params.id,
-        data = helper.startData(req);
-    console.log("Channels.newJournal",id);
-    //Must check the privacy settings on this channel
-    ChannelModel.fetchChannel(id, function(err, node) {
-
-    })
-    return res.redirect("/"); //TODO
-});
-*/
 
 /**
  * Fetch the contents of a channel.

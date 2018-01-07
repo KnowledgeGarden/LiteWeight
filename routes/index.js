@@ -1,3 +1,4 @@
+/* @author park */
 var express = require('express');
 var router = express.Router();
 var helper = require('./helper');
@@ -70,7 +71,7 @@ router.get('/fetch/:id/:type', helper.isPrivate, function(req, res, next) {
   
 });
 
-router.get('/confetch/:id', function(req, res, next) {
+router.get('/confetch/:id', helper.isPrivate, function(req, res, next) {
   var id = req.params.id;
   CommonModel.fetchNode(id, function(err, node) {
     var type = node.type;
@@ -93,14 +94,20 @@ router.get('/confetch/:id', function(req, res, next) {
   });
 
 });
+
 router.get('/login', function(req, res, next) {
   var data = helper.startData(req);
   return res.render("login_form", data);
 });
 
 router.get('/logout', function(req, res, next) {
-  helper.logout(req);
-  return res.redirect('/');
+  var struct = {};
+  struct.type = constants.LOGOUT_EVENT;
+  struct.content = req.session.theUser;
+  EventModel.registerSimpleEvent(struct, function(err) {
+    helper.logout(req);
+    return res.redirect('/');
+  });
 });
 
 router.get("/aboutbookmarks", function(req, res, next) {
@@ -139,11 +146,11 @@ router.get("/aboutchannels", function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about_channels", data);
 });
-router.get("/about", function(req, res, nex) {
+router.get("/about", helper.isPrivate, function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about", data);
 });
-router.get("/contact", function(req, res, nex) {
+router.get("/contact", helper.isPrivate, function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about", data);
 });
