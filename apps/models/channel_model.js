@@ -129,19 +129,6 @@ Channel = function() {
                 if (!fx.includes(".DS_Store")) { // mac file system
                     self.fetchChannel(fx, function(err, thecon) {
                         var canSee = CommonModel.canShow(userId,thecon);
-                        /*
-                        if (thecon.isPrivate) {
-                            if (!userId) {
-                                canSee = false;
-                            } else {
-                                var acls = thecon.acls;
-                                if (acls && acls.indexOf(userId) == -1) {
-                                    canSee = false;
-                                }
-                            }
-
-                        }
-                        */
                         console.log("ChannelModel.listChannels-2",canSee, thecon, userId);
                         if (canSee) {
                             console.log("FCH", fx, thecon);

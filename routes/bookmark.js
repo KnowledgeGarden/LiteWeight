@@ -51,9 +51,7 @@ router.get('/new', function(req, res, next) {
     data.action = "/bookmark/newnode";
     if (query.url) {
     //        console.log("NB", eq.body);
-        BookmarkModel.newBookmark(creatorId, url, statement, details, isPrivate, function(err, node) {
-            return res.redirect('/bookmark/'+node.id);
-        });
+      res.render('newnode_form', data);
     } else {
         //That's not good!
         req.flash("error", "Missing URL");

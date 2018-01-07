@@ -13,6 +13,16 @@ router.get('/', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
     creatorId = req.session.theUser;
     data.channellist = ChannelModel.listChannels(creatorId);
+        var mock = {};
+        var l = [];
+        var journ = {};
+
+        journ.id="";
+        journ.img="";
+        journ.statement="";
+        l.push(mock);
+        data.journallist = l;
+
     console.log("Channels.index",data);
     return res.render('channel_view', data);
 });

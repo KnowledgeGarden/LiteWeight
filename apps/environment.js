@@ -13,6 +13,7 @@ var BookmarkModel = require('./models/bookmark_model');
 var ConnectionModel = require('./models/connection_model');
 var JournalModel = require('./models/journal_model');
 var ChannelModel = require('./models/channel_model');
+var UserModel = require('./models/user_model');
 Environment = function() {
     var self = this;
     CommonModel.inject(EventLogModel);
@@ -23,6 +24,7 @@ Environment = function() {
     ConnectionModel.inject(CommonModel);
     JournalModel.inject(CommonModel);
     ChannelModel.inject(CommonModel, EventLogModel);
+    UserModel.inject(CommonModel);
     //Bootstrap channels
     ChannelModel.bootstrapBookmarks(function(err) {
         ChannelModel.bootstrapGeneral(function(err1) {
