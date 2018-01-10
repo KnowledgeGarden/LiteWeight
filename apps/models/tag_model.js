@@ -15,13 +15,17 @@ Tags = function() {
 
     /**
      * Fetch a tag
+     * @param userId
      * @param {*} viewId 
      * @param {*} callback err json
      */
-    self.fetchTag = function(id, callback) {
+    self.fetchTag = function(userId, id, callback) {
         console.log("TagModel.fetchTag", id);
         Database.fetchTag(id, function(err, data) {
-            return callback(err, data);            
+                CommonModel.buildTagChildList(userId, data, function(children) {
+                    data.theTags = children;
+                    return callback(err, data);
+            });
         });
     };
 
@@ -58,8 +62,8 @@ Tags = function() {
      */
     function wireTagNode(tag, creatorId, node, callback) {
         console.log("TagModel.wireTagNode", node, tag);
-        CommonModel.addStructToNode(constants.TAG_NODE_TYPE, creatorId, node, tag);
-        CommonModel.addStructToNode(constants.TAG_NODE_TYPE, creatorId, tag, node);
+        CommonModel.addChildToNode(constants.TAG_NODE_TYPE, creatorId, node, tag);
+        CommonModel.addChildToNode(constants.TAG_NODE_TYPE, creatorId, tag, node);
         console.log("TagModel.wireTagNode-1",tag,node);
         Database.saveTagData(tag.id, tag, function(err) {
             return callback(err);
@@ -90,7 +94,7 @@ Tags = function() {
                     console.log("TagModel.newTag-1",aTag);
                     return callback(err);
                 });
-            } else { // new tag
+            } else { // new tag  all tags are public
                 CommonModel.newNode(id, creatorId, constants.TAG_NODE_TYPE, tagLabel, "", false, function(theTag) {
                     wireTagNode(theTag, creatorId, node, function(err) {
                         console.log("TagModel.newTag-2",theTag,node);
@@ -134,7 +138,7 @@ Tags = function() {
      * @param {*} callback err. nodetype
      */
     self.addTags = function(creatorId, tagLabel, selectedLabels, nodeId, callback) {
-        console.log("TagModel.addTags",tagLabel, selectedLabels);
+        console.log("TagModel.addTags",tagLabel, selectedLabels,nodeId);
         var ta = selectedLabels.split(',');
         var labels = tagLabel;
         var len = ta.length;
@@ -146,7 +150,7 @@ Tags = function() {
             }
         }
         console.log("TagModel.addTags-1",labelArray);
-        Database.fetchData(nodeId, function(err, node) {
+        CommonModel.fetchNode(creatorId, nodeId, function(err, node) {
 
             var type = node.type;
             tagHandler(labelArray, creatorId, node, function(error) {
@@ -161,7 +165,7 @@ Tags = function() {
         });
     }
 
-    self.listTags = function() {
+    self.listTags = function(userId) {
         var fileNames = Database.listTags();
         console.log("TagModel.listTags",fileNames);
         var result = [],
@@ -172,13 +176,9 @@ Tags = function() {
         }
         fileNames.forEach(function(fx) {
             if (!fx.includes(".DS_Store")) { // mac file system
-                self.fetchTag(fx, function(err, thecon) {
+                self.fetchTag(userId, fx, function(err, thecon) {
                     console.log("TFE", fx, thecon);
-                    con = {};
-                    con.id = thecon.id;
-                    con.img = thecon.imgsm;
-                    con.statement = thecon.statement;
-                    result.push(con);
+                    result.push(thecon);
                 });
             }
         });

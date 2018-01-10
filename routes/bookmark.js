@@ -15,10 +15,10 @@ var BookmarkModel = require('../apps/models/bookmark_model');
 var helper = require('./helper');
 
 //Bookmarks is not an app: it's a Channel
-router.get('/stash', function(req, res, next) {
+router.get('/stash', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
         query = req.query,
-        creatorId = req.session.theUser;
+        creatorId = req.session.theUserId;
     //Must be logged in
     if (!creatorId) {
         return res.render("login_form", data);
@@ -34,10 +34,10 @@ router.get('/stash', function(req, res, next) {
 /**
  * Paint a bookmark form
  */
-router.get('/new', function(req, res, next) {
+router.get('/new', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
         query = req.query,
-        creatorId = req.session.theUser;
+        creatorId = req.session.theUserId;
     //Must be logged in
     if (!creatorId) {
         return res.render("login_form", data);
@@ -46,8 +46,6 @@ router.get('/new', function(req, res, next) {
     data.formtitle = "New Bookmark";
     data.formlabel = query.title;
     data.url = query.url;
-    data.checkPrivate = true;
-    data.private = "";
     data.action = "/bookmark/newnode";
     if (query.url) {
     //        console.log("NB", eq.body);
@@ -63,26 +61,31 @@ router.get('/new', function(req, res, next) {
 /**
  * Fetch and paint a bookmark
  */
-router.get("/:id", function(req, res, next) {
-    var id = req.params.id;
+router.get("/:id", helper.isPrivate, function(req, res, next) {
+    var id = req.params.id,
+        creatorId = req.session.theUserId;
 //    console.log("Bookmark.get",id);
-    BookmarkModel.fetchBookmark(id, function(err, result) {
-        req.session.curCon = result.id;
-        var data = helper.startData(req);
-        console.log("Model returned "+result);
-        data.result = result;
-        return res.render('view', data);
+    BookmarkModel.fetchBookmark(creatorId, id, function(err, result) {
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            req.session.curCon = result.id;
+            var data = helper.startData(req);
+            console.log("Model returned "+result);
+            data.result = result;
+            return res.render('view', data);
+        }
     });
 });
 
 
-router.post("/newnode", function(req, res, next) {
+router.post("/newnode", helper.isPrivate, function(req, res, next) {
     var statement = req.body.title
         details = req.body.details,
-        isPrivate = req.body.private,
-        isPrivate = (isPrivate === 'true');
+        isPrivate = false; // ALL BOOKMARKS ARE PUBLIC
         url = req.body.url,
-        creatorId = req.session.theUser; //constants.TEST_CREATOR; //ToDo
+        creatorId = req.session.theUserId;
     if (url) {
 //        console.log("NB", eq.body);
         BookmarkModel.newBookmark(creatorId, url, statement, details, isPrivate, function(err, node) {

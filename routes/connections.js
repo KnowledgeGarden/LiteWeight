@@ -21,7 +21,7 @@ var helper = require('./helper');
  * B- Push the Source button means the visited node is the source
  *  and remembered node is target
  */
-router.get('/newassource/:id/:type', function(req, res, next) {
+router.get('/newassource/:id/:type', helper.isPrivate, function(req, res, next) {
     var id = req.params.id,
         type = req.params.type,
         remembered = req.session.transclude;
@@ -44,7 +44,7 @@ router.get('/newassource/:id/:type', function(req, res, next) {
     return res.render("connection_form", json);
 });
 
-router.get('/newastarget/:id/:type', function(req, res, next) {
+router.get('/newastarget/:id/:type', helper.isPrivate, function(req, res, next) {
     var id = req.params.id,
         type = req.params.type,
         remembered = req.session.transclude;
@@ -67,7 +67,7 @@ router.get('/newastarget/:id/:type', function(req, res, next) {
     return res.render("connection_form", json);
 });
 
-router.get('/remember/:id', function(req, res, next) {
+router.get('/remember/:id', helper.isPrivate, function(req, res, next) {
     var id = req.params.id;
     req.session.transclude = id;
     console.log("Connections.get.remember",id);
@@ -75,21 +75,22 @@ router.get('/remember/:id', function(req, res, next) {
     return res.redirect('/');
 });
 
-router.get('/connectionindex', helper.isPrivate, function(req, res, next) {
-    var data = helper.startData(req);
-    data.connectionlist = ConnectionModel.listConnections();
-    return res.render("connection_index", data);
-});
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', helper.isPrivate, function(req, res, next) {
     var id = req.params.id,
         data = helper.startData(req),
+        creatorId = req.session.theUserId,
         isAuth = data.isAuthenticated;
-    ConnectionModel.fetchConnection(id, function(err, node) {
-        console.log("Connections.get",data.isAuthenticated);
-        data.isRelation = true;
-        data.result = node;
-        return res.render('view',data);
+    ConnectionModel.fetchConnection(creatorId, id, function(err, node) {
+        console.log("Connections.get",err);
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            data.isRelation = true;
+            data.result = node;
+            return res.render('view',data);
+        }
     });
 
 });
@@ -98,14 +99,20 @@ router.get('/:id', function(req, res, next) {
 /**
  * Called from connection_form.hbs
  */
-router.post('/new', function(req, res, next) {
+router.post('/new', helper.isPrivate, function(req, res, next) {
     var body = req.body,
         callerId = body.callerId,
         type = body.callerType;
-        creatorId = req.session.theUser;
-    console.log("Connections.post.net",ConnectionModel,body);
+        creatorId = req.session.theUserId;
+    console.log("Connections.post.net",body);
     ConnectionModel.createConnection(creatorId, body, function(err) {
         console.log("Connections.post.new",err);
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            if (err !== constants.DUPLICATE_ERROR) {
+                req.flash("error", err);
+            }
+        }
+
         req.session.transclude = null;
         //TODO make this redirect to the caller
         return res.redirect('/');

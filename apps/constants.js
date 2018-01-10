@@ -4,6 +4,11 @@
  * */
 //a user identity for testing
 module.exports.TEST_CREATOR                 = "TestUser";
+
+/**Error Messages */
+module.exports.DUPLICATE_ERROR              = "Duplicate";
+module.exports.INSUFFICIENT_CREDENTIALS     = "InsufficientCredentials";
+
 /**
  * File Suffix
  * It appears that we will not be using filename suffixes
@@ -38,6 +43,8 @@ module.exports.RELATION_NODE_TYPE           = "RelationNodeType";
 module.exports.BOOKMARK_NODE_TYPE           = "BookmarkNodeType";
 module.exports.BLOG_NODE_TYPE               = "BlogNodeType"; // used for the Journal App
 module.exports.CHANNEL_NODE_TYPE            = "ChannelNodeType";
+module.exports.USER_NODE_TYPE               = "UserNodeType";
+module.exports.DM_NODE_TYPE                 = "DMNodeType";
 /**
  * Node schema fields
  * While we don't actually use these in Javascript
@@ -78,4 +85,5 @@ module.exports.ADD_CHILD_EVENT              = "AddChildEvent";
 module.exports.ADD_RELATION_EVENT           = "AddRelationEvent";
 module.exports.LOGIN_EVENT                  = "LoginEvent";
 module.exports.LOGOUT_EVENT                 = "LogoutEvent";
+module.exports.SIGNUP_EVENT                 = "SignupEvent";
 

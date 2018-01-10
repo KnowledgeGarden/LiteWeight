@@ -32,7 +32,7 @@ function typeToLargeImage(type) {
  * Paint the tree view: ViewFirst
  * The view uses ajax to fetch the tree
  */
-router.get('/jstree/:id', function(req, res, next) {
+router.get('/jstree/:id', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
     id = req.params.id;
     data.ajaxid = id;
@@ -42,20 +42,27 @@ router.get('/jstree/:id', function(req, res, next) {
 /**
  * Paint the tree by ajax call
  */
-router.get('/ajaxtree/:id', function (req, res, next) {
-    var id = req.params.id;
-    ConversationModel.toJsTree(id, null, function(tree) {
+router.get('/ajaxtree/:id', helper.isPrivate, function (req, res, next) {
+    var id = req.params.id,
+        creatorId = req.session.theUserId;
+    ConversationModel.toJsTree(creatorId, id, null, function(err, tree) {
     //    console.log("Convo.jstree",id,tree);
-        return res.json(tree);
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            return res.json(tree);
+        }
     });
 });
 
 
-router.get("/newquestion/:id", function(req, res, next) {
+router.get("/newquestion/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewQuestion",id);
-    ConversationModel.fetchView(id, function(err, parent) {
+    ConversationModel.fetchView(creatorId, id, function(err, parent) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
@@ -70,11 +77,12 @@ router.get("/newquestion/:id", function(req, res, next) {
     });
 });
 
-router.get("/newanswer/:id", function(req, res, next) {
+router.get("/newanswer/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewAnswer",id);
-    ConversationModel.fetchView(id, function(err, parent) {
+    ConversationModel.fetchView(creatorId, id, function(err, parent) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
@@ -88,11 +96,12 @@ router.get("/newanswer/:id", function(req, res, next) {
     });
 });
 
-router.get("/newpro/:id", function(req, res, next) {
+router.get("/newpro/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewPro",id);
-    ConversationModel.fetchView(id, function(err, parent) {
+    ConversationModel.fetchView(creatorId, id, function(err, parent) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
@@ -106,11 +115,12 @@ router.get("/newpro/:id", function(req, res, next) {
     });
 });
 
-router.get("/newcon/:id", function(req, res, next) {
+router.get("/newcon/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewCon",id);
-    ConversationModel.fetchView(id, function(err, parent) {
+    ConversationModel.fetchView(creatorId, id, function(err, parent) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
@@ -124,11 +134,12 @@ router.get("/newcon/:id", function(req, res, next) {
     });
 });
 
-router.get("/newnote/:id", function(req, res, next) {
+router.get("/newnote/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewNote",id);
-    ConversationModel.fetchView(id, function(err, parent) {
+    ConversationModel.fetchView(creatorId, id, function(err, parent) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
@@ -142,11 +153,12 @@ router.get("/newnote/:id", function(req, res, next) {
     });
 });
 
-router.get("/newreference/:id", function(req, res, next) {
+router.get("/newreference/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewReference",id);
-    ConversationModel.fetchView(id, function(err, parent) {
+    ConversationModel.fetchView(creatorId, id, function(err, parent) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
@@ -163,14 +175,23 @@ router.get("/newreference/:id", function(req, res, next) {
 /**
  * Get any node other than conversation and tag
  */
-router.get("/:id", function(req, res, next) {
-    var data = helper.startData(req),
+router.get("/:id", helper.isPrivate, function(req, res, next) {
+    var creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("Fetching ",id);
-    ConversationModel.fetchView(id, function(err, result) {
+    ConversationModel.fetchView(creatorId, id, function(err, result) {
         console.log("Model returned "+result);
-        data.result = result;
-        return res.render('view', data);
+        if (! req.session.curCon) {
+            req.session.curCon = result.context;
+        }
+        var data = helper.startData(req);
+        if (err) { // credential issue
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            data.result = result;
+            return res.render('view', data);
+        }
     });
     
 });
@@ -179,14 +200,14 @@ router.get("/:id", function(req, res, next) {
  * Fundamentally handles all kinds of nodes
  * TODO: make tags go to a tag router
  */
-router.post("/newnode", function(req, res, next) {
+router.post("/newnode", helper.isPrivate, function(req, res, next) {
     var title = req.body.title
         details = req.body.details,
         isPrivate = req.body.private,
         isPrivate = (isPrivate === 'true');
         parentId = req.body.hidden_1,
         type = req.body.hidden_2,
-        creatorId = req.session.theUser;
+        creatorId = req.session.theUserId;
     console.log("NN", JSON.stringify(req.body));
     ConversationModel.newResponseNode(creatorId, parentId, type, title, details, isPrivate, function(err, node) {
         res.redirect(node.id);

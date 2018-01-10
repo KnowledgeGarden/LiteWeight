@@ -1,25 +1,31 @@
 /* @author park */
 var fs = require('fs');
+var path = require('path');
 var constants = require('../constants');
+var LRUCache = require("lru-cache-js");
 
 /** Paths */
-const DataPath = "./data/";
+const DataPath = path.join(__dirname,"../../data/");
+const AccountsPath = DataPath+"accounts/accounts.json";
 const ResourcePath = "./resources/";
-const JournalPath = DataPath+"journals/";
+
 const BookmarkPath = DataPath+"bookmarks/";
-const ConnectionPath = DataPath+"connections/";
+
 const EventLogPath = DataPath+"eventlog/";
 const RecentEventsPath = EventLogPath+"recentEvents.json";
 const HistoryPath = EventLogPath+"history.json";
 const TagPath = DataPath+"tags/";
 const ChannelPath = DataPath+"channels/";
 const UserPath = DataPath+"users/";
+const DM_PATH = UserPath+"dm/";
+const CacheSize = 1000;
 
 var FileDatabase,
     instance;
 
 FileDatabase = function() {
     var self = this;
+    var cache = new LRUCache(CacheSize);
 
     /**
      * Fetch a file
@@ -31,22 +37,29 @@ FileDatabase = function() {
         var json,
             error;
         try {
-            var f = fs.readFileSync(path);
-//          console.log("Database.readFile-1",f);
-            if (f) {
-//              console.log("Database.readFile-2",f);
-                try {
-                    json = JSON.parse(f);
-//                  console.log("Database.readFile-3",json);
-                } catch (e) {
-                    console.log("Database.readFile error",path,e);
-                    error = e;
-                    //e.g.
-                    //Database.readFile error ./data/1514763456472 SyntaxError: Unexpected end of JSON input
+            //fs.readFile(path, (err, f) => {
+            var f = fs.readFileSync(path, 'utf8');
+                console.log("Database.readFile-1",f);
+                if (f) {
+    //              console.log("Database.readFile-2",f);
+                    try {
+                        json = JSON.parse(f);
+    //                  console.log("Database.readFile-3",json);
+                    } catch (e) {
+                        console.log("Database.readFile error",path,e,f);
+                        error = e;
+                        //e.g.
+                        //Database.readFile error ./data/1514763456472 SyntaxError: Unexpected end of JSON input
+                    }
+                    
                 }
-            }
-        } catch (x) {}
-//        console.log("Database.readFile-4",json);
+                return callback(error, json);
+            //});
+        } catch (x) {
+            //console.log("Database.readFile error2 "+x);
+            error = x;
+        }
+        console.log("Database.readFile-4",path,json);
         return callback(error, json);
     };
 
@@ -78,46 +91,45 @@ FileDatabase = function() {
      * Must be extended as new apps are added
      * Note: does not presently check for Conversations (the Map node)
      * @param {*} nodeId 
-     * @param {*} callback 
+     * @param {*} callback err, result
      */
     self.fetchData = function(nodeId, callback) {
-        //assume it's a conversation
+        //assume it's anything except tag or channel or bookmark
         self.fetchNode(nodeId, function(err, data) {
             if (data) {
                 return callback(err, data);
             } else {
-                self.fetchBookmark(nodeId, function(err1, data1) {
-                    if (data1) {
-                        return callback(err1, data1);
+                //TECHNICALLY SPEAKING, tags don't need to be here
+                self.fetchTag(nodeId, function(err2, data2) {
+                    if (data2) {
+                        return callback(err2, data2);
                     } else {
-                        //TECHNICALLY SPEAKING, tags don't need to be here
-                        self.fetchTag(nodeId, function(err2, data2) {
-                            if (data2) {
-                                return callback(err2, data2);
+                        self.fetchChannel(nodeId, function(err3, data3) {
+                            if (data3) {
+                            return callback(err3, data3);
                             } else {
-                                self.fetchConnection(nodeId, function(err3, data3) {
-                                    if (data3) {
-                                        return callback(err3, data3);
+                                self.fetchBookmark(nodeId, function(err4, data4) {
+                                    if (data4) {
+                                        return callback(err4, data4);
                                     } else {
-                                        self.fetchJournal(nodeId, function(err4, data4) {
-                                            if (data4) {
-                                                return callback(err4, data4);
+                                        self.fetchUser(nodeId, function(err5, data5) {
+                                            if (data5) {
+                                            return callback(err5, data5);
                                             } else {
-                                                self.fetchChannel(nodeId, function(err5, data5) {
-
-                                                    return callback(err4, data5);
-                                                    //NOTE: if other models are added you must add
-                                                    // their fetch methods here
-
+                                                self.fetchDM(nodeId, function(err6, data6) { 
+                                                    return callback(err6, data6);
                                                 });
+        
                                             }
                                         });
+        
                                     }
                                 });
+        
                             }
                         });
                     }
-                });
+                });  
             }
         });
     };
@@ -132,19 +144,7 @@ FileDatabase = function() {
     self.saveData = function(nodeId, json, callback) {
         console.log("Database.saveData",json);
         var type = json.type;
-        if (type === constants.BOOKMARK_NODE_TYPE) {
-            self.saveBookmarkData(nodeId, json, function(err) {
-                return callback(err);
-            });
-        } else if (type === constants.RELATION_NODE_TYPE) {
-            self.saveConnectionData(nodeId, json, function(err) {
-                return callback(err);
-            });
-        } else if (type === constants.BLOG_NODE_TYPE) {
-            self.saveJournalData(nodeId, json, function(err) {
-                return callback(err);
-            });
-        } else if (type === constants.TAG_NODE_TYPE) {
+        if (type === constants.TAG_NODE_TYPE) {
             self.saveTagData(nodeId, json, function(err) {
                 return callback(err);
             });
@@ -152,10 +152,18 @@ FileDatabase = function() {
             self.saveChannelData(nodeId, json, function(err) {
                 return callback(err);
             });
-//        } else if (type === constants.CONVERSATION_NODE_TYPE) {
-//            self.saveConversationData(nodeId, json, function(err) {
-//                return callback(err);
-//            });
+        } else if (type === constants.BOOKMARK_NODE_TYPE) {
+            self.saveBookmarkData(nodeId, json, function(err) {
+                return callback(err);
+            });
+        } else if (type === constants.USER_NODE_TYPE) {
+            self.saveUserData(nodeId, json, function(err) {
+                return callback(err);
+            });
+        } else if (type === constants.DM_NODE_TYPE) {
+            self.saveDMData(nodeId, json, function(err) {
+                return callback(err);
+            });
         } else {//TODO ADD OTHER TYPES, e.g. Blog, etc
             //default conversation nodes
             self.saveNodeData(nodeId, json, function(err) {
@@ -173,10 +181,16 @@ FileDatabase = function() {
      * @param {*} callback err data
      */
     self.fetchNode = function(nodeId, callback) {
-        var path = DataPath+nodeId;
-        readFile(path, function(err, data) {
-            return callback(err, data);
-        }); 
+        var result = cache.get(nodeId);
+        if (result) {
+            return callback(null, result);
+        } else {
+            var path = DataPath+nodeId;
+            readFile(path, function(err, data) {
+                cache.put(nodeId, data);
+                return callback(err, data);
+            });
+        }
     };
 
     /**
@@ -189,6 +203,7 @@ FileDatabase = function() {
         console.log("DatabaseSaveNodeData",id,json);
         fs.writeFile(DataPath+id, 
                 JSON.stringify(json), function(err) {
+            cache.put(id, json);
             return callback(err);
         }); 
     };
@@ -196,34 +211,6 @@ FileDatabase = function() {
     ////////////////////////
     // Connections
     ////////////////////////
-
-    /**
-     * 
-     * @param {*} nodeId 
-     * @param {*} callback err data
-     */
-    self.fetchConnection = function(nodeId, callback) {
-        var path = ConnectionPath+nodeId;
-        readFile(path, function(err, data) {
-            console.log("Database.fetchConnectin",nodeId,err,data);
-            return callback(err, data);
-        });
-       
-    };
-
-    /**
-     * Save node data
-     * @param id
-     * @param {*} json 
-     * @param {*} callback error or undefined
-     */
-    self.saveConnectionData = function(id, json, callback) {
-        console.log("DatabaseSaveConnectionData",id,json);
-        fs.writeFile(ConnectionPath+id, 
-                JSON.stringify(json), function(err) {
-            return callback(err);
-        }); 
-    };
 
     /**
      * A connection resource is a tiny JSON file which describes
@@ -238,8 +225,46 @@ FileDatabase = function() {
         });
     };
 
-    self.listConnections = function() {
-        return walkSync(ConnectionPath, []);
+    ////////////////////////
+    // Users
+    ////////////////////////
+
+    self.fetchDM = function(id, callback) {
+        var path = DM_PATH+id;
+        readFile(path, function(err, data) {
+            return callback(err, data);
+        });
+     };
+     self.saveDMData = function(id, json, callback) {
+        console.log("DatabaseSaveDMData",id,json);
+        fs.writeFile(DM_PATH+id, 
+                JSON.stringify(json), function(err) {
+            return callback(err);
+        }); 
+    };
+
+    /**
+     * 
+     * @param {*} id 
+     * @param {*} callback err data
+     */
+    self.fetchUser = function(id, callback) {
+        var path = UserPath+id;
+        readFile(path, function(err, data) {
+            return callback(err, data);
+        });
+     };
+
+    self.saveUserData = function(id, json, callback) {
+        console.log("DatabaseSaveUserData",id,json);
+        fs.writeFile(UserPath+id, 
+                JSON.stringify(json), function(err) {
+            return callback(err);
+        }); 
+    };
+
+    self.listUsers = function() {
+        return walkSync(UserPath, []);
     };
 
     ////////////////////////
@@ -297,35 +322,6 @@ FileDatabase = function() {
         return walkSync(TagPath, []);
     };
 
-    ////////////////////////
-    // Journal
-    ////////////////////////
-
-    /**
-     * 
-     * @param {*} id 
-     * @param {*} callback err data
-     */
-    self.fetchJournal = function(id, callback) {
-        var path = JournalPath+id;
-        readFile(path, function(err, data) {
-            return callback(err, data);
-        });
-     };
-
-    self.saveJournalData = function(id, json, callback) {
-        console.log("DatabaseSaveJournalData",id,json);
-        fs.writeFile(JournalPath+id, 
-                JSON.stringify(json), function(err) {
-            return callback(err);
-        }); 
-    };
-
-    self.listJournal = function() {
-        var raw = walkSync(JournalPath, []);
-        var rev = raw.reverse();
-        return rev;
-    };
 
     ////////////////////////
     // Bookmarks
@@ -348,6 +344,47 @@ FileDatabase = function() {
 
     self.listBookmarks = function() {
         return walkSync(BookmarkPath, []);
+    };
+
+    
+    ////////////////////////
+    // Accounts
+    ////////////////////////
+
+    self.fetchInvitations = function(callback) {
+        readFile(AccountsPath, function(err, json) {
+            var invitations = json.invitations;
+            console.log("Database.fetchInvitations",email,invitations,json);
+            return callback(err, invitations);
+        });
+
+    };
+
+    /**
+     * 
+     * @param {*} email 
+     * @param {*} callback err, json can return null
+     */
+    self.fetchAccount = function(email, callback) {
+        readFile(AccountsPath, function(err, json) {
+            var acct = json.participants[email];
+            console.log("Database.fetchAccount",email,acct,json);
+            return callback(err, acct);
+        });
+
+    };
+
+    self.saveAccount = function(email, struct, callback) {
+        readFile(AccountsPath, function(err, json) {
+            console.log("Database.saveAccount",json,struct);
+            json.participants[email] = struct;
+            console.log("Database.saveAccount-1",json);
+            fs.writeFile(AccountsPath, 
+                JSON.stringify(json), function(err) {
+                console.log("Database.saveAccount-2",err,json);
+                return callback(err);
+            });
+        }); 
     };
 
     ////////////////////////
@@ -376,13 +413,15 @@ FileDatabase = function() {
     self.saveHistory = function(struct, callback) {
         console.log("Database.saveHistory",struct);
         readFile(HistoryPath, function(err, json) {
+            console.log("Database.saveHistory-1",err, json);
             if (!json) {
                 json = [];
             }
             json.push(struct);
+            console.log("Database.saveHistory-2",json);
             fs.writeFile(HistoryPath, 
                     JSON.stringify(json), function(err) {
-                console.log("Database.saveHistory-1",err,json);
+                console.log("Database.saveHistory-3",err,json);
                 return callback(err);
             });
         });      

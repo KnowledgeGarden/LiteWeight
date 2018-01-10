@@ -2,8 +2,8 @@
 <div id="topbox">
     <span style="float:right; font-size:small;">{{result.creatorId}} {{result.createdDate}}</span>
     <div style="margin-left: 4px;">
-        {{#if result.parent}}
-        <h4>Responds to <img style="margin-right:4px;" src="{{result.parent.img}}"><a href="/conversation/{{result.parent.id}}">{{result.parent.statement}}</a></h4>
+        {{#if result.theParent}}
+        <h4>Responds to <img style="margin-right:4px;" src="{{result.theParent.img}}"><a href="/conversation/{{result.theParent.id}}">{{result.theParent.statement}}</a></h4>
         {{/if}}
         <h2><img style="margin-right:4px;" src="{{result.img}}">{{result.statement}}</h2>
         {{#if result.url}}
@@ -18,9 +18,9 @@
 </div>
 {{#if isRelation}}
     <span style="margen-left:20px;">
-    <b>Source Node</b>  <a href="/fetch/{{result.sourceNode.id}}/{{result.sourceNode.type}}"><img style="margin-right:4px;" src="{{result.sourceNode.img}}">{{result.sourceNode.statement}}</a>
+    <b>Source Node</b>  <a href="/grab/{{result.theSource.id}}"><img style="margin-right:4px;" src="{{result.theSource.img}}">{{result.theSource.statement}}</a>
     <br/>
-    <b>Target Node</b>  <a href="/fetch/{{result.targetNode.id}}/{{result.targetNode.type}}"><img style="margin-right:4px;" src="{{result.targetNode.img}}">{{result.targetNode.statement}}</a>    
+    <b>Target Node</b>  <a href="/grab/{{result.theTarget.id}}"><img style="margin-right:4px;" src="{{result.theTarget.img}}">{{result.theTarget.statement}}</a>    
     </span>
     <br/>
 {{/if}}
@@ -36,6 +36,15 @@
 <div class="columnscroller">
     <!-- column headers -->
     <div class="columncontainer">
+            <div class="column" style="text-align: center;">
+                <img class="headerimage" src="/images/tag.png">Tags
+                {{#if isAuthenticated}}
+                    <a href="/tags/newtag/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                {{/if}}
+            </div>
+             <div class="column" style="text-align: center;">
+                <img class="headerimage" src="/images/cogwheels.png">Connections
+            </div>
             <div class="column" style="text-align: center;">
                 <img class="headerimage" src="/images/ibis/issue.png">Question
                 {{#if isAuthenticated}}
@@ -72,34 +81,39 @@
                     <a href="/conversation/newreference/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
                 {{/if}}
             </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/cogwheels.png">Connections
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/tag.png">Tags
-                {{#if isAuthenticated}}
-                    <a href="/tags/newtag/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-    </div>
+     </div>
     <!-- column data -->
     <div class="datacontainer">
+         <div class="datacolumn">
+            {{#each result.theTags}}
+                <div class="node">
+                    <a style="margin-left:4px;" href="/tags/gettag/{{id}}">{{statement}}</a>
+                </div>
+            {{/each}}
+        </div>
         <div class="datacolumn">
-            {{#each result.questions}}
+            {{#each result.theRelations}}
+                <div class="node">
+                    <a style="margin-left:4px;" href="/connections/{{id}}">{{statement}}</a>
+                </div>
+            {{/each}}
+        </div>
+        <div class="datacolumn">
+            {{#each result.theQuestions}}
                 <div class="node">
                     <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
                 </div>
             {{/each}}
         </div>
         <div class="datacolumn" >
-            {{#each result.answers}}
+            {{#each result.theAnswers}}
                 <div class="node">
                     <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
                 </div>
             {{/each}}
         </div>
         <div class="datacolumn">
-            {{#each result.proargs}}
+            {{#each result.thePros}}
                 <div class="node">
                     <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
                 </div>
@@ -107,37 +121,23 @@
 
         </div>
         <div class="datacolumn">
-            {{#each result.conargs}}
+            {{#each result.theCons}}
                 <div class="node">
                     <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
                 </div>
             {{/each}}
         </div>
         <div class="datacolumn">
-            {{#each result.notes}}
+            {{#each result.theNodes}}
                 <div class="node">
                     <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
                 </div>
             {{/each}}
         </div>
         <div class="datacolumn">
-            {{#each result.references}}
+            {{#each result.theReferences}}
                 <div class="node">
                     <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
-                </div>
-            {{/each}}
-        </div>
-        <div class="datacolumn">
-            {{#each result.relations}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/connections/{{id}}">{{statement}}</a>
-                </div>
-            {{/each}}
-        </div>
-        <div class="datacolumn">
-            {{#each result.tags}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/tags/gettag/{{id}}">{{statement}}</a>
                 </div>
             {{/each}}
         </div>

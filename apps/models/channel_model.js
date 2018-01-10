@@ -48,10 +48,54 @@ Channel = function() {
         });
     };
 
-    self.fetchChannel = function(id, callback) {
+
+    /**
+     * Theoretically speaking, this channel would not be visible unless user has credentials
+     * to see it. In theory, every node in a channel follows the channels privacy policy, 
+     * but still we pass nodes through the CommonModel.fetchNode gauntlet
+     * Big issue: this is shared due to UserModel making journals 
+     * @param {*} userId 
+     * @param {*} id 
+     * @param {*} callback 
+     */
+    self.fetchChannel = function(userId, id, callback) {
         console.log("ChannelModel.fetchChannel",id);
         Database.fetchChannel(id, function(err, data) {
-            return callback(err, data);            
+            if (data) {
+                var kids = data.journals;
+                if (kids) {
+                    CommonModel.grabChildStructs(userId, kids, function(list) {
+                        data.theJournals = list;
+                        return callback(err, data);
+                    });
+                } else {
+                    kids = data.bookmarks;
+                    if (kids) {
+                        CommonModel.grabChildStructs(userId, kids, function(list) {
+                            data.theBookmarks = list;
+                            return callback(err, data);
+                        });
+                    } else {
+                        return callback(err, data);
+                    }
+                }
+            } else {
+                Database.fetchDM(id, function(err1, data1) {
+                    if (data1) {
+                        var kids = data1.journals;
+                        if (kids) {
+                            CommonModel.grabChildStructs(userId, kids, function(list) {
+                                data.theJournals = list;
+                                return callback(err, data1);
+                            });
+                        } else {
+                            return callback(err1, data1);
+                        }
+                    } else {
+                        return callback(err1, data1);
+                    }
+                });
+            }           
         });
     };
 
@@ -93,10 +137,15 @@ Channel = function() {
             if (isPrivate) {
                 var mlist = [];
                 mlist.push(creatorId);
-                var ta = members.split(',');
-                if (ta.length > 0) {
-                    for (var i=0;i<len;i++) {
-                        mlist.push(ta[i].trim());
+                if (members !== '') {
+                    var ta = members.split(',');
+                    var len = ta.length;
+                    if (len > 0) {
+                        for (var i=0;i<len;i++) {
+                            mlist.push(ta[i].trim());
+                        }
+                    } else {
+                        mlist.push(members);   // just one added member
                     }
                 }
                 node.acls = mlist;
@@ -127,7 +176,7 @@ Channel = function() {
         fileNames.forEach(function(fx) {
             if (fx) {
                 if (!fx.includes(".DS_Store")) { // mac file system
-                    self.fetchChannel(fx, function(err, thecon) {
+                    self.fetchChannel(userId, fx, function(err, thecon) {
                         var canSee = CommonModel.canShow(userId,thecon);
                         console.log("ChannelModel.listChannels-2",canSee, thecon, userId);
                         if (canSee) {

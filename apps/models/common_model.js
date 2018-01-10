@@ -13,6 +13,9 @@ Common = function() {
         EventLogModel = eventModel;
     //    console.log("CommonModel",environment,EventLogModel);
     }
+//////////////////////////////////
+// Identity
+//////////////////////////////////
 
     // user UUIDs for Node IDs
     // TODO not used
@@ -20,12 +23,31 @@ Common = function() {
         return uuid.v4();
     };
 
+    /**
+     * Some potential for collision
+     * @return
+     */
+    self.newId = function() {
+        var d = new Date();
+        return d.getTime().toString();
+    };
+
+
+//////////////////////////////////
+// Date-Time
+//////////////////////////////////
+
+
     //https://stackoverflow.com/questions/23593052/format-javascript-date-to-yyyy-mm-dd
     self.newDate = function() {
         return new Date().toLocaleString(); //  1/6/2018, 1:35:11 PM
         //toLocaleDateString(); 1/6/2018
         //toISOString().slice(0,10); 2018-01-06
     };
+
+//////////////////////////////////
+// Utility
+//////////////////////////////////
 
     //https://stackoverflow.com/questions/1137436/what-are-useful-javascript-methods-that-extends-built-in-objects/1137579#1137579
     String.prototype.replaceAll = function(search, replace)
@@ -48,14 +70,9 @@ Common = function() {
         return str.replaceAll(search, replace);
     };
 
-    /**
-     * Some potential for collision
-     * @return
-     */
-    self.newId = function() {
-        var d = new Date();
-        return d.getTime().toString();
-    };
+//////////////////////////////////
+// Privacy
+//////////////////////////////////
 
     /**
      * Return <code>true</code> if this user can see the given node
@@ -63,6 +80,7 @@ Common = function() {
      * @param {*} node 
      */
     self.canShow = function(userId, node) {
+        console.log("CommonModel.canShow",userId,node);
         var canSee = true;
         if (node.isPrivate) {
             if (!userId) {
@@ -83,19 +101,254 @@ Common = function() {
                 }
             }
         }
+        if (node.type === constants.RELATION_NODE_TYPE) {
+            // MUST EXAMINE Source and Target
+            var nx = node.sourceNode;
+            Database.fetchData(nx, function(err, dx) {
+               // console.log("CommonModel.canShow-1",userId,dx);
+                canSee = self.canShow(userId, dx);
+
+                if (canSee) {
+                    nx = node.targetNode;
+                    Database.fetchData(nx, function(err, dy) {
+                     //   console.log("CommonModel.canShow-2",userId,dy);
+                        canSee = self.canShow(userId, dy);
+                     //   console.log("CommonModel.canShow-3",canSee);
+                    });
+                }
+            });
+
+        }
+        //console.log("CommonModel.canShow-4",canSee);
         return canSee;
     };
 
+    //////////////////////////////////////////
+    // This is intended to be the primary node fetching mechanism
+    // for all nodes except Tag and Channels
+    // We use this to pay to a nodoe's Privacy Profile
+    //  Thus, userId is required
+    //////////////////////////////////////////
     /**
      * Utility to fetch any kind of node
+     * @param userId
      * @param {*} nodeId 
      * @param {*} callback err data
      */
-    self.fetchNode = function(nodeId, callback) {
+    self.fetchNode = function(userId, nodeId, callback) {
+        console.log("CommonModel.fetchNode",nodeId);
         Database.fetchData(nodeId, function(err, node) {
-            return callback(err, node);
+            console.log("CommonModel.fetchNode-1",nodeId,node);
+            if (!node) { // doesn't exist unless there's an err
+                return callback(err, node);
+            }
+            var canShow = self.canShow(userId, node);
+            console.log("CommonModel.fetchNode-2",userId,canShow);
+            if (canShow) {
+                return callback(err, node);
+            } else {
+                return callback(constants.INSUFFICIENT_CREDENTIALS, null);
+            }
         });
     };
+
+    /**
+     * Returns a list of structs
+     * @param {*} userId 
+     * @param {*} childList 
+     * @param {*} callback list of struct
+     */
+    self.grabChildStructs = function (userId, childList, callback) {
+        var kids = [];
+        childList.forEach(function(kid) {
+            self.fetchNode(userId, kid, function(err, node) {
+                if (!err) {
+                    struct = {};
+                    struct.id = node.id;
+                    struct.type = node.type;
+                    struct.img = node.imgsm;
+                    struct.creatorId = node.creatorId;
+                    struct.statement = node.statement;
+                    kids.push(struct);
+                }
+            });
+        });
+        return callback(kids);
+    };
+
+    /**
+     * 
+     * @param {*} userId
+     * @param name
+     * @param {*} childList 
+     * @param {*} callback kidstruct
+     */
+    function grabKids(userId, name, childList, callback) {
+        var result = {};
+        var struct;
+        self.grabChildStructs(userId, childList, function(kids) {
+             result[name] = kids;
+             console.log("CommonModel.grabKids",name,childList,kids,result);
+             return callback(result);
+        })
+    };
+
+    /**
+     * 
+     * @param {*} userId 
+     * @param {*} node 
+     * @param {*} callback parentstruct
+     */
+    self.buildParent = function(userId, node, callback) {
+        var result;
+        if (node.parent) {
+            self.fetchNode(userId, node.parent, function(err, node) {
+                if (!err) {
+                    var struct = {};
+                    struct.id = node.id;
+                    struct.type = node.type;
+                    struct.img = node.imgsm;
+                    struct.creatorId = node.creatorId;
+                    struct.statement = node.statement;
+                    return callback(struct);
+               } else {
+                   return callback(result);
+               }
+            })
+        }
+        return callback(result);
+    };
+
+    self.buildTagChildList = function(userId, tag, callback) {
+        var result = [];
+        var childList = tag.tags;
+        if (childList) {
+            self.grabChildStructs(userId, childList, function(struct) {
+                result = struct;
+            });
+        }
+        return callback(result);
+    }
+
+    /**
+     * Build a child list for given node. Will not include nodes where
+     * insufficient credentials exist.
+     * Builds structs for viewing
+     * NOTE: this function serves the purpose of a complex database JOIN
+     * @param {*} userId 
+     * @param {*} node 
+     * @param {*} callback node
+     */
+    self._populateNode = function(userId, node, callback) {
+        console.log("CommonModel._populateNode",node);
+        var result = [];
+        var childList = node.questions;
+        if (!node.theQuestions) {
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theQuestions = struct;
+                    }
+                });
+            }
+        }
+        if (!node.theAnswers) {
+            childList = node.answers;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theAnswers = struct;
+                    }
+                });
+            }
+        }
+        if (!node.thePros) {
+            childList = node.pros;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                     node.thePros = struct;
+                    }
+                });
+            }
+        }
+        if (!node.theCons) {
+            childList = node.cons;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theCons = struct;
+                    }
+                });
+            }
+        }
+        if (!node.theNotes) {
+            childList = node.notes;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theNodes = struct;
+                    }
+                });
+            }
+        }
+        if (!node.theReferences) {
+            childList = node.references;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theReferences = struct;
+                    }
+                });
+            }
+        }
+        if (!node.theRelations) {
+            childList = node.relations;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theRelations = struct;
+                    }
+                });
+            }
+        }
+        if (!node.theTags) {
+            childList = node.tags;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theTags = struct;
+                    }
+                });
+            }
+        }
+        return callback(node);
+ 
+   };
+
+   /**
+    * Populate with theParent and theChildren
+    * @param {*} userId 
+    * @param {*} node 
+    * @param {*} callback 
+    */
+   self.populateNode = function(userId, node, callback) {
+       console.log("CommonModel.populateNode",node);
+       self.buildParent(userId, node, function(theParent) {
+            if (theParent) {
+               node.theParent = theParent;
+            }
+            self._populateNode(userId, node, function(result) {
+                
+                return callback(result);
+            });
+       })
+
+   };
+
+//////////////////////////////////
+// Node fabrication and manipulation
+//////////////////////////////////
 
 
     self.nodeToSmallIcon = function(type) {
@@ -127,6 +380,10 @@ Common = function() {
             return "/images/publication_sm.png";
         } else if (type === constants.CHANNEL_NODE_TYPE) {
             return ""; // NO ICOON YET
+        } else if (type === constants.DM_NODE_TYPE) {
+            return ""; // NO ICOON YET
+        } else if (type === constants.USER_NODE_TYPE) {
+            return "/images/person_sm.png"; // NO ICOON YET
         } else {
             console.log("CommonModel.nodeToSmallIcon ERROR",type);
             throw "Bad Type 1: "+type;
@@ -160,8 +417,12 @@ Common = function() {
             return "/images/ibis/map.png";
         } else if (type === constants.BLOG_NODE_TYPE) {
             return "/images/publication.png";
+        } else if (type === constants.USER_NODE_TYPE) {
+            return "/images/person.png"; // NO ICOON YET
         } else if (type === constants.CHANNEL_NODE_TYPE) {
             return ""; // NO ICON YET
+        } else if (type === constants.DM_NODE_TYPE) {
+            return ""; // NO ICOON YET
         } else {
             console.log("CommonModel.nodeTolargeIcon ERROR",type);
             throw "Bad Type 2: "+type;
@@ -251,14 +512,18 @@ Common = function() {
 
     /**
      * json could include statement, details, url, ...
+     * @param userId
      * @param {*} json 
      * @param {*} callback err
      */
-    self.updateNode = function(json, callback) {
+    self.updateNode = function(userId, json, callback) {
         var nodeId = json.hidden_1,
             version = json.hidden_2;
         //fetch the node being edited
-        self.fetchNode(nodeId, function(err, oldNode) {
+        self.fetchNode(userId, nodeId, function(err, oldNode) {
+            if (err) {
+                return callback(err);
+            }
             //deal with statement
             var labelChanged = false;
             var oldStatement = oldNode.statement;
@@ -369,28 +634,19 @@ Common = function() {
     /////////////////////////
 
     /**
-     * Add a child struct to a given node
+     * Add a child to a given node
      * @param {*} childType 
      * @param creatorId
      * @param {*} theChildNode 
      * @param {*} targetNode 
      */
-    self.addStructToNode = function(childType, creatorId, theChildNode, targetNode) {
-        console.log("CommonModel.addStructToNode",childType,theChildNode,targetNode);
-        var struct = {},
-            type = theChildNode.type,
-            img = theChildNode.imgsm;
-        struct.id = theChildNode.id;
-        struct.img = img;
-        struct.type = type;
-        //creatorId is NOT related to the node but to whom credit is given for this struct
-        struct.creatorId = creatorId;
-        struct.statement = theChildNode.statement;
+    self.addChildToNode = function(childType, creatorId, theChildNode, targetNode) {
+        console.log("CommonModel.addChildToNode",childType,theChildNode,targetNode);
         var kids = self.getChildList(childType, targetNode);
         if (!kids) {
             kids = [];
         }
-        kids.push(struct);
+        kids.push(theChildNode.id);
         self.setChildList(childType, kids, targetNode);
         //snappers are an index into every node that carries the child's struct
         var snappers = theChildNode.snappers;
@@ -401,17 +657,14 @@ Common = function() {
         theChildNode.snappers = snappers;
         var canDo = true;
         if (targetNode.type === constants.TAG_NODE_TYPE ||
-            targetNode.type === constants.CHANNEL_NODE_TYPE) {
+            targetNode.type === constants.CHANNEL_NODE_TYPE ||
+            theChildNode.type === constants.TAG_NODE_TYPE ||
+            theChildNode === constants.CHANNEL_NODE_TYPE) {
             canDo = false;
         }
         if (canDo) {
             //DANGER: assuming one parent
-            struct= {};
-            struct.id = targetNode.id;
-            struct.img = targetNode.imgsm;
-            struct.creatorId = targetNode.creatorId;
-            struct.statement = targetNode.statement;
-            theChildNode.parent = struct;
+            theChildNode.parent = targetNode.id;
         }
     };
 };

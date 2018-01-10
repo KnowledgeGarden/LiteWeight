@@ -1,19 +1,26 @@
-/* @author park */
+/**
+ * @author park 
+ * Session values used
+ *  req.session.theUser = handle
+ *  req.session.theUserId = userId
+ */
 var express = require('express');
 var router = express.Router();
 var helper = require('./helper');
 var constants = require('../apps/constants');
 var EventModel = require('../apps/models/eventlog_model');
 var CommonModel = require('../apps/models/common_model');
+var AdminModel = require('../apps/models/admin_model');
+const numRecentsToShow = 100;
 
 
 /* GET home page. */
 router.get('/', helper.isPrivate, function(req, res, next) {
-  var userId = req.session.theUser;
+  var userId = req.session.theUserId;
   req.session.curCon = null;
 
 //  console.log("Home",req.session);
-  EventModel.listRecentEvents(userId, 50, function(events) {
+  EventModel.listRecentEvents(userId, numRecentsToShow, function(events) {
     var data = helper.startData(req);
     data.recentlist = events;    
     return res.render('index', data);
@@ -23,77 +30,39 @@ router.get('/', helper.isPrivate, function(req, res, next) {
 /**
  * Face it: this platform passes around nodes of all sorts, and it's
  * non-trivial to know how to paint them. So, here we are. A hack.
+ * This is expensive, given the multiple fetch of a node.
+ * TODO: revise this to make use of that fetched node in painting
  */
 router.get('/grab/:id', helper.isPrivate, function(req, res, next) {
-  var id = req.params.id
-  CommonModel.fetchNode(id, function(err, node) {
-    var type = node.type;
-    if (type === constants.BOOKMARK_NODE_TYPE) {
-      return res.redirect('/bookmark/'+id);
-    } else if (type === constants.TAG_NODE_TYPE) {
-      return res.redirect('/tags/gettag/'+id);
-    } else if (type === constants.CONVERSATION_NODE_TYPE) {
-      return res.redirect('/conversation/fetchconversation/'+id);
-    } else if (type === constants.RELATION_NODE_TYPE) {
-      return res.redirect('/connections/'+id);
-    } else if (type === constants.BLOG_NODE_TYPE) {
-      return res.redirect('/journal/'+id);
-    } else if (type === constants.CHANNEL_NODE_TYPE) {
-      return res.redirect('/channels/'+id);
-    } else {
-      return res.redirect('/conversation/'+id);
-    }  
-  });
-});
-
-/**
- * This turns out to be an important vehicle for fetching a node
- * when you only know its id and its type.
- */
-router.get('/fetch/:id/:type', helper.isPrivate, function(req, res, next) {
   var id = req.params.id,
-      type = req.params.type;
-  console.log("Index.fetch",id,req.body);
-  if (type === constants.BOOKMARK_NODE_TYPE) {
-    return res.redirect('/bookmark/'+id);
-  } else if (type === constants.TAG_NODE_TYPE) {
-    return res.redirect('/tags/gettag/'+id);
-  } else if (type === constants.CONVERSATION_NODE_TYPE) {
-    return res.redirect('/conversation/fetchconversation/'+id);
-  } else if (type === constants.RELATION_NODE_TYPE) {
-    return res.redirect('/connections/'+id);
-  } else if (type === constants.BLOG_NODE_TYPE) {
-    return res.redirect('/journal/'+id);
-  } else if (type === constants.CHANNEL_NODE_TYPE) {
-    return res.redirect('/channels/'+id);
-  } else {
-    return res.redirect('/conversation/'+id);
-  }
-  
+    creatorId = req.session.theUserId;
+  CommonModel.fetchNode(creatorId, id, function(err, node) {
+    if (err) {  // issue of a private node somewhere in the tree -- should not happen
+      req.flash("error", err);
+      return res.redirect("/");
+    } else {
+      var type = node.type;
+      if (type === constants.BOOKMARK_NODE_TYPE) {
+        return res.redirect('/bookmark/'+id);
+      } else if (type === constants.TAG_NODE_TYPE) {
+        return res.redirect('/tags/gettag/'+id);
+      } else if (type === constants.RELATION_NODE_TYPE) {
+        return res.redirect('/connections/'+id);
+      } else if (type === constants.BLOG_NODE_TYPE) {
+        return res.redirect('/journal/'+id);
+      } else if (type === constants.CHANNEL_NODE_TYPE) {
+        return res.redirect('/channels/'+id);
+      } else { // pick up all the conversation nodes
+        return res.redirect('/conversation/'+id);
+      }
+    }
+  });
 });
 
-router.get('/confetch/:id', helper.isPrivate, function(req, res, next) {
-  var id = req.params.id;
-  CommonModel.fetchNode(id, function(err, node) {
-    var type = node.type;
-    console.log("Index.confetch",id);
-    if (type === constants.BOOKMARK_NODE_TYPE) {
-      return res.redirect('/bookmark/'+id);
-    } else if (type === constants.TAG_NODE_TYPE) {
-      return res.redirect('/tags/gettag/'+id);
-    } else if (type === constants.CONVERSATION_NODE_TYPE) {
-      return res.redirect('/conversation/fetchconversation/'+id);
-    } else if (type === constants.RELATION_NODE_TYPE) {
-      return res.redirect('/connections/'+id);
-    } else if (type === constants.BLOG_NODE_TYPE) {
-      return res.redirect('/journal/'+id);
-    } else if (type === constants.CHANNEL_NODE_TYPE) {
-      return res.redirect('/channels/'+id);
-    } else {
-      return res.redirect('/conversation/'+id);
-    }  
-  });
 
+router.get('/signup', function(req, res, next) {
+  var data = helper.startData(req);
+  return res.render("signup_form", data);
 });
 
 router.get('/login', function(req, res, next) {
@@ -103,8 +72,11 @@ router.get('/login', function(req, res, next) {
 
 router.get('/logout', function(req, res, next) {
   var struct = {};
+  req.session.theUser = null;
+  req.session.theUserId = null;
+ 
   struct.type = constants.LOGOUT_EVENT;
-  struct.content = req.session.theUser;
+  struct.content = req.session.theUserId;
   EventModel.registerSimpleEvent(struct, function(err) {
     helper.logout(req);
     return res.redirect('/');
@@ -147,6 +119,10 @@ router.get("/aboutchannels", function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about_channels", data);
 });
+router.get("/aboutparticipants", function(req, res, nex) {
+  var data = helper.startData(req);
+  return res.render("about_participants", data);
+});
 router.get("/about", helper.isPrivate, function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about", data);
@@ -156,21 +132,50 @@ router.get("/contact", helper.isPrivate, function(req, res, nex) {
   return res.render("about", data);
 });
 
+router.post('/signup', function(req, res, next) {
+  var data = helper.startData(req);
+      email = req.body.email,
+      handle = req.body.handle,
+      fullName = req.body.fullname,
+      pwd = req.body.password;
+  AdminModel.signup(email, handle, fullName, pwd, function(err) {
+    console.log("Index.post",email,err);
+    if (!err) {
+      var struct = {};
+      struct.type = constants.SIGNUP_EVENT;
+      struct.email = email;
+      EventModel.registerSimpleEvent(struct, function(err) {
+        console.log("Index.post-1",err);
+        return res.redirect('/');
+      });
+    } else {
+      console.log("Index.post-2");
+      req.flash("error", "Signup Problem: "+err);
+      return res.redirect('/');       
+    }
+  });
+  
+});
 
 router.post('/login', function(req, res, next) {
-  var name = req.body.username,
+  var email = req.body.email,
       password = req.body.password;
-  if (!helper.authenticate(name, password, req)) {
-    req.flash("error", "Authentication failed");
-    return res.redirect('/');
-  } else {
-    var struct = {};
-    struct.type = constants.LOGIN_EVENT;
-    struct.content = name;
-    EventModel.registerSimpleEvent(struct, function(err) {
+  AdminModel.authenticate(email, password, function(err, truth, handle, userId) {
+    if (err) {
+      req.flash("error", err);
+    }
+    if (truth) {
+      req.session.theUser = handle;
+      req.session.theUserId = userId;
+      var struct = {};
+      struct.type = constants.LOGIN_EVENT;
+      struct.email = email;
+      EventModel.registerSimpleEvent(struct, function(err) {
+        return res.redirect('/');
+      });
+    } else {
       return res.redirect('/');
-    });
-  }
-//  console.log("LOGIN",name,req.session);
+    }
+  });
 });
 module.exports = router;

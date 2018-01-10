@@ -12,7 +12,7 @@
         }
     };
     function doRadio(val) {
-        //alert(val);
+        alert(val);
         var e = document.getElementById("private");
         e.value = val;
     };
@@ -23,14 +23,14 @@
     <form name="rootform" method="post" action="/channels/new" onsubmit="return validateForm()">
         <input type="hidden" name="hidden_1" value="{{hidden_1}}">
         <input type="hidden" name="hidden_2" value="{{hidden_2}}">
-        <input type="hidden" id="private" name="private" value="{{private}}":
-        {{#if checkPrivate}}
-        <p style="margin-left: 20px">
+        <input type="hidden" id="private" name="private" value="{{private}}">:
+
+        <p style="margin-left: 40px">
             <span style="color: red;"><b>Select Private or Public</b></span><br/>
-            <input type="radio"   name="private" value="Public"  onclick="doRadio('false')" /> <b>Public</b>
-            <input type="radio"  name="private" value="Private" onclick="doRadio('true')" /> <b>Private</b>
+            <input type="radio"   name="xprivate" value="Public"  onclick="doRadio('false')" /> <b>Public</b>
+            <input type="radio"  name="xprivate" value="Private" onclick="doRadio('true')" /> <b>Private</b>
         </p>
-        {{/if}}
+
         <p style="margin-left: 20px">
             <b>Label</b><br/>
             <input type="text" size="100" name="title" placeholder="New Channel Name" value="{{formlabel}}">

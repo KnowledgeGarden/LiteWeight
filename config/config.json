@@ -1,14 +1,5 @@
 {
     "brand": "LiteWeight Test Portal",
     "isPrivatePortal":false,
-    "secretPassword":"SomeSecret!",
-    "validHandles": [
-        "joe", "sue", "sam"
-    ],
-    "viewerHandles":[
-        "sam"
-    ],
-    "viewerPassword":"ExtraSecret!",
-    "admin":"joe",
-    "adminPassword":"AnotherSecret!"
+    "invitationOnly": true
 }

@@ -81,32 +81,11 @@ EventLog = function() {
             if (json) {
                 json.forEach(function(fx) {
                     console.log("EventModel.listRecentEvents-1",fx);
-                    CommonModel.fetchNode(fx.id, function(err, node) {
-                        console.log("EventModel.listRecentEvents-2",userId,node);
-                        var canSee = CommonModel.canShow(userId, node);
-                        /*
-                        if (node.isPrivate) {
-                            if (!userId) {
-                                // no userId, no way, jose.
-                                canSee = false;
-                                // does this user own this node?
-                            } else if (userId !== node.creatorId) {
-                                // look now for ACLs
-                                var acls = node.acls;
-                                if (acls) {
-                                    console.log("CANSEE-2",userId, acls);
-                                    if (acls && acls.indexOf(userId) == -1) {
-                                     canSee = false;
-                                    }
-                                } else {
-                                    //poof! It's private. Full stop.
-                                    canSee = false;
-                                }
-                            }
-                        }
-                        */
-                        console.log("EventModel.listRecentEvents-3",userId,canSee,fx);
-                        if (canSee) {
+                    CommonModel.fetchNode(userId, fx.id, function(err, node) {
+                        //returns node = null if can't show
+                        console.log("EventModel.listRecentEvents-2",userId,err,node);
+
+                        if (node) {
                             result.push(fx);
                         }       
                     });

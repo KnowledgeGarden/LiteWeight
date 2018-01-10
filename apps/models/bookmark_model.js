@@ -31,7 +31,7 @@ Bookmark = function() {
             }
             CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, lbl, "Stashed", false, function(node) {
                 node.url = url;
-                CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
+                CommonModel.addChildToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
                 channel.version = CommonModel.newId();
                 console.log("BookmarkModel.newBookmark-1",node,channel);
 
@@ -62,7 +62,7 @@ Bookmark = function() {
             //create a new node
             CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, details, isPrivate, function(node) {
                 node.url = url;
-                CommonModel.addStructToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
+                CommonModel.addChildToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
                 channel.version = CommonModel.newId();
                 console.log("BookmarkModel.newBookmark-1",node,channel);
 
@@ -76,10 +76,16 @@ Bookmark = function() {
         });
     };
 
-    self.fetchBookmark = function(id, callback) {
+    self.fetchBookmark = function(userId, id, callback) {
 //        console.log("BookmarkModel.fetchBookmark",id);
         Database.fetchBookmark(id, function(err, data) {
-            return callback(err, data);
+            if (err) {
+                return callback(err, null);
+            }
+            CommonModel.populateNode(userId, data, function(node) {
+                console.log("BookmarkModel.fetchBookmark++",err,node);
+                return callback(err, node);
+            });
         });
     };
 

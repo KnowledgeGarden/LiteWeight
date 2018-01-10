@@ -7,26 +7,29 @@ var TagModel = require('../apps/models/tag_model');
 
 router.get("/tagindex", helper.isPrivate, function(req, res, next) {
     req.session.curCon = null;
-    var data = helper.startData(req);
-    data.taglist = TagModel.listTags();
+    var data = helper.startData(req),
+        creatorId = req.session.theUserId;
+    data.taglist = TagModel.listTags(creatorId);
     res.render('tag_index', data);
 });
 
-router.get("/newtag/:id", function(req, res, next) {
+router.get("/newtag/:id", helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
+        creatorId = req.session.theUserId,
         id = req.params.id;
     console.log("NewTag",id);
     data.hidden_1 = id;
-    data.taglist = TagModel.listTags();
+    data.taglist = TagModel.listTags(creatorId);
 
    return res.render('newtag_form', data);
 });
 
-router.get("/gettag/:id", function(req, res, next) {
+router.get("/gettag/:id", helper.isPrivate, function(req, res, next) {
     var id = req.params.id,
+        creatorId = req.session.theUserId,
         data = helper.startData(req);
     //console.log("Tags.getTag",id);
-    TagModel.fetchTag(id, function(err, result) {
+    TagModel.fetchTag(creatorId, id, function(err, result) {
         data.result = result;
         console.log("Tags.getTag",result);
         return res.render('tag_view', data);
@@ -36,11 +39,11 @@ router.get("/gettag/:id", function(req, res, next) {
 /**
  * Add tags to some node
  */
-router.post("/newnode", function(req, res, next) {
+router.post("/newnode", helper.isPrivate, function(req, res, next) {
     var label = req.body.title
         selections = req.body.selectedtags,
         parentId = req.body.hidden_1,
-        creatorId = req.session.theUser;
+        creatorId = req.session.theUserId;
     console.log("NT",req.body);
     TagModel.addTags(creatorId, label, selections, parentId, function(err, type) {
         // "type" because we don't know what kind of node was just tagged
@@ -53,8 +56,6 @@ router.post("/newnode", function(req, res, next) {
             return res.redirect('/connections/'+parentId);
         } else if (type === constants.BLOG_NODE_TYPE) {
             return res.redirect('/journal/'+parentId);
-        } else if (type === constants.CONVERSATION_NODE_TYPE) {
-            return res.redirect('/conversation/fetchconversation/'+parentId);
         } else { 
               //TODO MUST add other redirects if other apps added
             return res.redirect('/conversation/'+parentId);

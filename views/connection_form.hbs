@@ -5,16 +5,16 @@
             alert("Label must be filled out");
             return false;
         }
-        x = document.getElementById("private").val();
+      /*  x = document.getElementById("private").val();
         if (!x || x === "") {
             alert("Node Privacy must be seleted");
             return false;
-        }
+        }*/
     };
-    function doRadio(val) {
+  /*  function doRadio(val) {
         var e = document.getElementById("private");
         e.value = val;
-    };
+    };*/
 
     function doSelect(e) {
         x = e.value;
@@ -29,12 +29,8 @@
             <input type="hidden" name="target" value="{{target}}">
             <input type="hidden" name="callerId" value="{{callerId}}">
             <input type="hidden" name="callerType" value="{{callerType}}">
-            <input type="hidden" id="private" name="private" value="{{private}}":
-            <p style="margin-left: 20px">
-                <span style="color: red;"><b>Select Private or Public</b></span><br/>
-                <input type="radio"   name="private" value="Public"  onclick="doRadio('false')" /> <b>Public</b>
-                <input type="radio"  name="private" value="Private" onclick="doRadio('true')" /> <b>Private</b>
-            </p>
+            <input type="hidden" id="private" name="private" value="{{private}}">:
+
             <h2>Choose a Relation</h2>
             <span style="margin-left:20px">Chosen Value <input id="selected" type="text" name="selected"></span>
             <div class="relationscroller">

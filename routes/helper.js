@@ -32,6 +32,7 @@ Helper = function() {
         if (self.isAuthenticated(req)) {
             result.isAuthenticated = true;
         }
+        result.invitationOnly = config.invitationOnly;
         //current conversation
         result.curCon = req.session.curCon;
         //remembered
@@ -53,22 +54,6 @@ Helper = function() {
 //        console.log("Helper.isAuthenticated",req.session);
         if (req.session.theUser) {
             return true;
-        }
-        return false;
-    };
-
-    /**
-     * Very simple authentication:
-     * compare submitted credentials to what's in config.json
-     */
-    self.authenticate = function(handle, password, req) {
-        if (password === config.secretPassword) {
-            var i = config.validHandles.indexOf(handle);
-            if (i > -1) {
-                req.session.theUser = handle;
-//                console.log("Authenticate",req.session);
-                return true;
-            }
         }
         return false;
     };

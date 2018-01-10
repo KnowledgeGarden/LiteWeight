@@ -39,10 +39,13 @@ var CommonModel = require('../apps/models/common_model');
  */
 router.get('/edit/:id', function(req, res, next) {
     var data = helper.startData(req),
-    creatorId = req.session.theUser;
+    creatorId = req.session.theUserId;
     id = req.params.id;
-    CommonModel.fetchNode(id, function(err, node) {
-        if (helpers.canEdit(creatorId, node)) {
+    CommonModel.fetchNode(creatorId, id, function(err, node) {
+        if (err) { // private node case
+            req.flash("error", constants.INSUFFICIENT_CREDENTIALS);
+            return res.redirect("/");    
+        } else if (helpers.canEdit(creatorId, node)) {
             var hasIbisKids = CommonModel.hasIBISChildren(node);
             var label = node.statement;
             if (hasIbisKids) {
@@ -56,19 +59,23 @@ router.get('/edit/:id', function(req, res, next) {
             data.formtitle = "Edit Node";
             data.action = "/edit/edit";
             return res.render('newnode_form', data);
-        } else {
+        } else { //not owner case
             //flash a message and paint the node again
-            req.flash("error", "Improper Editing Credentials");
-            return res.redirect("/fetch/"+id+"/"+node.type);    
+            req.flash("error", constants.INSUFFICIENT_CREDENTIALS);
+            return res.redirect("/grag/"+id);    
         }
     });
 });
 
 router.post('/edit', function(req, res, next) {
     var json = req.body,
+        creatorId = req.session.theUserId;
         id = req.body.hidden_1;
-    CommonModel.updateNode(body, function(err) {
-
+    CommonModel.updateNode(creatorId, body, function(err) {
+        if (err) {
+            req.flash("error", constants.INSUFFICIENT_CREDENTIALS);
+        }
+        return res.redirect("/grab/"+id);
     });
 });
 

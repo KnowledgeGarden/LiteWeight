@@ -95,8 +95,8 @@
     border: 1px solid black;
     column-width:29%;
     white-space:nowrap;
-    overflow-x: scroll; 
-    overflow-y: hidden;
+    overflow-x: hidden; 
+    overflow-y: scroll;
     height:500px;   
 }
 

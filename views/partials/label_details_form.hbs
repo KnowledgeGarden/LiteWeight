@@ -5,16 +5,16 @@
             alert("Label must be filled out");
             return false;
         }
-        x = document.getElementById("private").val();
+       /* x = document.getElementById("private").val();
         if (x === "") {
             alert("Node Privacy must be seleted");
             return false;
-        }
+        }*/
     };
-    function doRadio(val) {
+   /* function doRadio(val) {
         var e = document.getElementById("private");
         e.value = val;
-    };
+    };*/
 
 </script>
 <div class="home col-xs-12 ">
@@ -36,13 +36,13 @@
         <input type="hidden" name="hidden_1" value="{{hidden_1}}">
         <input type="hidden" name="hidden_2" value="{{hidden_2}}">
         <input type="hidden" id="private" name="private" value="{{private}}">
-        {{#if checkPrivate}}
+        <!--{{#if checkPrivate}}
             <div style="margin-left: 20px">
                 <span style="color: red;"><b>Select Private or Public</b></span><br/>
                 <input type="radio"   name="private" value="Public"  onclick="doRadio('false')" /> <b>Public</b>
                 <input style="margin-left:30px;" type="radio"  name="private" value="Private" onclick="doRadio('true')" /> <b>Private</b>
             </div>
-        {{/if}}
+        {{/if}}-->
         {{#if url}}
             <div style="margin-left: 20px">
                 <b>URL:</b> <input id="url" type="text" name="url" size="100" value="{{url}}" >

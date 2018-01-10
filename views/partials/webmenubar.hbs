@@ -33,7 +33,7 @@
                             <li><a href="/logout">Logout</a></li>
                             <!--<li><a href="/profile/{{email}}">Profile</a></li>-->
                         {{else}}
-                            <!--<li><a href="/signup">Signup</a></li>-->
+                            <li><a href="/signup">Signup</a></li>
                             <li><a href="/login">Login</a></li>
                         {{/if}}
 
@@ -51,7 +51,7 @@
         <!-- <br/> <br/> -->
             {{#if curCon}}
                 <div style="margin-left: 50px;">
-                    <a href="/confetch/{{curCon}}">Current Context</a>
+                    <a href="/grab/{{curCon}}">Current Context</a>
                     <a style="margin-left:20px;" href="/conversation/jstree/{{curCon}}">Tree View</a>
                 </div>
             {{/if}}
