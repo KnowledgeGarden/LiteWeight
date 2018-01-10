@@ -124,7 +124,7 @@ User = function() {
      */
     self.newDM = function(creatorId, creatorHandle, targetUserId, callback) {
         var name = targetUserId+"_"+creatorId;
-        CommonModel.newNode(name, creatorId, constants.DM_NODE_TYPE, name, "", true, function(node) {
+        CommonModel.newNode(name, creatorId, creatorHandle, constants.DM_NODE_TYPE, name, "", true, function(node) {
             var acls = [];
             acls.push(creatorId);
             acls.push(targetUserId);
