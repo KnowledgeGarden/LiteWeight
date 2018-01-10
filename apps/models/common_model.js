@@ -453,6 +453,7 @@ Common = function() {
         result.createdDate = self.newDate();
         result.version = self.newId();
         result.type = type;
+        result.handle = creatorHandle;
         result.img = self.nodeTolargeIcon(type);
         result.imgsm = self.nodeToSmallIcon(type);
         result.statement = statement;
