@@ -46,6 +46,7 @@ Bookmark = function() {
         });
     };
 
+
     /**
      * Create a new bookmark (aka WebClip)
      * Caller must pay attention to returned error in case the USL is missing
@@ -61,6 +62,7 @@ Bookmark = function() {
 //        console.log("BookmarkModel.newBookmark",creatorId,url,statement);
         //fetch the bookmark channe
         Database.fetchChannel(constants.BOOKMARK_CHANNEL, function(err, channel) {
+           
             //create a new node
             CommonModel.newNode(null, creatorId, creatorHandle, constants.BOOKMARK_NODE_TYPE, statement, details, isPrivate, function(node) {
                 node.url = url;

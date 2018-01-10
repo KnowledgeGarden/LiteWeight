@@ -162,6 +162,7 @@ Common = function() {
         var kids = [];
         childList.forEach(function(kid) {
             self.fetchNode(userId, kid, function(err, node) {
+                console.log("CommonModel.grabChildStructs",childList,kid,node,err);
                 if (!err) {
                     struct = {};
                     struct.id = node.id;
@@ -259,6 +260,7 @@ Common = function() {
                     if (struct) {
                         node.theAnswers = struct;
                     }
+                    console.log("CommonModel.Populate answers",childList, struct);
                 });
             }
         }

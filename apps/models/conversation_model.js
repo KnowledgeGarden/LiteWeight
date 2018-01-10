@@ -52,6 +52,21 @@ Conversation = function() {
     //          IN FACT, it might be a bookmark,blog, etc.
     //////////////////////////////
 
+    function removePopulation(nodeType, node) {
+        if (nodeType === constants.ANSWER_NODE_TYPE) {
+            node.theAnswers = null;
+        } else if (nodeType === constants.DECISION_NODE_TYPE) {
+            node.theDecisions = null;
+        } else if (nodeType === constants.CON_NODE_TYPE) {
+            node.theCons = null;
+        } else if (nodeType === constants.NOTE_NODE_TYPE) {
+            node.theNodes = null;
+        } else if (nodeType === constants.PRO_NODE_TYPE) {
+            node.thePros = null;
+        } else if (nodeType === constants.REFERENCE_NODE_TYPE) {
+            node.theReferences = null;
+        }
+    };
     /**
      * Create a response node and add its reference to the parent
      * @param {*} creatorId
@@ -68,6 +83,7 @@ Conversation = function() {
         //fetch the parent
         Database.fetchData(parentId, function(err, parent) {
             console.log("ConversationModel.newResponseNode",type,parentId,parent);
+            removePopulation(type, parent);
             var acls = parent.acls;
             var context;
             if (parent.type === constants.BLOG_NODE_TYPE ||
