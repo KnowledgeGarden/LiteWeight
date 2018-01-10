@@ -15,12 +15,13 @@ Bookmark = function() {
 
     /**
      * Stash this bookmark
-     * @param {*} creatorId 
+     * @param {*} creatorId
+     * @param creatorHandle
      * @param {*} url 
      * @param {*} statement 
      * @param {*} callback err
      */
-    self.stashBookmark = function(creatorId, url, statement, callback) {
+    self.stashBookmark = function(creatorId, creatorHandle, url, statement, callback) {
     //        console.log("BookmarkModel.newBookmark",creatorId,url,statement);
         //fetch the bookmark channe
         Database.fetchChannel(constants.BOOKMARK_CHANNEL, function(err, channel) {
@@ -29,7 +30,7 @@ Bookmark = function() {
             if (lbl === "") {
                 lbl = "label missing from"+url;
             }
-            CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, lbl, "Stashed", false, function(node) {
+            CommonModel.newNode(null, creatorId, creatorHandle, constants.BOOKMARK_NODE_TYPE, lbl, "Stashed", false, function(node) {
                 node.url = url;
                 CommonModel.addChildToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
                 channel.version = CommonModel.newId();
@@ -48,19 +49,20 @@ Bookmark = function() {
     /**
      * Create a new bookmark (aka WebClip)
      * Caller must pay attention to returned error in case the USL is missing
-     * @param {*} creatorId 
+     * @param {*} creatorId
+     * @param creatorHandle
      * @param {*} url required
      * @param {*} statement 
      * @param {*} details
      * @param isPrivate
      * @param {*} callback err, node
      */
-    self.newBookmark = function(creatorId, url, statement, details, isPrivate, callback) {
+    self.newBookmark = function(creatorId, creatorHandle, url, statement, details, isPrivate, callback) {
 //        console.log("BookmarkModel.newBookmark",creatorId,url,statement);
         //fetch the bookmark channe
         Database.fetchChannel(constants.BOOKMARK_CHANNEL, function(err, channel) {
             //create a new node
-            CommonModel.newNode(null, creatorId, constants.BOOKMARK_NODE_TYPE, statement, details, isPrivate, function(node) {
+            CommonModel.newNode(null, creatorId, creatorHandle, constants.BOOKMARK_NODE_TYPE, statement, details, isPrivate, function(node) {
                 node.url = url;
                 CommonModel.addChildToNode(constants.BOOKMARK_NODE_TYPE, creatorId, node, channel);
                 channel.version = CommonModel.newId();

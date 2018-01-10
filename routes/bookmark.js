@@ -18,14 +18,15 @@ var helper = require('./helper');
 router.get('/stash', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req),
         query = req.query,
-        creatorId = req.session.theUserId;
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
     //Must be logged in
     if (!creatorId) {
         return res.render("login_form", data);
     }
     if (query.url) {
         console.log("Bookmark.stash", query);
-        BookmarkModel.stashBookmark(creatorId, query.url, query.title, function(err, node) {
+        BookmarkModel.stashBookmark(creatorId, handle, query.url, query.title, function(err, node) {
             return res.redirect(query.url);
         });
     }
@@ -85,10 +86,11 @@ router.post("/newnode", helper.isPrivate, function(req, res, next) {
         details = req.body.details,
         isPrivate = false; // ALL BOOKMARKS ARE PUBLIC
         url = req.body.url,
-        creatorId = req.session.theUserId;
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
     if (url) {
 //        console.log("NB", eq.body);
-        BookmarkModel.newBookmark(creatorId, url, statement, details, isPrivate, function(err, node) {
+        BookmarkModel.newBookmark(creatorId, handle, url, statement, details, isPrivate, function(err, node) {
             return res.redirect('/bookmark/'+node.id);
         });
     } else {

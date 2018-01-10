@@ -77,11 +77,12 @@ Connection = function() {
     /**
      * Will return a "Duplicate" error message if the connection already exists
      * Relation node takes the privacy policy of its sourceNode
-     * @param {*} creatorId 
+     * @param {*} creatorId
+     * @param creatorHandle
      * @param {*} jsonBody 
      * @param {*} callback err
      */
-    self.createConnection = function(creatorId, jsonBody, callback) {
+    self.createConnection = function(creatorId, creatorHandle, jsonBody, callback) {
         console.log("ConnectionModel.createConnection",creatorId, jsonBody);
 
         var relnId = jsonBody.source+"."+jsonBody.selected+"."+jsonBody.target;
@@ -117,7 +118,7 @@ Connection = function() {
                             //craft a relation node
                             var label = jsonBody.selected;
                             var details = sourceNode.statement+" "+resource.asSource+targetNode.statement;
-                            CommonModel.newNode(relnId, creatorId, constants.RELATION_NODE_TYPE,
+                            CommonModel.newNode(relnId, creatorId, handle, constants.RELATION_NODE_TYPE,
                                     label, details, isPrivate, function(json) {
                                 json.sourceNode = sourceNode.id;
                                 json.targetNode = targetNode.id;

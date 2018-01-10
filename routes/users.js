@@ -17,8 +17,9 @@ var ChannelModel = require('../apps/models/channel_model');
  */
 router.get('/:id', helper.isPrivate, function(req, res, next) {
     var id = req.params.id,
-        creatorId = req.session.theUserId;
-    UserModel.processUserGet(creatorId, id, function(err, result) {
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    UserModel.processUserGet(creatorId, handle, id, function(err, result) {
         console.log("Users.get",id,result);
       var data = helper.startData(req);
       var clist = result.theJournals;

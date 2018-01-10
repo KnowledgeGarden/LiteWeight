@@ -31,17 +31,18 @@ Journal = function() {
      * IF creatorId !== channelId, must fetch creatorId as well to make a composite
      * for that user
      * @param {*} creatorId 
+     * @param creatorHandle
      * @param {*} channelId 
      * @param {*} statement 
      * @param {*} details 
      * @param {*} isPrivate 
      * @param {*} callback 
      */
-    self.createJournalFromDM = function(creatorId, channelId, statement, details, isPrivate, callback) {
+    self.createJournalFromDM = function(creatorId, creatorHandle, channelId, statement, details, isPrivate, callback) {
         Database.fetchDM(channelId, function(err, channel) {
             var acls = channel.acls;
             console.log("JournalModel.createFromChannel",isPrivate,channel,statement);
-            CommonModel.newNode(null, creatorId, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
+            CommonModel.newNode(null, creatorId, creatorHandle, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
                 node.dm = true; // tell it that it is a DM node
                 CommonModel.addChildToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel);
                 console.log("JournalModel.createFromChannel-1",node,channel);
@@ -78,19 +79,20 @@ Journal = function() {
     /**
      * 
      * @param {*} creatorId 
+     * @param creatorHandle
      * @param {*} channelId 
      * @param {*} statement 
      * @param {*} details
      * @param {*} isPrivate 
      * @param {*} callback err node
      */
-    self.createJournalFromChannel = function(creatorId, channelId, statement, details, isPrivate, callback) {
+    self.createJournalFromChannel = function(creatorId, creatorHandle, channelId, statement, details, isPrivate, callback) {
         Database.fetchChannel(channelId, function(err, channel) {
             var acls;
            // if (channel) {
                 acls = channel.acls;
                 console.log("JournalModel.createFromChannel",isPrivate,channel,statement);
-                CommonModel.newNode(null, creatorId, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
+                CommonModel.newNode(null, creatorId, creatorHandle, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
                     CommonModel.addChildToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel);
                     console.log("JournalModel.createFromChannel-1",node,channel);
                     node.acls = acls;
@@ -132,13 +134,14 @@ Journal = function() {
 
     /**
      * @param creatorId
+     * @param creatorHandle
      * @param statement
      * @param details
      * @param isPrivate
      * @param callback  err node
      */
-    self.createJournalEntry = function(creatorId, statement, details, isPrivate, callback) {
-        CommonModel.newNode(null, creatorId, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
+    self.createJournalEntry = function(creatorId, creatorHandle, statement, details, isPrivate, callback) {
+        CommonModel.newNode(null, creatorId, creatorHandle, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
             Database.saveNodeData(node.id, node, function(err) {
                 return callback(err, node);
             });

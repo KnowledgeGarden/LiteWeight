@@ -76,11 +76,12 @@ Tags = function() {
      *   instead, we simply add the new node to its list of nodes
      * FOR NOW, all tags are public
      * @param creatorId
+     * @param creatorHandle
      * @param {*} tagLabel 
      * @param {*} node 
      * @param {*} callback err
      */
-    self.newTag = function(creatorId, tagLabel, node, callback) {
+    self.newTag = function(creatorId, creatorHandle, tagLabel, node, callback) {
         if (tagLabel === '') {
             return callback("Missing tag label");
         }
@@ -95,7 +96,7 @@ Tags = function() {
                     return callback(err);
                 });
             } else { // new tag  all tags are public
-                CommonModel.newNode(id, creatorId, constants.TAG_NODE_TYPE, tagLabel, "", false, function(theTag) {
+                CommonModel.newNode(id, creatorId, creatorHandle, constants.TAG_NODE_TYPE, tagLabel, "", false, function(theTag) {
                     wireTagNode(theTag, creatorId, node, function(err) {
                         console.log("TagModel.newTag-2",theTag,node);
                         return callback(err);
@@ -105,7 +106,7 @@ Tags = function() {
         });
     };
 
-    function tagHandler(tagNameArray, creatorId, node, callback) {
+    function tagHandler(tagNameArray, creatorId, creatorHandle, node, callback) {
         var error;
         function next() {
             console.log("TagModel.tagHandler",tagNameArray);
@@ -115,7 +116,7 @@ Tags = function() {
             lx = tagNameArray.pop();
             if (lx && lx !== '') {
                 console.log("TagModel.tagHandler-1",lx,tagNameArray);
-                self.newTag(creatorId, lx, node, function(err) {
+                self.newTag(creatorId, creatorHandle, lx, node, function(err) {
                     if (!error && err) {
                         error = err;
                     }
@@ -137,7 +138,7 @@ Tags = function() {
      * @param {*} nodeId 
      * @param {*} callback err. nodetype
      */
-    self.addTags = function(creatorId, tagLabel, selectedLabels, nodeId, callback) {
+    self.addTags = function(creatorId, creatorHandle, tagLabel, selectedLabels, nodeId, callback) {
         console.log("TagModel.addTags",tagLabel, selectedLabels,nodeId);
         var ta = selectedLabels.split(',');
         var labels = tagLabel;
@@ -153,7 +154,7 @@ Tags = function() {
         CommonModel.fetchNode(creatorId, nodeId, function(err, node) {
 
             var type = node.type;
-            tagHandler(labelArray, creatorId, node, function(error) {
+            tagHandler(labelArray, creatorId, creatorHandle, node, function(error) {
                 //update the node's version
                 node.version = CommonModel.newId();
                 console.log("TagModel.addTags-3",node);

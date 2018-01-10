@@ -98,11 +98,12 @@ User = function() {
      * is created and the router vectors to that node and treates it like a private channel
      * Make both a shell user, and a userDM
      * @param creatorId
+     * @param creatorHandle
      * @param userId -- the channel name
      * @callback err
      */
-    self.newUser = function(creatorId, userId, handle, callback) {
-        CommonModel.newNode(userId, creatorId, constants.USER_NODE_TYPE, handle, "", false, function(node) {
+    self.newUser = function(creatorId, creatorHandle, userId, handle, callback) {
+        CommonModel.newNode(userId, creatorId, creatorHandle, constants.USER_NODE_TYPE, handle, "", false, function(node) {
             Database.saveUserData(node.id, node, function(err) {
                 node.isPrivate = true;
                 node.type = constants.DM_NODE_TYPE;
@@ -117,10 +118,11 @@ User = function() {
      * This creates a private channel. This node is never painted in an index:
      * It is called internally when a user clicks on another user's channel
      * @param creatorId -- user starting DM
+     * @param creatorHandle
      * @param targetUserId
      * @callback err
      */
-    self.newDM = function(creatorId, targetUserId, callback) {
+    self.newDM = function(creatorId, creatorHandle, targetUserId, callback) {
         var name = targetUserId+"_"+creatorId;
         CommonModel.newNode(name, creatorId, constants.DM_NODE_TYPE, name, "", true, function(node) {
             var acls = [];
@@ -147,11 +149,12 @@ User = function() {
 
     /**
      * Returns a Channel-like view
-     * @param {*} creatorId 
+     * @param {*} creatorId
+     * @param creatorHandle
      * @param {*} targetUserId 
      * @param {*} callback err, node
      */
-    self.fetchOrCreateDM = function(creatorId, targetUserId, callback) {
+    self.fetchOrCreateDM = function(creatorId, creatorHandle, targetUserId, callback) {
         //////////////////////
         //TWO ways these can happen: target_creator AND creator+target
         // IF either exists, use that one.
@@ -164,7 +167,7 @@ User = function() {
                     console.log("UserModel.fetchOrCreateDM-1",name2,node1);
                     if (!node1) {
 
-                        self.newDM(creatorId, targetUserId, function(err2, user) {
+                        self.newDM(creatorId, creatorHandle, targetUserId, function(err2, user) {
                             return callback(err2, user);
                         });
                     } else {
@@ -178,13 +181,13 @@ User = function() {
         });
     };
 
-    self.processUserGet = function(creatorId, targetUserId, callback) {
+    self.processUserGet = function(creatorId, creatorHandle, targetUserId, callback) {
         if (creatorId === targetUserId) {
             self.fetchDM(creatorId, targetUserId, function(err, node) {
                 return callback(err, node);
             });
         } else {
-            self.fetchOrCreateDM(creatorId, targetUserId, function(err1, user) {
+            self.fetchOrCreateDM(creatorId, creatorHandle, targetUserId, function(err1, user) {
                 return callback(err1, user);
             });
        }

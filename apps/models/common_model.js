@@ -432,16 +432,17 @@ Common = function() {
     /**
      * Core node creation function
      * @param nodeId  can be null
-     * @param {*} creatorId 
+     * @param {*} creatorId
+     * @param creatorHandle
      * @param {*} type 
      * @param {*} statement 
      * @param {*} details 
      * @param isPrivate
      * @param callback json
      */
-    self.newNode = function(nodeId, creatorId, type, statement,
+    self.newNode = function(nodeId, creatorId, creatorHandle, type, statement,
                 details, isPrivate, callback) {
-        console.log("CommonModel.newNode"+creatorId,type);
+        console.log("CommonModel.newNode"+creatorId,type, creatorHandle);
         var result = {},
             ix = nodeId;
         if (!ix) {
@@ -449,7 +450,7 @@ Common = function() {
         }
         result.id = ix;
         result.creatorId = creatorId;
-        result.createdDate = self.newDate(); //new Date();
+        result.createdDate = self.newDate();
         result.version = self.newId();
         result.type = type;
         result.img = self.nodeTolargeIcon(type);
@@ -457,7 +458,7 @@ Common = function() {
         result.statement = statement;
         result.isPrivate = isPrivate;
         result.details = details;
-        EventLogModel.registerEvent(creatorId, constants.NEW_NODE_EVENT, result, function(err) {
+        EventLogModel.registerEvent(creatorId, creatorHandle, constants.NEW_NODE_EVENT, result, function(err) {
             console.log("CommonModel.newNode",creatorId,type,result);
             return callback(result);
         });

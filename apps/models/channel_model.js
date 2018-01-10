@@ -22,7 +22,7 @@ Channel = function() {
     self.bootstrapBookmarks = function(callback) {
         Database.fetchChannel("bookmarks", function(err, data) {
             if (!data) {
-                CommonModel.newNode(constants.BOOKMARK_CHANNEL, "system", 
+                CommonModel.newNode(constants.BOOKMARK_CHANNEL, "system", "system",
                     constants.CHANNEL_NODE_TYPE, "Bookmarks", "", false, function(json) {
                         Database.saveChannelData(json.id, json, function(err) {
                             return callback(err);
@@ -36,7 +36,7 @@ Channel = function() {
     self.bootstrapGeneral = function(callback) {
         Database.fetchChannel(constants.GENERAL_CHANNEL, function(err, data) {
             if (!data) {
-                CommonModel.newNode(constants.GENERAL_CHANNEL, "system", 
+                CommonModel.newNode(constants.GENERAL_CHANNEL, "system", "system",
                     constants.CHANNEL_NODE_TYPE, "General", "", false, function(json) {
                         Database.saveChannelData(json.id, json, function(err) {
                             return callback(err);
@@ -123,15 +123,16 @@ Channel = function() {
 
     /**
      * @param creatorId
+     * @param creatorHandle
      * @param statement
      * @param members if is private
      * @param isPrivate
      * @param callback  err node
      */
-    self.createChannel = function(creatorId, statement, members, isPrivate, callback) {
+    self.createChannel = function(creatorId, creatorHandle, statement, members, isPrivate, callback) {
         var id = CommonModel.replaceAll(statement, ' ', '_');
         id = id.toLowerCase();
-        CommonModel.newNode(id, creatorId, constants.CHANNEL_NODE_TYPE, statement, "", isPrivate, function(node) {
+        CommonModel.newNode(id, creatorId, creatorHandle, constants.CHANNEL_NODE_TYPE, statement, "", isPrivate, function(node) {
             console.log("ChannelModel.createChannel",id,isPrivate,members,node);
 
             if (isPrivate) {

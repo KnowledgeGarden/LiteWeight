@@ -54,7 +54,8 @@ Conversation = function() {
 
     /**
      * Create a response node and add its reference to the parent
-     * @param {*} creatorId 
+     * @param {*} creatorId
+     * @param creatorHandle
      * @param {*} parentId 
      * @param {*} type 
      * @param {*} statement 
@@ -62,7 +63,7 @@ Conversation = function() {
      * @param isPrivate
      * @param {*} callback err node
      */
-    self.newResponseNode = function(creatorId, parentId, type, statement, details, isPrivate, callback) {
+    self.newResponseNode = function(creatorId, creatorHandle, parentId, type, statement, details, isPrivate, callback) {
         var pv = isPrivate;
         //fetch the parent
         Database.fetchData(parentId, function(err, parent) {
@@ -80,7 +81,7 @@ Conversation = function() {
             if (acls) {
                 pv = parent.isPrivate;
             }
-            CommonModel.newNode(null, creatorId, type, statement, details, pv, function(node) {
+            CommonModel.newNode(null, creatorId, creatorHandle, type, statement, details, pv, function(node) {
                 console.log("ConversationModel.newResponseNode-1",type,node);
                 node.context = context;
                 //wire them together

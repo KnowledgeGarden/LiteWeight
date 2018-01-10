@@ -30,11 +30,12 @@ EventLog = function() {
     /**
      * 
      * @param {*} creatorId 
+     * @param handle
      * @param {*} eventType 
      * @param {*} node 
      * @param {*} callback err
      */
-    self.registerEvent = function(creatorId, eventType, node, callback) {
+    self.registerEvent = function(creatorId, handle, eventType, node, callback) {
         console.log("EventModel.registerEvent",eventType,node);
         var struct = {},
             type = node.type;
@@ -42,6 +43,7 @@ EventLog = function() {
         struct.img = CommonModel.nodeToSmallIcon(type);
         struct.statement = node.statement;
         struct.creatorId = creatorId;
+        struct.handle = handle;
         struct.createdDate = node.createdDate;
         struct.isPrivate = node.isPrivate;
         struct.type = type; // used for a common fetch mechanism

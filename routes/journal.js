@@ -89,9 +89,10 @@ router.post('/newnode', helper.isPrivate, function(req, res, next) {
     var title = req.body.title
         details = req.body.details,
         isPrivate = req.body.private,
-        isPrivate = (isPrivate === 'true');
-        creatorId = req.session.theUserId;
-    JournalModel.createJournalEntry(creatorId, title, details, isPrivate, function(err, entry) {
+        isPrivate = (isPrivate === 'true'),
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    JournalModel.createJournalEntry(creatorId, handle, title, details, isPrivate, function(err, entry) {
         console.log("Journal.post.newnode",entry);
         return res.redirect("/journal/"+entry.id);
     });
@@ -100,10 +101,11 @@ router.post('/newnode', helper.isPrivate, function(req, res, next) {
 router.post('/newfromuser', helper.isPrivate, function(req, res, next) {
     var title = req.body.title
         details = req.body.details,
-        isPrivate = true;
-        channelId = req.body.hidden_1;
-        creatorId = req.session.theUserId;
-    JournalModel.createJournalFromDM(creatorId, channelId, title, details, isPrivate, function(err, entry) {
+        isPrivate = true,
+        channelId = req.body.hidden_1,
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    JournalModel.createJournalFromDM(creatorId, handle, channelId, title, details, isPrivate, function(err, entry) {
         console.log("Journal.post.newfromuser",entry);
         return res.redirect("/journal/"+entry.id);
     });
@@ -112,10 +114,11 @@ router.post('/newfromchannel', helper.isPrivate, function(req, res, next) {
     var title = req.body.title
         details = req.body.details,
         isPrivate = req.body.private,
-        isPrivate = (isPrivate === 'true');
-        channelId = req.body.hidden_1;
-        creatorId = req.session.theUserId;
-    JournalModel.createJournalFromChannel(creatorId, channelId, title, details, isPrivate, function(err, entry) {
+        isPrivate = (isPrivate === 'true'),
+        channelId = req.body.hidden_1,
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    JournalModel.createJournalFromChannel(creatorId, handle, channelId, title, details, isPrivate, function(err, entry) {
         console.log("Journal.post.newfromchannel",entry);
         return res.redirect("/journal/"+entry.id);
     });

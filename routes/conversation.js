@@ -207,9 +207,10 @@ router.post("/newnode", helper.isPrivate, function(req, res, next) {
         isPrivate = (isPrivate === 'true');
         parentId = req.body.hidden_1,
         type = req.body.hidden_2,
-        creatorId = req.session.theUserId;
+        creatorId = req.session.theUserId,
+        handle = req.session.theUser;
     console.log("NN", JSON.stringify(req.body));
-    ConversationModel.newResponseNode(creatorId, parentId, type, title, details, isPrivate, function(err, node) {
+    ConversationModel.newResponseNode(creatorId, handle, parentId, type, title, details, isPrivate, function(err, node) {
         res.redirect(node.id);
     });
  

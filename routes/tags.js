@@ -43,9 +43,10 @@ router.post("/newnode", helper.isPrivate, function(req, res, next) {
     var label = req.body.title
         selections = req.body.selectedtags,
         parentId = req.body.hidden_1,
-        creatorId = req.session.theUserId;
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
     console.log("NT",req.body);
-    TagModel.addTags(creatorId, label, selections, parentId, function(err, type) {
+    TagModel.addTags(creatorId, handle, label, selections, parentId, function(err, type) {
         // "type" because we don't know what kind of node was just tagged
         // here, we are using redirects; could just mimic their route renders
         // but then have to do all the fetching, etc

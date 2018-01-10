@@ -103,9 +103,10 @@ router.post('/new', helper.isPrivate, function(req, res, next) {
     var body = req.body,
         callerId = body.callerId,
         type = body.callerType;
-        creatorId = req.session.theUserId;
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
     console.log("Connections.post.net",body);
-    ConnectionModel.createConnection(creatorId, body, function(err) {
+    ConnectionModel.createConnection(creatorId, handle, body, function(err) {
         console.log("Connections.post.new",err);
         if (err) {  // issue of a private node somewhere in the tree -- should not happen
             if (err !== constants.DUPLICATE_ERROR) {

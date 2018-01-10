@@ -85,10 +85,11 @@ router.post('/new', helper.isPrivate, function(req, res, next) {
     var title = req.body.title
         isPrivate = req.body.private,
         members = req.body.members,
-        creatorId = req.session.theUserId;
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
         console.log("XYZ",req.body);
         console.log("Channels.post.new",isPrivate,members,title);
-    ChannelModel.createChannel(creatorId, title, members, isPrivate, function(err, node) {
+    ChannelModel.createChannel(creatorId, handle, title, members, isPrivate, function(err, node) {
         return res.redirect('/channels');
     });
 });
