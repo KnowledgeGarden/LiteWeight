@@ -7,6 +7,14 @@ Helper = function() {
     var self = this;
     //console.log("HELPER");
 
+    self.checkIP = function(req, which) {
+        var ip = 
+         req.connection.remoteAddress || 
+         req.socket.remoteAddress || 
+         req.connection.socket.remoteAddress;
+        console.log("Helper.checkIP",ip,which);
+    };
+
     self.isPrivate = function (req, res, next) {
         if (config.isPrivatePortal) {
             if (self.isAuthenticated(req)) {

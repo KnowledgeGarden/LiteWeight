@@ -61,11 +61,13 @@ router.get('/grab/:id', helper.isPrivate, function(req, res, next) {
 
 
 router.get('/signup', function(req, res, next) {
+  helper.checkIP(req, "login", "signup");
   var data = helper.startData(req);
   return res.render("signup_form", data);
 });
 
 router.get('/login', function(req, res, next) {
+  helper.checkIP(req, "login");
   var data = helper.startData(req);
   return res.render("login_form", data);
 });

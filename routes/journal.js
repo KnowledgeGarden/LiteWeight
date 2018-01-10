@@ -4,6 +4,7 @@ var router = express.Router();
 var constants = require('../apps/constants');
 var JournalModel = require('../apps/models/journal_model');
 var ChannelModel = require('../apps/models/channel_model');
+var CommonModel = require('../apps/models/common_model');
 var helper = require('./helper');
 
 
@@ -57,6 +58,26 @@ router.get('/fromchannel/:id', helper.isPrivate, function(req, res, next) {
     });
 });
 
+router.get('/edit/:id', function(req, res, next) {
+    var data = helper.startData(req),
+    creatorId = req.session.theUserId;
+    id = req.params.id;
+    console.log("Journal.get.edit",id);
+    JournalModel.fetchJournal(creatorId, id, function(err, result) {
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            data.hidden_1 = id;
+            data.url = result.url;
+            data.formlabel = result.statement;
+            data.formdetails = result.details;
+            data.formtitle = "Edit This Node";
+            data.action = "/journal/editnode"
+            return res.render('newnode_form', data);
+        }
+    });
+});
 
 router.get('/new', helper.isPrivate, function(req, res, next) {
     var data = helper.startData(req)
@@ -75,12 +96,15 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
             req.flash("error", err);
             return res.redirect("/");
         } else {
+            var canEdit = helper.canEdit(creatorId, result);
  
             req.session.curCon = result.id;
             var data = helper.startData(req);
             console.log("Model returned "+result);
+            data.canEdit = canEdit;
+            data.editURL = "/journal/edit/"+id;
             data.result = result;
-        return res.render('view', data);
+            return res.render('view', data);
         }
     });
 });
@@ -97,6 +121,16 @@ router.post('/newnode', helper.isPrivate, function(req, res, next) {
         return res.redirect("/journal/"+entry.id);
     });
 });
+router.post('/editnode', helper.isPrivate, function(req, res, next) {
+    var body = req.body,
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    CommonModel.updateNode(creatorId, handle, body, function(err) {
+        console.log("Journal.post.newnode",err);
+        return res.redirect("/journal/"+body.hidden_1);
+    });
+});
+
 
 router.post('/newfromuser', helper.isPrivate, function(req, res, next) {
     var title = req.body.title

@@ -30,6 +30,9 @@
         <b>Connect this node as Source</b><a title="Connect As Source" href="/connections/newassource/{{result.id}}/{{result.type}}"><img  src="/images/connectsrc.png"></a>
         <b>Connect this node as Target</b><a title="Connect As Target" href="/connections/newastarget/{{result.id}}/{{result.type}}"><img  src="/images/connect.png"></a>
     {{/if}}
+    {{#if canEdit}}
+        <a style="margin-left:20px;" href="{{editURL}}"><b>Edit</b></a>
+    {{/if}}
     </span>
 {{/if}}
 <!-- left-right scrollable container -->

@@ -517,10 +517,11 @@ Common = function() {
     /**
      * json could include statement, details, url, ...
      * @param userId
+     * @param userHandle
      * @param {*} json 
      * @param {*} callback err
      */
-    self.updateNode = function(userId, json, callback) {
+    self.updateNode = function(userId, userHandle, json, callback) {
         var nodeId = json.hidden_1,
             version = json.hidden_2;
         //fetch the node being edited
@@ -545,13 +546,13 @@ Common = function() {
             oldNode.version = self.newId();
             // save it
             Database.saveData(oldNode.id, oldNode, function(err) {
-                if (labelChanged) {
-                    propagateStatementChange(oldStatement, node, function(err) {
-                        return callback(err);
-                    });
-                } else {
+                //if (labelChanged) {
+                //    propagateStatementChange(oldStatement, node, function(err) {
+                //        return callback(err);
+                //    });
+                //} else {
                     return callback(err);
-                }
+                //}
             });
         });
     };

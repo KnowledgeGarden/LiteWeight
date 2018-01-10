@@ -12,6 +12,7 @@ var express = require('express');
 var router = express.Router();
 var constants = require('../apps/constants');
 var BookmarkModel = require('../apps/models/bookmark_model');
+var CommonModel = require('../apps/models/common_model');
 var helper = require('./helper');
 
 //Bookmarks is not an app: it's a Channel
@@ -58,7 +59,26 @@ router.get('/new', helper.isPrivate, function(req, res, next) {
     }
 });
     
-
+router.get('/edit/:id', function(req, res, next) {
+    var data = helper.startData(req),
+        creatorId = req.session.theUserId;
+        id = req.params.id;
+    console.log("Bookmark.get.edit",id);
+    BookmarkModel.fetchBookmark(creatorId, id, function(err, result) {
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            data.hidden_1 = id;
+            data.url = result.url;
+            data.formlabel = result.statement;
+            data.formdetails = result.details;
+            data.formtitle = "Edit This Node";
+            data.action = "/bookmark/editnode"
+            return res.render('newnode_form', data);
+        }
+    });
+});
 /**
  * Fetch and paint a bookmark
  */
@@ -73,6 +93,9 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
         } else {
             req.session.curCon = result.id;
             var data = helper.startData(req);
+            var canEdit = helper.canEdit(creatorId, result);
+            data.canEdit = canEdit;
+            data.editURL = "/bookmark/edit/"+id;
             console.log("Model returned "+result);
             data.result = result;
             return res.render('view', data);
@@ -99,6 +122,16 @@ router.post("/newnode", helper.isPrivate, function(req, res, next) {
         return res.redirect("/");
     }
  
+});
+
+router.post('/editnode', helper.isPrivate, function(req, res, next) {
+    var body = req.body,
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    CommonModel.updateNode(creatorId, handle, body, function(err) {
+        console.log("Conversation.post.newnode",err);
+        return res.redirect("/conversation/"+body.hidden_1);
+    });
 });
 
 module.exports = router;

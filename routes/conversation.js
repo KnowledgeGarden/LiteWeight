@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var constants = require('../apps/constants');
 var ConversationModel = require('../apps/models/conversation_model');
+var CommonModel = require('../apps/models/common_model');
 var helper = require('./helper');
 
 function typeToLargeImage(type) {
@@ -172,6 +173,26 @@ router.get("/newreference/:id", helper.isPrivate, function(req, res, next) {
     });
 });
 
+router.get('/edit/:id', function(req, res, next) {
+    var data = helper.startData(req),
+        creatorId = req.session.theUserId;
+        id = req.params.id;
+    console.log("Conversation.get.edit",id);
+    ConversationModel.fetchView(creatorId, id, function(err, result) {
+        if (err) {  // issue of a private node somewhere in the tree -- should not happen
+            req.flash("error", err);
+            return res.redirect("/");
+        } else {
+            data.hidden_1 = id;
+            data.url = result.url;
+            data.formlabel = result.statement;
+            data.formdetails = result.details;
+            data.formtitle = "Edit This Node";
+            data.action = "/conversation/editnode"
+            return res.render('newnode_form', data);
+        }
+    });
+});
 /**
  * Get any node other than conversation and tag
  */
@@ -189,6 +210,9 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
             req.flash("error", err);
             return res.redirect("/");
         } else {
+            var canEdit = helper.canEdit(creatorId, result);
+            data.canEdit = canEdit;
+            data.editURL = "/conversation/edit/"+id;
             data.result = result;
             return res.render('view', data);
         }
@@ -196,6 +220,16 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
     
 });
 
+
+router.post('/editnode', helper.isPrivate, function(req, res, next) {
+    var body = req.body,
+        creatorId = req.session.theUserId,
+        handle =  req.session.theUser;
+    CommonModel.updateNode(creatorId, handle, body, function(err) {
+        console.log("Conversation.post.newnode",err);
+        return res.redirect("/conversation/"+body.hidden_1);
+    });
+});
 /**
  * Fundamentally handles all kinds of nodes
  * TODO: make tags go to a tag router
@@ -211,7 +245,7 @@ router.post("/newnode", helper.isPrivate, function(req, res, next) {
         handle = req.session.theUser;
     console.log("NN", JSON.stringify(req.body));
     ConversationModel.newResponseNode(creatorId, handle, parentId, type, title, details, isPrivate, function(err, node) {
-        res.redirect(node.id);
+        return res.redirect(node.id);
     });
  
 });
