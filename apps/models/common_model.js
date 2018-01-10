@@ -498,20 +498,7 @@ Common = function() {
     };
 
     function sameStatements(json, node) {
-        return (json.statement === node.statement);
-    };
-
-    /**
-     * Ripple through the entire database
-     * looking for nodes with children that hold this node
-     * as a child
-     * @param {*} oldStatement 
-     * @param {*} node 
-     * @param {*} callback 
-     */
-    function propagateStatementChange(oldStatement, node, callback) {
-        //TODO
-        return callback(null);
+        return (json.title === node.statement);
     };
 
     /**
@@ -530,10 +517,14 @@ Common = function() {
                 return callback(err);
             }
             //deal with statement
-            var labelChanged = false;
-            var oldStatement = oldNode.statement;
-            if (!self.hasIBISChildren(oldNode)) {
-                labelChanged = sameStatements(json, oldNode);
+            //Can edit only if node has NO IBIS children
+            var sameLabels = sameStatements(json, oldNode);
+            var hasIBISKids = self.hasIBISChildren(oldNode);
+            console.log("CommonModel.updateNode",sameLabels,hasIBISKids,json,oldNode);
+            if (!sameLabels) {
+                if (!hasIBISKids) {
+                    oldNode.statement = json.title;
+                }
             }
             //deal with URL if any
             if (json.url) {
