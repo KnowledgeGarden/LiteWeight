@@ -52,6 +52,14 @@ Conversation = function() {
     //          IN FACT, it might be a bookmark,blog, etc.
     //////////////////////////////
 
+    /**
+     * We have to "depopulate" this node because it will be persisted,
+     * which means the present population is frozen. That's because
+     * CommonModel.populateNode checks to see if a childType is already
+     * populated to save fetch cycles
+     * @param {*} nodeType 
+     * @param {*} node 
+     */
     function removePopulation(nodeType, node) {
         if (nodeType === constants.ANSWER_NODE_TYPE) {
             node.theAnswers = null;
@@ -60,7 +68,7 @@ Conversation = function() {
         } else if (nodeType === constants.CON_NODE_TYPE) {
             node.theCons = null;
         } else if (nodeType === constants.NOTE_NODE_TYPE) {
-            node.theNodes = null;
+            node.theNotes = null;
         } else if (nodeType === constants.PRO_NODE_TYPE) {
             node.thePros = null;
         } else if (nodeType === constants.REFERENCE_NODE_TYPE) {

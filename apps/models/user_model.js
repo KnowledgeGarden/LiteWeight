@@ -131,17 +131,7 @@ User = function() {
             node.acls = acls;
             console.log("UserModel.newDM".node);
             Database.saveDMData(node.id, node, function(err) {
-                //self.fetchUser(creatorId, targetUserId, function(erx, usr) {
-                //    var dms = usr.dms;
-                //    if (!dms) {
-                //        dms = [];
-                //    }
-                //    dms.push(name);
-                //    usr.dms = dms;
-                //    Database.saveUserData(usr.id, usr, function(ery) {
-                        return callback(err, node);
-                //    });
-                //});
+                return callback(err, node);
                 
             });
         });

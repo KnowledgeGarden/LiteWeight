@@ -49,28 +49,13 @@ Journal = function() {
                 node.acls = acls;
                 channel.version = CommonModel.newId();
                 Database.saveDMData(channel.id, channel, function(err2) {
-                    //if (creatorId === channelId) {
-                        // we're done
-                        Database.saveNodeData(node.id, node, function(err) {
-                    
-                            console.log("JournalModel.createFromChannel-2",node);
-                            return callback(err2, node);
-                        });
-                   /* } else {
-                        //have to put this stuff in the user's own DM
-                        Database.fetchDM(creatorId, function(err, userdm) {
-                            CommonModel.addChildToNode(constants.BLOG_NODE_TYPE, creatorId, node, userdm);
-                            userdm.version = CommonModel.newId();
-                            Database.saveDMData(userdm.id, userdm, function(err2) {
-                                Database.saveNodeData(node.id, node, function(err) {
-                    
-                                    console.log("JournalModel.createFromChannel-3",node);
-                                    return callback(err, node);
-                                });
-                            });
-                        });
-                    }*/
-                    
+                    // we're done
+                    Database.saveNodeData(node.id, node, function(err) {
+                
+                        console.log("JournalModel.createFromChannel-2",node);
+                        return callback(err2, node);
+                    });
+                   
                 });
             });
         });
@@ -88,47 +73,22 @@ Journal = function() {
      */
     self.createJournalFromChannel = function(creatorId, creatorHandle, channelId, statement, details, isPrivate, callback) {
         Database.fetchChannel(channelId, function(err, channel) {
-            var acls;
-           // if (channel) {
-                acls = channel.acls;
-                console.log("JournalModel.createFromChannel",isPrivate,channel,statement);
-                CommonModel.newNode(null, creatorId, creatorHandle, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
-                    CommonModel.addChildToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel);
-                    console.log("JournalModel.createFromChannel-1",node,channel);
-                    node.acls = acls;
-                    channel.version = CommonModel.newId();
-                    Database.saveNodeData(node.id, node, function(err) {
-                        Database.saveChannelData(channel.id, channel, function(err2) {
-                            console.log("JournalModel.createFromChannel-2",node);
-                            return callback(err2, node);
-                        });
-                        
+            var acls = channel.acls;
+            console.log("JournalModel.createFromChannel",isPrivate,channel,statement);
+            CommonModel.newNode(null, creatorId, creatorHandle, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
+                CommonModel.addChildToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel);
+                console.log("JournalModel.createFromChannel-1",node,channel);
+                node.acls = acls;
+                channel.version = CommonModel.newId();
+                Database.saveNodeData(node.id, node, function(err) {
+                    Database.saveChannelData(channel.id, channel, function(err2) {
+                        console.log("JournalModel.createFromChannel-2",node);
+                        return callback(err2, node);
                     });
+                    
                 });
-           /* } else {
-                Database.fetchDM(channelId, function(err1, channel1) {
-                    if (channel1) {
-                        acls = channel1.acls;
-                        console.log("JournalModel.createFromChannel-A",isPrivate,channel1,statement);
-                        CommonModel.newNode(null, creatorId, constants.BLOG_NODE_TYPE, statement, details, isPrivate, function(node) {
-                            CommonModel.addChildToNode(constants.BLOG_NODE_TYPE, creatorId, node, channel1);
-                            console.log("JournalModel.createFromChannel-B",node,channel);
-                            node.acls = acls;
-                            channel1.version = CommonModel.newId();
-                            Database.saveNodeData(node.id, node, function(err) {
-                                Database.saveDMData(channel1.id, channel1, function(err2) {
-                                    console.log("JournalModel.createFromChannel-C",node);
-                                    return callback(err2, node);
-                                });
-                                
-                            });
-                        });   
-                    } else {
-                        return callback(err1, channel1);
-                    }
-
-                });
-            }*/
+            });
+ 
         });
     };
 
