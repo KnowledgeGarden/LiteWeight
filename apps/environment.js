@@ -15,6 +15,7 @@ var JournalModel = require('./models/journal_model');
 var ChannelModel = require('./models/channel_model');
 var UserModel = require('./models/user_model');
 var AdminModel = require('./models/admin_model');
+var SearchModel = require('./models/search_model');
 Environment = function() {
     var self = this;
     CommonModel.inject(EventLogModel);
@@ -27,6 +28,7 @@ Environment = function() {
     UserModel.inject(CommonModel);
     ChannelModel.inject(CommonModel, EventLogModel);
     AdminModel.inject(CommonModel);
+    SearchModel.inject(CommonModel);
     //Bootstrap channels
     ChannelModel.bootstrapBookmarks(function(err) {
         ChannelModel.bootstrapGeneral(function(err1) {

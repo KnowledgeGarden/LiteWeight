@@ -11,7 +11,7 @@ Tags = function() {
     self.inject = function(commModel) {
         CommonModel = commModel;
     //    console.log("TagModel",environment,CommonModel);
-    }
+    };
 
     /**
      * Fetch a tag

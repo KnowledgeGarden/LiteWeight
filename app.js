@@ -53,6 +53,7 @@ var Gm = require('./routes/geomap');
 var Jnl = require('./routes/journal');
 var Ed = require('./routes/edit');
 var Chn = require('./routes/channels');
+var Srch = require('./routes/search');
 
 app.use('/users', users);
 app.use('/bookmark/', Bmk);
@@ -65,6 +66,7 @@ app.use('/carrotsearch', Cs);
 app.use('/geomap', Gm);
 app.use('/journal', Jnl);
 app.use('/edit', Ed);
+app.use('/search', Srch);
 
 // Index has to be last
 app.use('/', Indx);

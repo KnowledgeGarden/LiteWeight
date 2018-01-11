@@ -470,6 +470,55 @@ FileDatabase = function() {
         });
     };
 
+    ////////////////////////
+    // Search
+    ////////////////////////
+
+    self.scourDatabase = function(callback) {
+        console.log("Database.scourDatabase");
+        var result = [];
+        var temp = self.listBookmarks();
+        temp.forEach(function(fx) {
+            if (!fx.includes(".DS_Store")) {
+                result.push(fx);
+            }
+        });
+        console.log("Database.scourDatabase-1",result);
+        temp = self.listTags();
+        temp.forEach(function(fx) {
+            if (!fx.includes(".DS_Store")) {
+                result.push(fx);
+            }
+        });
+        console.log("Database.scourDatabase-2",result);
+        ////////////////////////
+        //MOTE: if you add a directory to this database, it must be added
+        // to this filter
+        ////////////////////////
+        temp = walkSync(DataPath, []);
+        temp.forEach(function(fx) {
+            // must filter directories:
+            // "accounts" "bookmarks" "channels" "evntlog""tags""users"
+            if (!(fx.includes(".DS_Store") ||
+                fx === "accounts" ||
+                fx === "bookmarks" ||
+                fx === "channels" ||
+                fx === "eventlog" ||
+                fx === "tags" ||
+                fx === "users" )) {
+                result.push(fx);
+            }
+        });
+        console.log("Database.scourDatabase-3",result);
+        temp = walkSync(DM_PATH, []);
+        temp.forEach(function(fx) {
+            if (!fx.includes(".DS_Store")) {
+                result.push(fx);
+            }
+        });
+        console.log("Database.scourDatabase++",result);
+        return result;
+    };
 
 };
 instance = new FileDatabase();
