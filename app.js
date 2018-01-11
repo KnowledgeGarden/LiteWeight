@@ -67,6 +67,8 @@ app.use('/geomap', Gm);
 app.use('/journal', Jnl);
 app.use('/edit', Ed);
 app.use('/search', Srch);
+app.use('/carrotsearch', Cs);
+app.use('./dbpedia', DbP);
 
 // Index has to be last
 app.use('/', Indx);

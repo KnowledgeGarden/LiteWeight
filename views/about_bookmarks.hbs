@@ -1,4 +1,52 @@
-<div style="height:400px;" id="topbox">
-        <h2>About Bookmarks</h2>
-        placeholder
+<div style="height:400px; overflow-y:scroll;" id="topbox">
+        <h2><img style="margin-right:4px;" src="/images/bookmark.png">About Bookmarks</h2>
+        LiteWeight supports two kinds of <i>bookmarking</i> activities:<br/>
+        <ul><li>Annotating</li><li>Stashing</li></ul>
+        In both cases, a <i>Javascript Bookmarklet</i> is required to be added to your browser.
+        The general forms of those Javascript objects is described for each below. The task is to create a 
+        <i>New Bookmark</i> for each, and give that a name according to whether it's for annotating or stashing.
+        Then, use the general Javascript below and adapt the "http://localhost:3000" to the correct URL for 
+        the LiteWeight portal you are using.
+        <h3>Annotating</h3>
+        <b>Annotation Bookmarklet: </b>
+        <pre>  
+        javascript:window.open('http://localhost:3000/bookmark/new?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title),'_blank')
+        </pre>
+        Using the annotate bookmarklet involves these steps:
+        <ol><li>Login</li><li>Visit website</li><li>Click Annotating Bookmarklet</li>
+                <li>Form opens in new page or tab: Fill it in:
+                        <ul>
+                                <li>Either copy and paste from the visited website</li>
+                                <li>Or type in your own comments</li>
+                        </ul>
+                </li>
+                <li>Click Save</li>
+        </ol>
+        Annotation is the process of adding nodes -- <i>Topics</i> -- for conversation. There are two primary concepts
+        behind annotation:<br/>
+        <ul>
+                <li>Bringing in one specific topic for conversation, which means choosing, e.g. just one paragraph
+                        from a page, or typing just one thought into the Details field 
+                        <ul>
+                                <li>You are always free to return to the page and grab other topics</li>
+                        </ul>
+                </li>
+                <li>Bringing in many topics from one page as a means to enable several conversations</li>
+
+        </ul>
+        <h3>Stashing</h3>
+        <b>Stash Bookmarklet</b>
+        <pre> 
+        javascript:location.href='http://localhost:3000/bookmark/stash?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)
+        </pre>
+       Using the stash bookmarklet involves these steps:
+        <ol>
+                <li>Login</li>
+                <li>Visit website</li>
+                <li>Click Stashing Bookmarklet</li>
+                <li>Web page will blink as LiteWeight accepts your contribution. You're done!</li>
+        </ol>
+        Stashing is a kind of <i>grab and run</i> feature which allows you to simply <i>remember this page</i> and
+        visit it later in the portal.  Once at the portal, you, as creator of that stash, have the opportunity
+        to edit the Details field to say what you had in mind, to tag it, and so forth.
 </div>

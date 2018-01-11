@@ -1,4 +1,45 @@
-<div style="height:400px;" id="topbox">
+<div style="height:400px; overflow-y:scroll;" id="topbox">
     <h2>About Channels</h2>
-    placeholder
+    Call them what you like: <i>Channels</i>, <i>Categories</i>, <i>Fixed Tags</i>, whatever... In all cases, Channels
+    are there to help <i>organize conversations</i>. LiteWeight supports these kinds of channels:
+    <ul>
+        <li>Pre-defined Channels:
+            <ul>
+            <li>Bookmarks</li>
+            <li>General</li>
+            <li>others to be added</li></ul>
+        </li>
+        <li>Participant-defined channels:
+            <ul>
+                <li>Public Channels</li>
+                <li>Private Channels with defined participants</li>
+            </ul>
+        </li>
+        <li>Participant Channels</li>
+    </ul>
+    <h3>Private Participant-defined Channels</h3>
+    Some notes about these channels: When you create a private channel, you have a text field in which to enter the 
+    <i>handles</i> of those participants you wish to include in that channel. Enter them in a comma-separated 
+    way, e.g. joe, sue, sam<br/>
+    <b>Note:</b> the present codebase does not (yet) allow you to make changes to the <i>access control list</i> of
+    your private channel. That will be added soon. <br/><br/>
+    <b>In all cases, additions you make in any private channel will be visible in the Recent Additions
+        (history) view <i>only</i> to those participants on the access control lists of the nodes to be displayed.
+    </b>
+
+    <h3>Participant Channels</h3>
+    Participant Channels are <i>private</i> by definition. They work this way:
+    <ul>
+        <li>If you click on your own handle, then you are in a private room all your own. There, you can make
+            journal entries, tag things, forge relations between your private nodes and those in public.
+            <ul>
+                <li><b>Any connection between a private and public node will be visible <i>only</i> to
+                the owner of the private node</b></li>
+            </ul>
+        </li>
+        <li>If you click on the handle of another participant (or they click on yours), a private conversation room
+            is created <i>only</i> between the two of you.
+        </li>
+    </ul>
+    
 </div>

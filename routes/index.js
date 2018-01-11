@@ -131,7 +131,7 @@ router.get("/about", helper.isPrivate, function(req, res, nex) {
 });
 router.get("/contact", helper.isPrivate, function(req, res, nex) {
   var data = helper.startData(req);
-  return res.render("about", data);
+  return res.render("contact", data);
 });
 
 router.post('/signup', function(req, res, next) {
