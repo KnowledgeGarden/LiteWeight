@@ -32,8 +32,9 @@ Environment = function() {
     //Bootstrap channels
     ChannelModel.bootstrapBookmarks(function(err) {
         ChannelModel.bootstrapGeneral(function(err1) {
-            console.log("Channels Bootstrapped",err,err1);
-           
+            ChannelModel.bootstrapHelp(function(err2) {
+                console.log("Channels Bootstrapped",err,err1);
+            });
         });
     });
 };

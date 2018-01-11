@@ -27,6 +27,8 @@ module.exports.RELATION_SUFFIX              = "_RLN";
 /** initial channels */
 module.exports.BOOKMARK_CHANNEL            = "bookmarks";
 module.exports.GENERAL_CHANNEL             = "general";
+module.exports.GENERAL_HELP                = "help";
+
 
 /** Node Types */
 module.exports.CONVERSATION_NODE_TYPE       = "ConversationNodeType";

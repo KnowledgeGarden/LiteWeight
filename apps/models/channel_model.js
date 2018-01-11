@@ -47,6 +47,20 @@ Channel = function() {
             }
         });
     };
+    self.bootstrapHelp = function(callback) {
+        Database.fetchChannel(constants.GENERAL_HELP, function(err, data) {
+            if (!data) {
+                CommonModel.newNode(constants.GENERAL_HELP, "system", "system",
+                    constants.CHANNEL_NODE_TYPE, "Help", "", false, function(json) {
+                        Database.saveChannelData(json.id, json, function(err) {
+                            return callback(err);
+                        });
+                    });
+            } else {
+                return callback(null);
+            }
+        });
+    };
 
 
     /**
