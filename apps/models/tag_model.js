@@ -20,9 +20,10 @@ Tags = function() {
      * @param {*} callback err json
      */
     self.fetchTag = function(userId, id, callback) {
-        console.log("TagModel.fetchTag", id);
+        
         Database.fetchTag(id, function(err, data) {
-                CommonModel.buildTagChildList(userId, data, function(children) {
+            console.log("TagModel.fetchTag", id);
+            CommonModel.buildTagChildList(userId, data, function(children) {
                     data.theTags = children;
                     return callback(err, data);
             });
@@ -65,6 +66,7 @@ Tags = function() {
         CommonModel.addChildToNode(constants.TAG_NODE_TYPE, creatorId, node, tag);
         CommonModel.addChildToNode(constants.TAG_NODE_TYPE, creatorId, tag, node);
         console.log("TagModel.wireTagNode-1",tag,node);
+        tag.theTags = null;
         Database.saveTagData(tag.id, tag, function(err) {
             return callback(err);
         });
@@ -159,6 +161,7 @@ Tags = function() {
                 node.version = CommonModel.newId();
                 console.log("TagModel.addTags-3",node);
                 //save the node
+                node.theTags = null;
                 Database.saveData(nodeId, node, function(err) {
                     return callback(error, type);
                 });

@@ -3,6 +3,7 @@
  * Session values used
  *  req.session.theUser = handle
  *  req.session.theUserId = userId
+ *  req.session.theUserEmail = email
  */
 var express = require('express');
 var router = express.Router();
@@ -169,6 +170,7 @@ router.post('/login', function(req, res, next) {
     if (truth) {
       req.session.theUser = handle;
       req.session.theUserId = userId;
+      req.session.theUserEmail = email;
       var struct = {};
       struct.type = constants.LOGIN_EVENT;
       struct.email = email;

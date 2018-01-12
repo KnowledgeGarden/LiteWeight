@@ -360,6 +360,13 @@ FileDatabase = function() {
 
     };
 
+    self.compareAdminEmail = function(email, callback) {
+        readFile(AccountsPath, function(err, json) {
+            var isadmin = json.admininvitation === email;
+            
+            return callback(err, isadmin);
+        });
+    }
     /**
      * 
      * @param {*} email 

@@ -221,13 +221,16 @@ Common = function() {
     };
 
     self.buildTagChildList = function(userId, tag, callback) {
+        console.log("CommonModel.buildTagChildList",tag);
         var result = [];
         var childList = tag.tags;
+        console.log("CommonModel.buildTagChildList-1",childList);
         if (childList) {
             self.grabChildStructs(userId, childList, function(struct) {
                 result = struct;
             });
         }
+        console.log("CommonModel.buildTagChildList-2",result);
         return callback(result);
     }
 
@@ -284,12 +287,15 @@ Common = function() {
                 });
             }
         }
+        console.log("ABCDE",node.theNotes);
         if (!node.theNotes) {
             childList = node.notes;
+            console.log("ABCDE-1",childList);
             if (childList) {
                 self.grabChildStructs(userId, childList, function(struct) {
+                    console.log("ABCDE-2",struct);
                     if (struct) {
-                        node.theNodes = struct;
+                        node.theNotes = struct;
                     }
                 });
             }
@@ -314,6 +320,7 @@ Common = function() {
                 });
             }
         }
+        //console.log("CommonModel._populate tags",node.theTags);
         if (!node.theTags) {
             childList = node.tags;
             if (childList) {
@@ -642,15 +649,19 @@ Common = function() {
         if (!kids) {
             kids = [];
         }
-        kids.push(theChildNode.id);
-        self.setChildList(childType, kids, targetNode);
+        if (!kids.includes(theChildNode.id)) {
+            kids.push(theChildNode.id);
+            self.setChildList(childType, kids, targetNode);
+        }
         //snappers are an index into every node that carries the child's struct
         var snappers = theChildNode.snappers;
         if (!snappers) {
             snappers = [];
         }
-        snappers.push(targetNode.id);
-        theChildNode.snappers = snappers;
+        if (!snappers.includes(targetNode.id)) {
+            snappers.push(targetNode.id);
+            theChildNode.snappers = snappers;
+        }
         var canDo = true;
         if (targetNode.type === constants.TAG_NODE_TYPE ||
             targetNode.type === constants.CHANNEL_NODE_TYPE ||

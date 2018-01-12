@@ -1,5 +1,6 @@
 /* @author park */
 var config = require('../config/config');
+var AdminModel = require('../apps/models/admin_model');
 var Helper,
     instance;
 
@@ -41,6 +42,9 @@ Helper = function() {
             result.isAuthenticated = true;
         }
         result.invitationOnly = config.invitationOnly;
+        self.isAdmin(req, function(truth) {
+            result.isAdmin = truth;
+        });
         //current conversation
         result.curCon = req.session.curCon;
         //remembered
@@ -64,6 +68,18 @@ Helper = function() {
             return true;
         }
         return false;
+    };
+
+    /**
+     * @param req
+     * @param {*} callback truth
+     */
+    self.isAdmin = function(req, callback) {
+        var email = req.session.theUserEmail;
+        AdminModel.checkIsAdmin(email, function(truth) {
+            console.log("Helper.isAdmin",truth);
+            return callback(truth);
+        });
     };
 
     self.logout = function(req) {

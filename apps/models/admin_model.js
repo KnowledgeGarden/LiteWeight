@@ -92,6 +92,12 @@ Admin = function() {
 
         });
     };
+
+    self.checkIsAdmin = function(email, callback) {
+        Database.compareAdminEmail(email, function(err, isadmin) {
+            return callback(isadmin);
+        });
+    };
 };
 instance = new Admin();
 module.exports = instance;

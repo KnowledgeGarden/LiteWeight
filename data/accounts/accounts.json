@@ -1,1 +1,28 @@
-{"participants":{"sue@sixpack.com":{"id":"1515561289196","pwd":"$2a$10$NVf3oHDxUjCct9XqYU6rfOOJmUk7RPg3qwbY5S/t2pIWf8OT6R2Xq","email":"sue@sixpack.com","handle":"sue","fullName":"Sue Sixpack"},"joe@sixpack.com":{"id":"1515552482935","pwd":"$2a$10$Y0VxI5DzvRQM4XEJyiOXoOaxKqmkfKVcvS0prpM9BAHt5kKNUnFMy","email":"joe@sixpack.com","handle":"joe","fullName":"Joe Sixpack"},"sam@slow.com":{"id":"1515540238898","pwd":"$2a$10$zZ4iejs3QmW1wY14Ftc.o.23CZ2F6MuMHOZGfxgitqhVq2gJIwV5C","email":"sam@slow.com","handle":"sam","fullName":"Sam Slow"}},"invitations":["joe@sixpack.com","sue@sixpack.com","sam@slow.com"],"admininvitation":"jeff@fast.org","admin":{}}
+{
+	"participants": {
+		"sue@sixpack.com": {
+			"id": "1515561289196",
+			"pwd": "$2a$10$NVf3oHDxUjCct9XqYU6rfOOJmUk7RPg3qwbY5S/t2pIWf8OT6R2Xq",
+			"email": "sue@sixpack.com",
+			"handle": "sue",
+			"fullName": "Sue Sixpack"
+		},
+		"joe@sixpack.com": {
+			"id": "1515552482935",
+			"pwd": "$2a$10$Y0VxI5DzvRQM4XEJyiOXoOaxKqmkfKVcvS0prpM9BAHt5kKNUnFMy",
+			"email": "joe@sixpack.com",
+			"handle": "joe",
+			"fullName": "Joe Sixpack"
+		},
+		"sam@slow.com": {
+			"id": "1515540238898",
+			"pwd": "$2a$10$zZ4iejs3QmW1wY14Ftc.o.23CZ2F6MuMHOZGfxgitqhVq2gJIwV5C",
+			"email": "sam@slow.com",
+			"handle": "sam",
+			"fullName": "Sam Slow"
+		}
+	},
+	"invitations": ["joe@sixpack.com", "sue@sixpack.com", "sam@slow.com"],
+	"admininvitation": "sue@sixpack.com",
+	"admin": {}
+}
