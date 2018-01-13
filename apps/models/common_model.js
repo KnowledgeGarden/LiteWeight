@@ -267,10 +267,13 @@ Common = function() {
                 });
             }
         }
+        console.log("ABCDE",node.thePros);
         if (!node.thePros) {
-            childList = node.pros;
+            childList = node.proargs;
+            console.log("ABCDE-1",childList);
             if (childList) {
                 self.grabChildStructs(userId, childList, function(struct) {
+                    console.log("ABCDE-2",struct);
                     if (struct) {
                      node.thePros = struct;
                     }
@@ -278,7 +281,7 @@ Common = function() {
             }
         }
         if (!node.theCons) {
-            childList = node.cons;
+            childList = node.conargs;
             if (childList) {
                 self.grabChildStructs(userId, childList, function(struct) {
                     if (struct) {
@@ -287,13 +290,13 @@ Common = function() {
                 });
             }
         }
-        console.log("ABCDE",node.theNotes);
+        
         if (!node.theNotes) {
             childList = node.notes;
-            console.log("ABCDE-1",childList);
+            
             if (childList) {
                 self.grabChildStructs(userId, childList, function(struct) {
-                    console.log("ABCDE-2",struct);
+                    
                     if (struct) {
                         node.theNotes = struct;
                     }

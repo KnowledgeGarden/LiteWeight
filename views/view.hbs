@@ -35,115 +35,128 @@
     {{/if}}
     </span>
 {{/if}}
-<!-- left-right scrollable container -->
-<div class="columnscroller">
-    <!-- column headers -->
-    <div class="columncontainer">
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/tag.png">Tags
-                {{#if isAuthenticated}}
-                    <a href="/tags/newtag/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-             <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/cogwheels.png">Connections
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/ibis/issue.png">Question
-                {{#if isAuthenticated}}
-                    <a title="Respond" href="/conversation/newquestion/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/ibis/position.png">Answer
-                {{#if isAuthenticated}}
-                    <a href="/conversation/newanswer/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/ibis/plus.png">Pro
-                {{#if isAuthenticated}}
-                    <a href="/conversation/newpro/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/ibis/minus.png">Con
-                {{#if isAuthenticated}}
-                    <a href="/conversation/newcon/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/ibis/note.png">Notes
-                {{#if isAuthenticated}}
-                    <a href="/conversation/newnote/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-            <div class="column" style="text-align: center;">
-                <img class="headerimage" src="/images/ibis/reference.png">References
-                {{#if isAuthenticated}}
-                    <a href="/conversation/newreference/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
-                {{/if}}
-            </div>
-     </div>
-    <!-- column data -->
-    <div class="datacontainer">
-         <div class="datacolumn">
-            {{#each result.theTags}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/tags/gettag/{{id}}">{{statement}}</a>
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#relns"><b>Relations</b></a></li>
+    <li><a data-toggle="tab" href="#convs"><b>Conversation</b></a></li>
+</ul>
+<div class="tab-content">
+    <div id="relns" class="tab-pane fade in active">
+        <div class="columnscroller">
+            <div class="columncontainer">
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/tag.png">Tags
+                    {{#if isAuthenticated}}
+                        <a href="/tags/newtag/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
                 </div>
-            {{/each}}
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/cogwheels.png">Connections
+                </div>
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/ibis/note.png">Notes
+                    {{#if isAuthenticated}}
+                        <a href="/conversation/newnote/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
+                </div>
+                 <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/ibis/reference.png">References
+                    {{#if isAuthenticated}}
+                        <a href="/conversation/newreference/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
+                </div>
+           </div>
+            <div class="datacontainer">
+                <div class="datacolumn">
+                    {{#each result.theTags}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/tags/gettag/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+                <div class="datacolumn">
+                    {{#each result.theRelations}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/connections/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+                <div class="datacolumn">
+                    {{#each result.theNotes}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+                 <div class="datacolumn">
+                    {{#each result.theReferences}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+           </div>
         </div>
-        <div class="datacolumn">
-            {{#each result.theRelations}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/connections/{{id}}">{{statement}}</a>
+    </div>
+    <div id="convs" class="tab-pane fade in active">
+        <div class="columnscroller">
+            <div class="columncontainer">
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/ibis/issue.png">Question
+                    {{#if isAuthenticated}}
+                        <a title="Respond" href="/conversation/newquestion/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
                 </div>
-            {{/each}}
-        </div>
-        <div class="datacolumn">
-            {{#each result.theQuestions}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/ibis/position.png">Answer
+                    {{#if isAuthenticated}}
+                        <a href="/conversation/newanswer/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
                 </div>
-            {{/each}}
-        </div>
-        <div class="datacolumn" >
-            {{#each result.theAnswers}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/ibis/plus.png">Pro
+                    {{#if isAuthenticated}}
+                        <a href="/conversation/newpro/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
                 </div>
-            {{/each}}
-        </div>
-        <div class="datacolumn">
-            {{#each result.thePros}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/ibis/minus.png">Con
+                    {{#if isAuthenticated}}
+                        <a href="/conversation/newcon/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+                    {{/if}}
                 </div>
-            {{/each}}
+            </div>
+            <div class="datacontainer">
+            <div class="datacolumn">
+                    {{#each result.theQuestions}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+                <div class="datacolumn" >
+                    {{#each result.theAnswers}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+                <div class="datacolumn">
+                    {{#each result.thePros}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
 
-        </div>
-        <div class="datacolumn">
-            {{#each result.theCons}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
                 </div>
-            {{/each}}
-        </div>
-        <div class="datacolumn">
-            {{#each result.theNotes}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                <div class="datacolumn">
+                    {{#each result.theCons}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
                 </div>
-            {{/each}}
+            </div>
         </div>
-        <div class="datacolumn">
-            {{#each result.theReferences}}
-                <div class="node">
-                    <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
-                </div>
-            {{/each}}
-        </div>
-
+        
     </div>
 </div>

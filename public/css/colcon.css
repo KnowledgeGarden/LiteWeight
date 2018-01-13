@@ -139,13 +139,13 @@
  * width is set to accomodate lots of columns.
  * If they wrap when adding more columns, then
  * width must increase.
- * The formula seems to be column width * num colums + 100px
+ * The formula seems to be column width * num colums + 100px  2500
  */
 .columncontainer {
-	width: 2500px;
+	width: 1200px;
 }
 .datacontainer {
-    width: 2500px;
+    width: 1200px;
 }
 
 .headerimage {
@@ -156,7 +156,7 @@
     float:left;
     white-space:normal;
     border: 1px solid black;
-    width: 300px;
+    width: 270px;
     height: 34px;
     background: rgb(240, 234, 234);
     border-radius: 3px;
@@ -168,7 +168,7 @@
     height: 400px; 
     float:left;
     border: 1px solid white;
-    width: 300px;
+    width: 270px;
     background: white;
     overflow-x: hidden;
     overflow-y: scroll;
