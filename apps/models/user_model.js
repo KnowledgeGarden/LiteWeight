@@ -30,7 +30,7 @@ User = function() {
             if (err) {
                 return callback(err, null);
             }
-            if (data) {
+            else if (data) {
                   return callback(err, data);
             } else {
                 return callback(null, null);
@@ -73,7 +73,7 @@ User = function() {
             if (err) {
                 return callback(err, null);
             }
-            if (data) {
+            else if (data) {
                 var kids = data.journals;
                 if (kids) {
                     CommonModel.grabChildStructs(userId, kids, function(list) {

@@ -19,11 +19,12 @@ Journal = function() {
         CommonModel.fetchNode(userId, id, function(err, data) {
             if (err) {
                 return callback(err, null);
+            } else {
+                CommonModel.populateNode(userId, data, function(node) {
+                    console.log("JournalModel.fetchJournal++",err,node);
+                    return callback(err, node);
+                });
             }
-            CommonModel.populateNode(userId, data, function(node) {
-                console.log("JournalModel.fetchJournal++",err,node);
-                return callback(err, node);
-            });
         });
     };
 

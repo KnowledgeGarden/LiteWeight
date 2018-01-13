@@ -53,15 +53,16 @@ Connection = function() {
             }
             // There can be connections between public and private
             // Technically, should never see such a node
-            if (!data) {
+            else if (!data) {
                 return callback(constants.INSUFFICIENT_CREDENTIALS, null);
-            }
-            CommonModel.populateNode(userId, data, function(node) {
-                console.log("ConnectionModel.fetchConnection++",err,node);
-                populateConnection(userId, node, function() {
-                    return callback(err, node);
+            } else {
+                CommonModel.populateNode(userId, data, function(node) {
+                    console.log("ConnectionModel.fetchConnection++",err,node);
+                    populateConnection(userId, node, function() {
+                        return callback(err, node);
+                    });
                 });
-            });
+            }
         });
     };
 
@@ -139,7 +140,9 @@ Connection = function() {
                                 CommonModel.setChildList(constants.RELATION_NODE_TYPE, lx, targetNode);
                                 //save the nodes
                                 Database.saveNodeData(relnId, json, function(err) {
+                                    sourceNode.theRelations = null;
                                     Database.saveData(sourceNode.id, sourceNode, function(err) {
+                                        targetNode.theRelations = null;
                                         Database.saveData(targetNode.id, targetNode, function(err) {
                                             return callback(err);
                                         });

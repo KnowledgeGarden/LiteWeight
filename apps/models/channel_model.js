@@ -186,28 +186,29 @@ Channel = function() {
         if (fileNames.length === 0) {
             console.log("ChannelModel.listChannels",fileNames);
             return result;
-        }
-        console.log("ChannelModel.listChannels-1",fileNames);
-        fileNames.forEach(function(fx) {
-            if (fx) {
-                if (!fx.includes(".DS_Store")) { // mac file system
-                    self.fetchChannel(userId, fx, function(err, thecon) {
-                        var canSee = CommonModel.canShow(userId,thecon);
-                        console.log("ChannelModel.listChannels-2",canSee, thecon, userId);
-                        if (canSee) {
-                            console.log("FCH", fx, thecon);
-                            con = {};
-                            con.id = thecon.id;
-                            con.img = thecon.imgsm;
-                            con.statement = thecon.statement;
-                            result.push(con);
-                        }
-                    });
+        } else {
+            console.log("ChannelModel.listChannels-1",fileNames);
+            fileNames.forEach(function(fx) {
+                if (fx) {
+                    if (!fx.includes(".DS_Store")) { // mac file system
+                        self.fetchChannel(userId, fx, function(err, thecon) {
+                            var canSee = CommonModel.canShow(userId,thecon);
+                            console.log("ChannelModel.listChannels-2",canSee, thecon, userId);
+                            if (canSee) {
+                                console.log("FCH", fx, thecon);
+                                con = {};
+                                con.id = thecon.id;
+                                con.img = thecon.imgsm;
+                                con.statement = thecon.statement;
+                                result.push(con);
+                            }
+                        });
+                    }
                 }
-            }
-        });
-        return result;
-    };
+            });
+            return result;
+        };
+    }
 
 };
 instance = new Channel();

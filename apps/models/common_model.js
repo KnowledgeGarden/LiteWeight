@@ -152,6 +152,45 @@ Common = function() {
         });
     };
 
+    /** 
+     * Here because this node does have a childList. The game is to populate this node's
+     * list of relation.
+     */
+    self.populateConnectionStructs = function(userId, node, callback) {
+        var kids = [];
+        var childList = node.relations;
+        console.log("CommonModel.populateConnectionStruct",childList);
+        var struct;
+        childList.forEach(function(kid) {
+            //fetch the connection
+            self.fetchNode(userId, kid, function(err, connection) {
+                console.log("CommonModel.populateConnectionStruct1",childList,kid,connection,err);
+                
+                
+                if (connection) {
+                    //Note: we hide the actual relation type in its statement
+                    Database.fetchConnectionResource(connection.statement, function(err, resource) {
+                        console.log("CommonModel.populateConnectionStruct-2",err,resource);
+                        //is this node a source or target?
+                        var isSource = (connection.sourceNode === node.id);
+                        struct = {};
+                        struct.id = kid;
+                        struct.type = connection.type;
+                        struct.img = connection.imgsm;
+                        struct.creatorId = connection.creatorId;
+                        if (isSource) {
+                            struct.statement = resource.asSource+node.statement;
+                        } else {
+                            struct.statement = resource.asTarget+node.statement;
+                        }
+                        kids.push(struct);
+                    });
+                }
+            });
+        });
+        return callback(kids);
+    };
+
     /**
      * Returns a list of structs
      * @param {*} userId 
@@ -267,13 +306,13 @@ Common = function() {
                 });
             }
         }
-        console.log("ABCDE",node.thePros);
+        
         if (!node.thePros) {
             childList = node.proargs;
-            console.log("ABCDE-1",childList);
+            
             if (childList) {
                 self.grabChildStructs(userId, childList, function(struct) {
-                    console.log("ABCDE-2",struct);
+                    
                     if (struct) {
                      node.thePros = struct;
                     }
@@ -313,10 +352,13 @@ Common = function() {
                 });
             }
         }
+        console.log("ABCDE",node.theRelations);
         if (!node.theRelations) {
             childList = node.relations;
+            console.log("ABCDE-1",childList);
             if (childList) {
-                self.grabChildStructs(userId, childList, function(struct) {
+                self.populateConnectionStructs(userId, node, function(struct) {
+                    console.log("ABCDE-2",struct);
                     if (struct) {
                         node.theRelations = struct;
                     }
@@ -491,20 +533,24 @@ Common = function() {
         var x = node.questions;
         if (x) {
             return true;
+        } else {
+            x = node.answers;
+            if (x) {
+                return true;
+            } else {
+                x = node.pros;
+                if (x) {
+                    return true;
+                } else {
+                    x = node.cons;
+                    if (x) {
+                        return true;
+                    } else {
+                        return false; // default
+                    }
+                }
+            }
         }
-        x = node.answers;
-        if (x) {
-            return true;
-        }
-        x = node.pros;
-        if (x) {
-            return true;
-        }
-        x = node.cons;
-        if (x) {
-            return true;
-        }
-        return false; // default
     };
 
     function sameStatements(json, node) {
@@ -525,36 +571,37 @@ Common = function() {
         self.fetchNode(userId, nodeId, function(err, oldNode) {
             if (err) {
                 return callback(err);
-            }
-            //deal with statement
-            //Can edit only if node has NO IBIS children
-            var sameLabels = sameStatements(json, oldNode);
-            var hasIBISKids = self.hasIBISChildren(oldNode);
-            console.log("CommonModel.updateNode",sameLabels,hasIBISKids,json,oldNode);
-            if (!sameLabels) {
-                if (!hasIBISKids) {
-                    oldNode.statement = json.title;
+            } else {
+                //deal with statement
+                //Can edit only if node has NO IBIS children
+                var sameLabels = sameStatements(json, oldNode);
+                var hasIBISKids = self.hasIBISChildren(oldNode);
+                console.log("CommonModel.updateNode",sameLabels,hasIBISKids,json,oldNode);
+                if (!sameLabels) {
+                    if (!hasIBISKids) {
+                        oldNode.statement = json.title;
+                    }
                 }
+                //deal with URL if any
+                if (json.url) {
+                    oldNode.url = json.url;
+                }
+                //deal with details
+                if (json.details) {
+                    oldNode.details = json.details;
+                }
+                oldNode.version = self.newId();
+                // save it
+                Database.saveData(oldNode.id, oldNode, function(err) {
+                    //if (labelChanged) {
+                    //    propagateStatementChange(oldStatement, node, function(err) {
+                    //        return callback(err);
+                    //    });
+                    //} else {
+                        return callback(err);
+                    //}
+                });
             }
-            //deal with URL if any
-            if (json.url) {
-                oldNode.url = json.url;
-            }
-            //deal with details
-            if (json.details) {
-                oldNode.details = json.details;
-            }
-            oldNode.version = self.newId();
-            // save it
-            Database.saveData(oldNode.id, oldNode, function(err) {
-                //if (labelChanged) {
-                //    propagateStatementChange(oldStatement, node, function(err) {
-                //        return callback(err);
-                //    });
-                //} else {
-                    return callback(err);
-                //}
-            });
         });
     };
 

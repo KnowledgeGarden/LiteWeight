@@ -41,7 +41,7 @@ Bookmark = function() {
                         console.log("BookmarkModel.newBookmark-2",node);
                         return callback(err2);
                     });
-                    });
+                });
             });
         });
     };
@@ -75,7 +75,7 @@ Bookmark = function() {
                         console.log("BookmarkModel.newBookmark-2",node);
                         return callback(err2, node);
                     });
-                 });
+                });
             });
         });
     };
@@ -85,11 +85,12 @@ Bookmark = function() {
         Database.fetchBookmark(id, function(err, data) {
             if (err) {
                 return callback(err, null);
+            } else {
+                CommonModel.populateNode(userId, data, function(node) {
+                    console.log("BookmarkModel.fetchBookmark++",err,node);
+                    return callback(err, node);
+                });
             }
-            CommonModel.populateNode(userId, data, function(node) {
-                console.log("BookmarkModel.fetchBookmark++",err,node);
-                return callback(err, node);
-            });
         });
     };
 
@@ -101,19 +102,20 @@ Bookmark = function() {
             con;
         if (fileNames.length === 0) {
             return result;
+        } else {
+            fileNames.forEach(function(fx) {
+                if (!fx.includes(".DS_Store")) { // mac file system
+                    self.fetchBookmark(fx, function(err, thecon) {
+                        con = {};
+                        con.id = thecon.id;
+                        con.img = thecon.imgsm;
+                        con.statement = thecon.statement;
+                        result.push(con);
+                    });
+                }
+            });
+            return result;
         }
-        fileNames.forEach(function(fx) {
-            if (!fx.includes(".DS_Store")) { // mac file system
-                self.fetchBookmark(fx, function(err, thecon) {
-                    con = {};
-                    con.id = thecon.id;
-                    con.img = thecon.imgsm;
-                    con.statement = thecon.statement;
-                    result.push(con);
-                });
-            }
-        });
-        return result;
     };
 
 

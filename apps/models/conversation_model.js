@@ -27,11 +27,12 @@ Conversation = function() {
             console.log("ConversationModel.fetchView-1",err,data);
             if (err) {
                 return callback(err, null);
+            } else {
+                CommonModel.populateNode(userId, data, function(node) {
+                    console.log("ConversationModel.fetchView++",err,node);
+                    return callback(err, node);
+                });
             }
-            CommonModel.populateNode(userId, data, function(node) {
-                console.log("ConversationModel.fetchView++",err,node);
-                return callback(err, node);
-            });
         });
     };
 
@@ -193,46 +194,47 @@ Conversation = function() {
             console.log("ConversationModel.toJsTree-1",rootNodeId,data);
             if (err)  { // unlikely private node in tree this user cannot see
                 return callback(err, null);
-            }
-            CommonModel._populateNode(userId, data, function(node) {
-                console.log("ConversationModel.toJsTree-1A",node);
-                //craft thisNode
-                thisNode = {};
-                thisNode.id = node.id;
-                thisNode.type = node.type;
-                if (!parentNode) {
-                    var state = {};
-                    state.opened = true;
-                    thisNode.state = state;
-                }
-                thisNode.text = node.statement;
-                thisNode.icon = CommonModel.nodeToSmallIcon(node.type);
-                //We are now crafting the children of thisNode
-                var parentKids = thisNode.children;
-                if (!parentKids) {
-                    parentKids = [];
-                }
-                if (node.type !== constants.TAG_NODE_TYPE) {
-                    var snappers = fetchAllkidStructs(node);
-                    console.log("ConversationModel.toJsTree-2",snappers);
-                    if (snappers) {
-                        var len = snappers.length;
-                        snappers.forEach(function(childStruct) {      
-                            if (childStruct) {
-                                //recurse
-                                self.toJsTree(userId, childStruct.id, thisNode, function(err, tree) {
-                                    console.log("ConversationModel.toJsTree-3",rootNodeId,tree);            
-                                    parentKids.push(tree);
-                                });
+            } else {
+                CommonModel._populateNode(userId, data, function(node) {
+                    console.log("ConversationModel.toJsTree-1A",node);
+                    //craft thisNode
+                    thisNode = {};
+                    thisNode.id = node.id;
+                    thisNode.type = node.type;
+                    if (!parentNode) {
+                        var state = {};
+                        state.opened = true;
+                        thisNode.state = state;
+                    }
+                    thisNode.text = node.statement;
+                    thisNode.icon = CommonModel.nodeToSmallIcon(node.type);
+                    //We are now crafting the children of thisNode
+                    var parentKids = thisNode.children;
+                    if (!parentKids) {
+                        parentKids = [];
+                    }
+                    if (node.type !== constants.TAG_NODE_TYPE) {
+                        var snappers = fetchAllkidStructs(node);
+                        console.log("ConversationModel.toJsTree-2",snappers);
+                        if (snappers) {
+                            var len = snappers.length;
+                            snappers.forEach(function(childStruct) {      
+                                if (childStruct) {
+                                    //recurse
+                                    self.toJsTree(userId, childStruct.id, thisNode, function(err, tree) {
+                                        console.log("ConversationModel.toJsTree-3",rootNodeId,tree);            
+                                        parentKids.push(tree);
+                                    });
+                                }
+                                console.log("ConversationModel.toJsTree-4",len,parentKids);
+                            });
+                            if (parentKids.length > 0) {
+                                thisNode.children = parentKids;                    
                             }
-                            console.log("ConversationModel.toJsTree-4",len,parentKids);
-                        });
-                        if (parentKids.length > 0) {
-                            thisNode.children = parentKids;                    
                         }
                     }
-                }
-            });
+                });
+            }
             console.log("ConversationModel.toJsTree++",thisNode);
             return callback(null, thisNode); 
         });

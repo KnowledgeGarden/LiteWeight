@@ -177,16 +177,17 @@ Tags = function() {
             con;
         if (fileNames.length === 0) {
             return result;
+        } else {
+            fileNames.forEach(function(fx) {
+                if (!fx.includes(".DS_Store")) { // mac file system
+                    self.fetchTag(userId, fx, function(err, thecon) {
+                        console.log("TFE", fx, thecon);
+                        result.push(thecon);
+                    });
+                }
+            });
+            return result;
         }
-        fileNames.forEach(function(fx) {
-            if (!fx.includes(".DS_Store")) { // mac file system
-                self.fetchTag(userId, fx, function(err, thecon) {
-                    console.log("TFE", fx, thecon);
-                    result.push(thecon);
-                });
-            }
-        });
-        return result;
 
     };
 

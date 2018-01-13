@@ -18,9 +18,9 @@
 </div>
 {{#if isRelation}}
     <span style="margen-left:20px;">
-    <b>Source Node</b>  <a href="/grab/{{result.theSource.id}}"><img style="margin-right:4px;" src="{{result.theSource.img}}">{{result.theSource.statement}}</a>
-    <br/>
-    <b>Target Node</b>  <a href="/grab/{{result.theTarget.id}}"><img style="margin-right:4px;" src="{{result.theTarget.img}}">{{result.theTarget.statement}}</a>    
+        <b>Source Node</b>  <a href="/grab/{{result.theSource.id}}"><img style="margin-right:4px;" src="{{result.theSource.img}}">{{result.theSource.statement}}</a>
+        <br/>
+        <b>Target Node</b>  <a href="/grab/{{result.theTarget.id}}"><img style="margin-right:4px;" src="{{result.theTarget.img}}">{{result.theTarget.statement}}</a>    
     </span>
     <br/>
 {{/if}}
@@ -126,7 +126,7 @@
                 </div>
             </div>
             <div class="datacontainer">
-            <div class="datacolumn">
+                <div class="datacolumn">
                     {{#each result.theQuestions}}
                         <div class="node">
                             <a style="margin-left:4px;" href="/conversation/{{id}}">{{statement}}</a>
