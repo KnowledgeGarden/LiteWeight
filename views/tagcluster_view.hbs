@@ -1,0 +1,54 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css"/>
+ 
+<script type="text/javascript" src="/js/vis.js"></script>
+
+<style type="text/css">
+    #mynetwork { 
+        display:block;
+        width:inherit;
+        height:800px;
+        border:solid;
+        background-color:white;
+    }
+</style>
+<div id="topbox">
+    <div id="mynetwork">Network Graph</div>
+</div>
+
+<script>
+    window.onload = function() {
+        //alert("starting");
+        //view-source:http://visjs.org/examples/timeline/dataHandling/loadExternalData.html
+        $.ajax({
+            url: '/tags/tagclusterajax',
+            dataType : "json",
+            success: function (data) {
+             //   alert(data);
+            // hide the "loading..." message
+            //document.getElementById('loading').style.display = 'none';
+
+            // DOM element where the Timeline will be attached
+            var container = document.getElementById('mynetwork');
+
+            // Create a DataSet (allows two way data-binding)
+            //var items = new vis.DataSet(data);
+
+            // Configuration for the Timeline
+            var options = {};
+
+            // Create a Timeline
+            var timeline = new vis.Network(container, data, options);
+            },
+            error: function (err) {
+                console.log('Error', err);
+                if (err.status === 0) {
+                    alert('Failed to load data/basic.json.\nPlease run this example on a server.');
+                } else {
+                    alert('Failed to load data/basic.json.');
+                }
+            }
+        });
+    };
+  
+    
+</script>

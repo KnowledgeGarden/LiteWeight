@@ -5,12 +5,24 @@ var constants = require('../apps/constants');
 var helper = require('./helper');
 var TagModel = require('../apps/models/tag_model');
 
+router.get('/tagcluster', helper.isPrivate, function(req, res, next) {
+    var  data = helper.startData(req);
+    return res.render('tagcluster_view', data);
+});
+
+router.get('/tagclusterajax', function(req, res, next) {
+    var creatorId = req.session.theUserId;
+    TagModel.clusterTags(creatorId, function(json) {
+        console.log("Tags.get.tagclusterajax",json);
+        return res.json(json);
+    });
+});
 router.get("/tagindex", helper.isPrivate, function(req, res, next) {
     req.session.curCon = null;
     var data = helper.startData(req),
         creatorId = req.session.theUserId;
     data.taglist = TagModel.listTags(creatorId);
-    res.render('tag_index', data);
+    return res.render('tag_index', data);
 });
 
 router.get("/newtag/:id", helper.isPrivate, function(req, res, next) {

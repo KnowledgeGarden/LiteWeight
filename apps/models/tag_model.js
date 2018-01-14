@@ -167,7 +167,137 @@ Tags = function() {
                 });
             });
         });
-    }
+    };
+
+    /////////////////////////////////
+    // TagClustering means
+    //  array of nodes  Tags
+    //      { id, label, shape }
+    //  array of edges
+    //      { fromId, toId }
+    //
+    /////////////////////////////////
+
+    function tagStruct(tag) {
+        var result = {};
+        result.id = tag.id;
+        result.label = tag.statement;
+        result.shape = "oval";
+        return result;
+    };
+
+    function edgeStruct(fromId, toId) {
+        var result = {};
+        result.from = fromId;
+        result.to = toId;
+        return result;
+    };
+
+    function fetchNodesForTag(userId, tag, callback) {
+        var nodeList = tag.tags;
+        var result = [];
+        nodeList.forEach(function(nodeId) {
+            CommonModel.fetchNode(userId, nodeId, function(err, node) {
+                if (node) {
+                    result.push(node);
+                }
+            });
+        });
+        return callback(result);
+    };
+
+    function nodeArrayContains(json, array) {
+        var len = array.length,
+            jo;
+        for (var i = 0; i< len; i++) {
+            jo = array[i];
+            if (jo.id === json.id) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    function edgeArrayContains(json, array) {
+        var len = array.length,
+            jo;
+        for (var i = 0; i< len; i++) {
+            jo = array[i];
+           // console.log("TagModel.edgeArrayContains", jo.from, json.from, jo.to,json.to);
+            if ((jo.from === json.from) &&
+                (jo.to === json.to) ||
+                (jo.to === json.from) &&
+                (jo.from === json.to)) {
+            //    console.log("TagModel.edgeArrayContains true");
+                return true;
+            }
+        }
+        //console.log("TagModel.edgeArrayContains false");
+        return false;
+    };
+    /**
+     * Return a JSON object which can paint a D3.js graph of tag clusters
+     * @param userId
+     * @param callback json
+     */
+    self.clusterTags = function(userId, callback) {
+        var fileNames = Database.listTags();
+        console.log("TagModel.listTags",fileNames);
+        var result = [],
+            tagDocsSet = [],
+            tagListSet = [],
+            edgeListSet = [],
+            workingTag,
+            workingTagNodes,
+            temp = [],
+            workingEdge,
+            where;
+        if (fileNames.length === 0) {
+            return callback(null, result);;
+        } else {
+            fileNames.forEach(function(fx) {
+                if (!fx.includes(".DS_Store")) { // mac file system
+                    //1- feetch this tag
+                    CommonModel.fetchNode(userId, fx, function(err, tag) {
+                        console.log("TagModel.clusterTags",tag);
+                        // get its JSON struct
+                        workingTag = tagStruct(tag);
+                        if (!nodeArrayContains(workingTag, tagListSet)) {
+                            tagListSet.push(workingTag);
+                        }
+                        //fetch nodes for this tag 
+                        fetchNodesForTag(userId, tag, function(nodelist) {
+                            workingTagNodes = nodelist;
+                            console.log("TagModel.clusterTags-1",nodelist);
+                            //That constitutes every node *this* tag touches.
+                            // We now pair this tag with arcs to those tags.
+                            workingTagNodes.forEach(function(node) {
+                                temp = node.tags;
+                                console.log("TagModel.clusterTags-2",temp);
+                                if (temp) {
+                                    temp.forEach(function(tagId) {
+                                        if (tagId !== tag.id) {
+                                            workingEdge = edgeStruct(tag.id, tagId);
+                                           
+                                            if (!edgeArrayContains(workingEdge, edgeListSet)) {
+                                                edgeListSet.push(workingEdge);
+                                            }
+                                        };
+                                    });
+                                }
+
+                            });
+                        });
+
+                    });
+                }
+            });
+            var result = {};
+            result.nodes = tagListSet;
+            result.edges = edgeListSet;
+            return callback(result);
+        }
+    };
 
     self.listTags = function(userId) {
         var fileNames = Database.listTags();
