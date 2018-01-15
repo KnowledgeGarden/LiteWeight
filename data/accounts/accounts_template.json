@@ -1,0 +1,6 @@
+{
+	"participants": {
+	},
+	"invitations": ["joe@sixpack.com", "sue@sixpack.com", "sam@slow.com"],
+	"adminemail": "sue@sixpack.com"
+}
