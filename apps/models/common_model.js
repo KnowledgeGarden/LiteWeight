@@ -173,17 +173,28 @@ Common = function() {
                         console.log("CommonModel.populateConnectionStruct-2",err,resource);
                         //is this node a source or target?
                         var isSource = (connection.sourceNode === node.id);
-                        struct = {};
-                        struct.id = kid;
-                        struct.type = connection.type;
-                        struct.img = connection.imgsm;
-                        struct.creatorId = connection.creatorId;
+                        var otherId;
                         if (isSource) {
-                            struct.statement = resource.asSource+node.statement;
+                            otherId = connection.targetNode;
                         } else {
-                            struct.statement = resource.asTarget+node.statement;
+                            otherId = connection.sourceNode;
                         }
-                        kids.push(struct);
+                        //fetch Other
+                        self.fetchNode(userId, otherId, function(err, other) {
+                            if (other) {
+                                struct = {};
+                                struct.id = kid;
+                                struct.type = connection.type;
+                                struct.img = connection.imgsm;
+                                struct.creatorId = connection.creatorId;
+                                if (isSource) {
+                                    struct.statement = resource.asSource+other.statement;
+                                } else {
+                                    struct.statement = resource.asTarget+other.statement;
+                                }
+                                kids.push(struct);
+                            }
+                        });
                     });
                 }
             });
