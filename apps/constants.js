@@ -41,6 +41,8 @@ module.exports.NOTE_NODE_TYPE               = "NoteNodeType";
 module.exports.REFERENCE_NODE_TYPE          = "ReferenceNodeType";
 module.exports.DECISION_NODE_TYPE           = "DecisionNodeType";
 module.exports.TAG_NODE_TYPE                = "TagNodeType";
+module.exports.PERSONAL_TAG_NODE_TYPE       = "PersonalTagNodeType";
+
 module.exports.RELATION_NODE_TYPE           = "RelationNodeType";
 module.exports.BOOKMARK_NODE_TYPE           = "BookmarkNodeType";
 module.exports.BLOG_NODE_TYPE               = "BlogNodeType"; // used for the Journal App

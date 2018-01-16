@@ -234,9 +234,10 @@ Conversation = function() {
                         }
                     }
                 });
+                console.log("ConversationModel.toJsTree++",thisNode);
+                return callback(null, thisNode); 
             }
-            console.log("ConversationModel.toJsTree++",thisNode);
-            return callback(null, thisNode); 
+           
         });
     };
 

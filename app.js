@@ -54,6 +54,7 @@ var Jnl = require('./routes/journal');
 var Ed = require('./routes/edit');
 var Chn = require('./routes/channels');
 var Srch = require('./routes/search');
+var PTags = require('./routes/personaltags');
 
 app.use('/users', users);
 app.use('/bookmark/', Bmk);
@@ -69,6 +70,7 @@ app.use('/edit', Ed);
 app.use('/search', Srch);
 app.use('/carrotsearch', Cs);
 app.use('./dbpedia', DbP);
+app.use('/personaltags', PTags)
 
 // Index has to be last
 app.use('/', Indx);

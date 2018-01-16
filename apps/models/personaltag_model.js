@@ -2,10 +2,10 @@
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
 var constants = require('../constants');
-var Tags,
+var PersonalTags,
     instance;
 
-Tags = function() {
+    PersonalTags = function() {
     var self = this;
 
     self.inject = function(commModel) {
@@ -20,17 +20,17 @@ Tags = function() {
      * @param {*} callback err json
      */
     self.fetchTag = function(userId, id, callback) {
-        //We have to generalize to fetchData because this might be a PersonalTag
-        Database.fetchData(id, function(err, data) {
-            console.log("TagModel.fetchTag", id);
-            CommonModel.buildTagChildList(userId, data, function(children) {
-                    if (data.type === constants.PERSONAL_TAG_NODE_TYPE) {
-                        data.thePersonalTags = children;
-                    } else {
+        
+        Database.fetchPersonalTag(id, function(err, data) {
+            if (CommonModel.canShow(userId, data)) {
+                console.log("PersonalTagModel.fetchTag", id);
+                CommonModel.buildTagChildList(userId, data, function(children) {
                         data.theTags = children;
-                    }
-                    return callback(err, data);
-            });
+                        return callback(err, data);
+                });
+            } else {
+                return callback(null, null);
+            }
         });
     };
 
@@ -46,9 +46,14 @@ Tags = function() {
         }
     };
 
-    function labelToId(label) {
+    /**
+     * Personal tags run the risk of having the same label, so we append creatorId
+     * @param {*} label 
+     * @param {*} creatorId 
+     */
+    function labelToId(label, creatorId) {
         var result = CommonModel.replaceAll(label, ' ', '_');
-        result = result.toLowerCase();
+        result = result.toLowerCase()+"_"+creatorId;
         return result;
     };
 
@@ -66,12 +71,12 @@ Tags = function() {
      * @param {*} callback 
      */
     function wireTagNode(tag, creatorId, node, callback) {
-        console.log("TagModel.wireTagNode", node, tag);
-        CommonModel.addChildToNode(constants.TAG_NODE_TYPE, creatorId, node, tag);
-        CommonModel.addChildToNode(constants.TAG_NODE_TYPE, creatorId, tag, node);
-        console.log("TagModel.wireTagNode-1",tag,node);
+        console.log("PersonalTagModel.wireTagNode", node, tag);
+        CommonModel.addChildToNode(constants.PERSONAL_TAG_NODE_TYPE, creatorId, node, tag);
+        CommonModel.addChildToNode(constants.PERSONAL_TAG_NODE_TYPE, creatorId, tag, node);
+        console.log("PersonalTagModel.wireTagNode-1",tag,node);
         tag.theTags = null;
-        Database.saveTagData(tag.id, tag, function(err) {
+        Database.savePersonalTagData(tag.id, tag, function(err) {
             return callback(err);
         });
     };
@@ -80,7 +85,7 @@ Tags = function() {
      * We are defining a tag against a particular node.
      * If that tag already exists, we don't make it again;
      *   instead, we simply add the new node to its list of nodes
-     * FOR NOW, all tags are public
+     * ALL Personal Tags are private
      * @param creatorId
      * @param creatorHandle
      * @param {*} tagLabel 
@@ -92,19 +97,22 @@ Tags = function() {
             return callback("Missing tag label");
         } else {
             //label to tag id
-            var id = labelToId(tagLabel);
+            var id = labelToId(tagLabel, creatorId);
             //Do we already have this tag?
-            Database.fetchTag(id, function(err, aTag) {
-                console.log("TagModel.newTag",tagLabel,id,aTag);
+            Database.fetchPersonalTag(id, function(err, aTag) {
+                console.log("PersonalTagModel.newTag",tagLabel,id,aTag);
                 if (aTag) {
                     wireTagNode(aTag, creatorId, node, function(err) {
-                        console.log("TagModel.newTag-1",aTag);
+                        console.log("PersonalTagModel.newTag-1",aTag);
                         return callback(err);
                     });
                 } else { // new tag  all tags are public
-                    CommonModel.newNode(id, creatorId, creatorHandle, constants.TAG_NODE_TYPE, tagLabel, "", false, function(theTag) {
+                    CommonModel.newNode(id, creatorId, creatorHandle, constants.PERSONAL_TAG_NODE_TYPE, tagLabel, "", true, function(theTag) {
+                        var acls = [];
+                        acls.push(creatorId);
+                        theTag.acls = acls;
                         wireTagNode(theTag, creatorId, node, function(err) {
-                            console.log("TagModel.newTag-2",theTag,node);
+                            console.log("PersonalTagModel.newTag-2",theTag,node);
                             return callback(err);
                         });
                     });
@@ -116,13 +124,13 @@ Tags = function() {
     function tagHandler(tagNameArray, creatorId, creatorHandle, node, callback) {
         var error;
         function next() {
-            console.log("TagModel.tagHandler",tagNameArray);
+            console.log("PersonalTagModel.tagHandler",tagNameArray);
             if (tagNameArray.length === 0) {
                 return callback(error);
             } else {
                 lx = tagNameArray.pop();
                 if (lx && lx !== '') {
-                    console.log("TagModel.tagHandler-1",lx,tagNameArray);
+                    console.log("PersonalTagModel.tagHandler-1",lx,tagNameArray);
                     self.newTag(creatorId, creatorHandle, lx, node, function(err) {
                         if (!error && err) {
                             error = err;
@@ -147,7 +155,7 @@ Tags = function() {
      * @param {*} callback err. nodetype
      */
     self.addTags = function(creatorId, creatorHandle, tagLabel, selectedLabels, nodeId, callback) {
-        console.log("TagModel.addTags",tagLabel, selectedLabels,nodeId);
+        console.log("PersonalTagModel.addTags",tagLabel, selectedLabels,nodeId);
         var ta = selectedLabels.split(',');
         var labels = tagLabel;
         var len = ta.length;
@@ -158,16 +166,16 @@ Tags = function() {
                 labelArray.push(ta[i].trim());
             }
         }
-        console.log("TagModel.addTags-1",labelArray);
+        console.log("PersonalTagModel.addTags-1",labelArray);
         CommonModel.fetchNode(creatorId, nodeId, function(err, node) {
 
             var type = node.type;
             tagHandler(labelArray, creatorId, creatorHandle, node, function(error) {
                 //update the node's version
                 node.version = CommonModel.newId();
-                console.log("TagModel.addTags-3",node);
+                console.log("PersonalTagModel.addTags-3",node);
                 //save the node
-                node.theTags = null;
+                node.thePersonalTags = null;
                 Database.saveData(nodeId, node, function(err) {
                     return callback(error, type);
                 });
@@ -200,10 +208,12 @@ Tags = function() {
     };
 
     function fetchNodesForTag(userId, tag, callback) {
-        var nodeList = tag.tags;
+        var nodeList = tag.personaltags;
         var result = [];
         nodeList.forEach(function(nodeId) {
+            console.log("PersonalTagModel.fetchNodesForTag",nodeId);
             CommonModel.fetchNode(userId, nodeId, function(err, node) {
+                console.log("PersonalTagModel.fetchNodesForTag-1",err, node);
                 if (node) {
                     result.push(node);
                 }
@@ -247,8 +257,8 @@ Tags = function() {
      * @param callback json
      */
     self.clusterTags = function(userId, callback) {
-        var fileNames = Database.listTags();
-        console.log("TagModel.listTags",fileNames);
+        var fileNames = Database.listPersonalTags();
+        console.log("PersonalTagModel.listPersonalTags",fileNames);
         var result = [],
             tagDocsSet = [],
             tagListSet = [],
@@ -263,38 +273,41 @@ Tags = function() {
         } else {
             fileNames.forEach(function(fx) {
                 if (!fx.includes(".DS_Store")) { // mac file system
-                    //1- feetch this tag
+                    //1- fetch this tag
+                    // Since they are private, this is filtered
                     CommonModel.fetchNode(userId, fx, function(err, tag) {
-                        console.log("TagModel.clusterTags",tag);
+                        console.log("PersonalTagModel.clusterTags",tag);
                         // get its JSON struct
-                        workingTag = tagStruct(tag);
-                        if (!nodeArrayContains(workingTag, tagListSet)) {
-                            tagListSet.push(workingTag);
-                        }
-                        //fetch nodes for this tag 
-                        fetchNodesForTag(userId, tag, function(nodelist) {
-                            workingTagNodes = nodelist;
-                            console.log("TagModel.clusterTags-1",nodelist);
-                            //That constitutes every node *this* tag touches.
-                            // We now pair this tag with arcs to those tags.
-                            workingTagNodes.forEach(function(node) {
-                                temp = node.tags;
-                                console.log("TagModel.clusterTags-2",temp);
-                                if (temp) {
-                                    temp.forEach(function(tagId) {
-                                        if (tagId !== tag.id) {
-                                            workingEdge = edgeStruct(tag.id, tagId);
-                                           
-                                            if (!edgeArrayContains(workingEdge, edgeListSet)) {
-                                                edgeListSet.push(workingEdge);
-                                            }
-                                        };
-                                    });
-                                }
+                        if (tag) {
+                            workingTag = tagStruct(tag);
+                            if (!nodeArrayContains(workingTag, tagListSet)) {
+                                tagListSet.push(workingTag);
+                            }
+                            console.log("PersonalTagModel.clusterTags-1A",workingTag);
+                            //fetch nodes for this tag 
+                            fetchNodesForTag(userId, tag, function(nodelist) {
+                                workingTagNodes = nodelist;
+                                console.log("PersonalTagModel.clusterTags-1",nodelist);
+                                //That constitutes every node *this* tag touches.
+                                // We now pair this tag with arcs to those tags.
+                                workingTagNodes.forEach(function(node) {
+                                    temp = node.personaltags;
+                                    console.log("PersonalTagModel.clusterTags-2",temp);
+                                    if (temp) {
+                                        temp.forEach(function(tagId) {
+                                            if (tagId !== tag.id) {
+                                                workingEdge = edgeStruct(tag.id, tagId);
+                                            
+                                                if (!edgeArrayContains(workingEdge, edgeListSet)) {
+                                                    edgeListSet.push(workingEdge);
+                                                }
+                                            };
+                                        });
+                                    }
 
+                                });
                             });
-                        });
-
+                        }
                     });
                 }
             });
@@ -306,8 +319,8 @@ Tags = function() {
     };
 
     self.listTags = function(userId) {
-        var fileNames = Database.listTags();
-        console.log("TagModel.listTags",fileNames);
+        var fileNames = Database.listPersonalTags();
+        console.log("PersonalTagModel.listTags",fileNames);
         var result = [],
             temp,
             con;
@@ -317,8 +330,10 @@ Tags = function() {
             fileNames.forEach(function(fx) {
                 if (!fx.includes(".DS_Store")) { // mac file system
                     self.fetchTag(userId, fx, function(err, thecon) {
-                        console.log("TFE", fx, thecon);
-                        result.push(thecon);
+                        console.log("TPFE", fx, thecon);
+                        if (thecon) {
+                            result.push(thecon);
+                        }
                     });
                 }
             });
@@ -326,9 +341,6 @@ Tags = function() {
         }
 
     };
-
 };
-if (!instance) {
-    instance = new Tags();
-}
+instance = new PersonalTags();
 module.exports = instance;

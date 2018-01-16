@@ -47,6 +47,8 @@ router.get('/grab/:id', helper.isPrivate, function(req, res, next) {
         return res.redirect('/bookmark/'+id);
       } else if (type === constants.TAG_NODE_TYPE) {
         return res.redirect('/tags/gettag/'+id);
+      } else if (type === constants.PERSONAL_TAG_NODE_TYPE) {
+        return res.redirect('/personaltags/gettag/'+id);
       } else if (type === constants.RELATION_NODE_TYPE) {
         return res.redirect('/connections/'+id);
       } else if (type === constants.BLOG_NODE_TYPE) {

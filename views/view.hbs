@@ -38,6 +38,9 @@
 <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#relns"><b>Relations</b></a></li>
     <li><a data-toggle="tab" href="#convs"><b>Conversation</b></a></li>
+    {{#if isAuthenticated}}
+        <li><a data-toggle="tab" href="#persnl"><b>Personal</b></a></li>
+    {{/if}}
 </ul>
 <div class="tab-content">
     <div id="relns" class="tab-pane fade in active">
@@ -158,5 +161,33 @@
             </div>
         </div>
         
+    </div>
+    <div id="persnl" class="tab-pane fade in active">
+        <div class="columnscroller">
+            <div class="columncontainer">
+                <div class="column" style="text-align: center;">
+                    <img class="headerimage" src="/images/tag.png">Personal Tags
+                        <a href="/personaltags/newtag/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>  
+                </div>
+                <div class="column" style="text-align: center;">
+                    <!--empty--> 
+                </div>
+                <div class="column" style="text-align: center;">
+                    <!--empty-->  
+                </div>
+                <div class="column" style="text-align: center;">
+                  <!--empty-->  
+                </div>
+            </div>
+            <div class="datacontainer">
+                <div class="datacolumn">
+                    {{#each result.thePersonalTags}}
+                        <div class="node">
+                            <a style="margin-left:4px;" href="/personaltags/gettag/{{id}}">{{statement}}</a>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
     </div>
 </div>

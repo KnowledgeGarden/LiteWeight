@@ -32,6 +32,10 @@
                         <li><a href="/channels">Channels</a></li>
                         <li><a href="/tags/tagindex">Tags</a></li>
                         <li><a href="/tags/tagcluster">Tag Cluster</a></li>
+                        {{#if isAuthenticated }}
+                            <li><a href="/personaltags/tagindex">Personal Tags</a></li>
+                            <li><a href="/personaltags/tagcluster">Personal Tag Cluster</a></li>
+                        {{/if}}
                     </ul>
                 </li>
                 <li class="dropdown">

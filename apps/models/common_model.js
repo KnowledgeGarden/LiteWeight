@@ -141,13 +141,14 @@ Common = function() {
             console.log("CommonModel.fetchNode-1",nodeId,node);
             if (!node) { // doesn't exist unless there's an err
                 return callback(err, node);
-            }
-            var canShow = self.canShow(userId, node);
-            console.log("CommonModel.fetchNode-2",userId,canShow);
-            if (canShow) {
-                return callback(err, node);
             } else {
-                return callback(constants.INSUFFICIENT_CREDENTIALS, null);
+                var canShow = self.canShow(userId, node);
+                console.log("CommonModel.fetchNode-2",userId,canShow);
+                if (canShow) {
+                    return callback(err, node);
+                } else {
+                    return callback(constants.INSUFFICIENT_CREDENTIALS, null);
+                }
             }
         });
     };
@@ -266,14 +267,18 @@ Common = function() {
                    return callback(result);
                }
             })
+        } else {
+            return callback(result);
         }
-        return callback(result);
     };
 
     self.buildTagChildList = function(userId, tag, callback) {
         console.log("CommonModel.buildTagChildList",tag);
         var result = [];
         var childList = tag.tags;
+        if (tag.type === constants.PERSONAL_TAG_NODE_TYPE) {
+            childList = tag.personaltags;
+        }
         console.log("CommonModel.buildTagChildList-1",childList);
         if (childList) {
             self.grabChildStructs(userId, childList, function(struct) {
@@ -282,7 +287,7 @@ Common = function() {
         }
         console.log("CommonModel.buildTagChildList-2",result);
         return callback(result);
-    }
+    };
 
     /**
      * Build a child list for given node. Will not include nodes where
@@ -387,6 +392,16 @@ Common = function() {
                 });
             }
         }
+        //if (!node.thePersonalTags) { THESE ARE PRIVATE--MUST BE POPULATED EACH TIME
+            childList = node.personaltags;
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.thePersonalTags = struct;
+                    }
+                });
+            }
+       // }
         return callback(node);
  
    };
@@ -431,6 +446,8 @@ Common = function() {
             return "/images/ibis/reference_sm.png";
         } else if (type === constants.TAG_NODE_TYPE) {
             return "/images/tag_sm.png";
+        } else if (type === constants.PERSONAL_TAG_NODE_TYPE) {
+            return "/images/tag_sm.png";
         } else if (type === constants.DECISION_NODE_TYPE) {
             return "/images/ibis/decision_sm.png";
         } else if (type === constants.RELATION_NODE_TYPE) {
@@ -470,6 +487,8 @@ Common = function() {
             return "/images/ibis/reference.png";
         } else if (type === constants.TAG_NODE_TYPE) {
             return "/images/tag.png";
+        } else if (type === constants.PERSONAL_TAG_NODE_TYPE) {
+            return "/images/tag.png";
         } else if (type === constants.DECISION_NODE_TYPE) {
             return "/images/ibis/decision.png";
         } else if (type === constants.RELATION_NODE_TYPE) {
@@ -496,6 +515,8 @@ Common = function() {
 
     /**
      * Core node creation function
+     * NOTE: if node is private, this does not add an ACL list:
+     *   That's the caller's responsibility
      * @param nodeId  can be null
      * @param {*} creatorId
      * @param creatorHandle
@@ -604,13 +625,7 @@ Common = function() {
                 oldNode.version = self.newId();
                 // save it
                 Database.saveData(oldNode.id, oldNode, function(err) {
-                    //if (labelChanged) {
-                    //    propagateStatementChange(oldStatement, node, function(err) {
-                    //        return callback(err);
-                    //    });
-                    //} else {
-                        return callback(err);
-                    //}
+                    return callback(err);
                 });
             }
         });
@@ -639,6 +654,8 @@ Common = function() {
                 result = node.references;
             } else if (type === constants.TAG_NODE_TYPE) {
                 result = node.tags;
+            } else if (type === constants.PERSONAL_TAG_NODE_TYPE) {
+                result = node.personaltags;
             } else if (type === constants.DECISION_NODE_TYPE) {
                 result = node.decisions;
             } else if (type === constants.RELATION_NODE_TYPE) {
@@ -676,6 +693,8 @@ Common = function() {
             node.references = list;
         } else if (type === constants.TAG_NODE_TYPE) {
             node.tags = list;
+        } else if (type === constants.PERSONAL_TAG_NODE_TYPE) {
+            node.personaltags = list;
         } else if (type === constants.DECISIONS_NODE_TYPE) {
             node.decisions = list;
         } else if (type === constants.RELATION_NODE_TYPE) {
@@ -725,8 +744,10 @@ Common = function() {
         }
         var canDo = true;
         if (targetNode.type === constants.TAG_NODE_TYPE ||
+            targetNode.type === constants.PERSONAL_TAG_NODE_TYPE ||
             targetNode.type === constants.CHANNEL_NODE_TYPE ||
             theChildNode.type === constants.TAG_NODE_TYPE ||
+            theChildNode.type === constants.PERSONAL_TAG_NODE_TYPE ||
             theChildNode === constants.CHANNEL_NODE_TYPE) {
             canDo = false;
         }

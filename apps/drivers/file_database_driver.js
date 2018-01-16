@@ -15,6 +15,7 @@ const EventLogPath = DataPath+"eventlog/";
 const RecentEventsPath = EventLogPath+"recentEvents.json";
 const HistoryPath = EventLogPath+"history.json";
 const TagPath = DataPath+"tags/";
+const PersonalTagPath = DataPath+"personaltags/";
 const ChannelPath = DataPath+"channels/";
 const UserPath = DataPath+"users/";
 const DM_PATH = UserPath+"dm/";
@@ -114,10 +115,16 @@ FileDatabase = function() {
                                     } else {
                                         self.fetchUser(nodeId, function(err5, data5) {
                                             if (data5) {
-                                            return callback(err5, data5);
+                                                return callback(err5, data5);
                                             } else {
-                                                self.fetchDM(nodeId, function(err6, data6) { 
-                                                    return callback(err6, data6);
+                                                self.fetchDM(nodeId, function(err6, data6) {
+                                                    if (data6) {
+                                                        return callback(err6, data6);
+                                                    } else {
+                                                        self.fetchPersonalTag(nodeId, function(err7, data7) {
+                                                            return callback(err7, data7);
+                                                        });
+                                                    }
                                                 });
         
                                             }
@@ -162,6 +169,10 @@ FileDatabase = function() {
             });
         } else if (type === constants.DM_NODE_TYPE) {
             self.saveDMData(nodeId, json, function(err) {
+                return callback(err);
+            });
+        } else if (type === constants.PERSONAL_TAG_NODE_TYPE) {
+            self.savePersonalTagData(nodeId, json, function(err) {
                 return callback(err);
             });
         } else {//TODO ADD OTHER TYPES, e.g. Blog, etc
@@ -320,6 +331,34 @@ FileDatabase = function() {
 
     self.listTags = function() {
         return walkSync(TagPath, []);
+    };
+
+    ////////////////////////
+    // Personal Tags
+    ////////////////////////
+
+    /**
+     * 
+     * @param {*} id 
+     * @param {*} callback err data
+     */
+    self.fetchPersonalTag = function(id, callback) {
+        var path = PersonalTagPath+id;
+        readFile(path, function(err, data) {
+            return callback(err, data);
+        });
+     };
+
+    self.savePersonalTagData = function(id, json, callback) {
+        console.log("DatabaseSavePersonalTagData",id,json);
+        fs.writeFile(PersonalTagPath+id, 
+                JSON.stringify(json), function(err) {
+            return callback(err);
+        }); 
+    };
+
+    self.listPersonalTags = function() {
+        return walkSync(PersonalTagPath, []);
     };
 
 
@@ -481,6 +520,10 @@ FileDatabase = function() {
     // Search
     ////////////////////////
 
+    /**
+     * Called by SearchModel
+     * @param {*} callback 
+     */
     self.scourDatabase = function(callback) {
         console.log("Database.scourDatabase");
         var result = [];
@@ -512,6 +555,7 @@ FileDatabase = function() {
                 fx === "channels" ||
                 fx === "eventlog" ||
                 fx === "tags" ||
+                fx === "personaltags" ||
                 fx === "users" )) {
                 result.push(fx);
             }

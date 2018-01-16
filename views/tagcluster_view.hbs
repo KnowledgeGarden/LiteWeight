@@ -20,32 +20,15 @@
         //alert("starting");
         //view-source:http://visjs.org/examples/timeline/dataHandling/loadExternalData.html
         $.ajax({
-            url: '/tags/tagclusterajax',
+            url: "{{action}}",
             dataType : "json",
             success: function (data) {
-             //   alert(data);
-            // hide the "loading..." message
-            //document.getElementById('loading').style.display = 'none';
-
-            // DOM element where the Timeline will be attached
-            var container = document.getElementById('mynetwork');
-
-            // Create a DataSet (allows two way data-binding)
-            //var items = new vis.DataSet(data);
-
-            // Configuration for the Timeline
-            var options = {};
-
-            // Create a Timeline
-            var timeline = new vis.Network(container, data, options);
+                var container = document.getElementById('mynetwork');
+                var options = {};
+                var timeline = new vis.Network(container, data, options);
             },
             error: function (err) {
                 console.log('Error', err);
-                if (err.status === 0) {
-                    alert('Failed to load data/basic.json.\nPlease run this example on a server.');
-                } else {
-                    alert('Failed to load data/basic.json.');
-                }
             }
         });
     };
