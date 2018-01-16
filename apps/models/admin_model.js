@@ -57,7 +57,7 @@ Admin = function() {
                     console.log("AdminModel.signup",uStruct);
                     Database.saveAccount(email, uStruct, function(err) {
                         if (!err) {
-                            UserModel.newUser("system", "system", uStruct.id, uStruct.handle, function(err) {
+                            UserModel.newUser(constants.SYSTEM_USER, constants.SYSTEM_USER, uStruct.id, uStruct.handle, function(err) {
                                 return callback(err);
                             });
                         } else {

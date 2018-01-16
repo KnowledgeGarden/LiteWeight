@@ -1,0 +1,13 @@
+<div id="topbox">
+    <div style="margin-left: 10px;">
+
+        <h2><img style="margin-right: 4px" src="/images/person.png">Participant: {{statement}}</h2>
+        <div style="overflow-y: auto; height:300px;">
+
+            {{#each userlist}}
+                <a href="/grab/{{id}}"><img style="margin-right: 4px;" src="{{img}}">{{statement}}</a><br/>
+            {{/each}}
+        </div>
+    </div>
+
+</div>

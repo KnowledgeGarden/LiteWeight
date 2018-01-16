@@ -368,10 +368,10 @@ Common = function() {
                 });
             }
         }
-        console.log("ABCDE",node.theRelations);
+        
         if (!node.theRelations) {
             childList = node.relations;
-            console.log("ABCDE-1",childList);
+            
             if (childList) {
                 self.populateConnectionStructs(userId, node, function(struct) {
                     console.log("ABCDE-2",struct);
@@ -392,6 +392,19 @@ Common = function() {
                 });
             }
         }
+        console.log("ABCDE",node.theNodes);
+        if (!node.theNodes) {  // user nodes
+            childList = node.nodes;
+            console.log("ABCDE-1",childList);
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theNodes = struct;
+                    }
+                });
+            }
+        }
+ 
         //if (!node.thePersonalTags) { THESE ARE PRIVATE--MUST BE POPULATED EACH TIME
             childList = node.personaltags;
             if (childList) {
@@ -529,6 +542,7 @@ Common = function() {
     self.newNode = function(nodeId, creatorId, creatorHandle, type, statement,
                 details, isPrivate, callback) {
         console.log("CommonModel.newNode"+creatorId,type, creatorHandle);
+        //craft the node
         var result = {},
             ix = nodeId;
         if (!ix) {
@@ -545,10 +559,31 @@ Common = function() {
         result.statement = statement;
         result.isPrivate = isPrivate;
         result.details = details;
-        EventLogModel.registerEvent(creatorId, creatorHandle, constants.NEW_NODE_EVENT, result, function(err) {
-            console.log("CommonModel.newNode",creatorId,type,result);
-            return callback(result);
-        });
+        //tell the user about it
+        if (creatorId !== constants.SYSTEM_USER) {
+            Database.fetchUser(creatorId, function(err, usr) {
+                var nodes = usr.nodes;
+                if (!nodes) {
+                    nodes = [];
+                }
+                nodes.push(ix);
+                usr.nodes = nodes;
+                usr.theNodes = null;
+                usr.version = self.newId();
+                Database.saveUserData(creatorId, usr, function(err) {
+                    EventLogModel.registerEvent(creatorId, creatorHandle, constants.NEW_NODE_EVENT, result, function(err) {
+                        console.log("CommonModel.newNode",creatorId,type,result);
+                        return callback(result);
+                    });
+                });
+
+            });
+        } else {
+            EventLogModel.registerEvent(creatorId, creatorHandle, constants.NEW_NODE_EVENT, result, function(err) {
+                console.log("CommonModel.newNode",creatorId,type,result);
+                return callback(result);
+            });
+        }
     };
 
     //////////////////////////////////

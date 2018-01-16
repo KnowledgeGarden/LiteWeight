@@ -14,18 +14,42 @@ User = function() {
     };
 
     /**
-     * This is the User fetching own DM, which means that whatever is in
-     * that DM is a composite of every other DM; it looks like any other channel.
+     * Returns a populated userObject
+     * @param {*} userId 
+     * @param {*} id 
+     * @param {*} callback err, data
+     */
+    self.fetchUserView = function(userId, id, callback) {
+        console.log("UserModel.fetchUserView",id);
+       
+        Database.fetchUser(id, function(err, data) {
+            console.log("UserModel.fetchUserView-1",err, data);
+            if (err) {
+                console.log("UserModel.fetchUserView-2");
+                return callback(err, null);
+            }
+            else if (data) {
+                CommonModel.populateNode(userId, data, function(result) {
+                    console.log("UserModel.fetchUserView-3",err,result);
+                    return callback(err, result);
+                });
+                  
+            } else {
+                console.log("UserModel.fetchUserView-4");
+                return callback(null, null);
+            }
+        })
+    };
+
+    /**
+     * Returns the user object without populating it
      * @param {*} userId 
      * @param {*} id 
      * @param {*} callback 
      */
     self.fetchUser = function(userId, id, callback) {
         console.log("UserModel.fetchUser",id);
-        // just return DM for now
-       // self.fetchDM(userId, id, function(err, node) {
-       //     return callback(err, node);
-       // });
+       
         Database.fetchUser(id, function(err, data) {
             if (err) {
                 return callback(err, null);
@@ -37,6 +61,7 @@ User = function() {
             }
         })
     };
+    
     /////////////////////////////////////////////////
     // Direct Messaging among two users.
     // If several users want to be in a group, they create a private channel.
@@ -202,6 +227,7 @@ User = function() {
                 });
             }
         });
+        console.log("UserModel.listUsers++",result);
         return result;
     };
 };

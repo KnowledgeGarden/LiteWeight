@@ -401,7 +401,7 @@ FileDatabase = function() {
 
     self.compareAdminEmail = function(email, callback) {
         readFile(AccountsPath, function(err, json) {
-            var isadmin = json.admininvitation === email;
+            var isadmin = json.adminemail === email;
             
             return callback(err, isadmin);
         });

@@ -6,6 +6,31 @@ var constants = require('../apps/constants');
 var UserModel = require('../apps/models/user_model');
 var ChannelModel = require('../apps/models/channel_model');
 
+//  we don't paint users, just list the nodes they produce
+router.get('/view/:id', helper.isPrivate, function(req, res, next) {
+    var id = req.params.id,
+        creatorId = req.session.theUserId,
+        data = helper.startData(req);
+        console.log("Users.get.view",id);
+    UserModel.fetchUserView(creatorId, id, function(err, result) {
+        console.log("Users.get.view-1",id,err,result);
+        if (!result) {
+            req.flash("error", "Missing user? "+id);
+            return res.redirect('/'); 
+        } else {
+            data.statement = result.statement;
+            data.userlist = result.theNodes;
+            return res.render('user_view', data);
+        }
+    });
+});
+
+router.get('/userindex', helper.isPrivate, function(req, res, next) {
+    var creatorId = req.session.theUserId,
+        data = helper.startData(req);
+        data.userlist = UserModel.listUsers(creatorId);
+        return res.render('user_index', data);
+});
 
 /**
  * Fetch a particular user object (id).

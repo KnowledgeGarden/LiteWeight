@@ -4,6 +4,8 @@
  * */
 //a user identity for testing
 module.exports.TEST_CREATOR                 = "TestUser";
+//for internally created nodes
+module.exports.SYSTEM_USER                  = "SystemUser";
 
 /**Error Messages */
 module.exports.DUPLICATE_ERROR              = "Duplicate";
