@@ -42,18 +42,19 @@ router.get('/fromchannel/:id', helper.isPrivate, function(req, res, next) {
     console.log("Journal.fromchannel",id);
     ChannelModel.fetchChannel(creatorId, id, function(err, node) {
         var pvt = node.isPrivate;
-        if (pvt) {
-            pvt = 'true';
-        } else {
-            pvt = 'false';
-        }
+        console.log("Journal.fromchannel-1",pvt);
+       // if (pvt) {
+       //     pvt = 'true';
+      //  } else {
+       //     pvt = 'false';
+       // }
         data.formtitle = "New Journal Entry";
         data.action = "/journal/newfromchannel";
         data.hidden_1 = id;
         data.checkPrivate = false;
         // journal entries follow the privacy settings on their channels
         data.private = pvt;
-        console.log("Journal.fromchannel-1",data);
+        console.log("Journal.fromchannel-2",data);
         return res.render('newnode_form', data);
     });
 });
@@ -152,8 +153,9 @@ router.post('/newfromchannel', helper.isPrivate, function(req, res, next) {
         channelId = req.body.hidden_1,
         creatorId = req.session.theUserId,
         handle =  req.session.theUser;
+        console.log("Journal.post.newfromchannel",isPrivate);
     JournalModel.createJournalFromChannel(creatorId, handle, channelId, title, details, isPrivate, function(err, entry) {
-        console.log("Journal.post.newfromchannel",entry);
+        console.log("Journal.post.newfromchannel-1",entry);
         return res.redirect("/journal/"+entry.id);
     });
 });
