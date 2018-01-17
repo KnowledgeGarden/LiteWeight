@@ -128,6 +128,10 @@ router.get("/aboutparticipants", function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about_participants", data);
 });
+router.get("/aboutremember", function(req, res, nex) {
+  var data = helper.startData(req);
+  return res.render("about_remember", data);
+});
 router.get("/about", helper.isPrivate, function(req, res, nex) {
   var data = helper.startData(req);
   return res.render("about", data);
