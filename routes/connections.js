@@ -10,6 +10,20 @@ var ConnectionModel = require('../apps/models/connection_model');
 var helper = require('./helper');
 
 
+router.get('/graph', helper.isPrivate, function(req, res, next) {
+    var  data = helper.startData(req);
+    data.action = "/connections/graphajax";
+    return res.render('tagcluster_view', data);
+});
+
+router.get('/graphajax', helper.isPrivate, function(req, res, next) {
+    var creatorId = req.session.theUserId;
+    console.log("Connections.graphajax",creatorId);
+    ConnectionModel.graphConnections(creatorId, function(json) {
+        console.log("Connections.get.graphajax",json);
+        return res.json(json);
+    });
+});
 /**
  * Called from connections.hbs partial which has two buttons.
  * Present UX calls for a user to<br>

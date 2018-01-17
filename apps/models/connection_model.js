@@ -139,7 +139,7 @@ Connection = function() {
                                 console.log("ConnectionModel.createConnection-4",lx);
                                 CommonModel.setChildList(constants.RELATION_NODE_TYPE, lx, targetNode);
                                 //save the nodes
-                                Database.saveNodeData(relnId, json, function(err) {
+                                Database.saveConnectionData(relnId, json, function(err) {
                                     sourceNode.theRelations = null;
                                     Database.saveData(sourceNode.id, sourceNode, function(err) {
                                         targetNode.theRelations = null;
@@ -153,6 +153,60 @@ Connection = function() {
                     });
                 });
             }
+        });
+    };
+
+    /**
+     * 
+     * @param {*} userId 
+     * @param {*} callback err, list
+     */
+    self.listConnections = function(userId, callback) {
+        console.log("ConnectionModel.listConnections",userId);
+        var fileNames = Database.listConnections();
+        console.log("ConnectionModel.listConnections-1",fileNames);
+        var result = [],
+            temp,
+            con;
+        if (fileNames.length === 0) {
+            return result;
+        } else {
+            fileNames.forEach(function(fx) {
+                if (!fx.includes(".DS_Store")) { // mac file system
+                    self.fetchConnection(userId, fx, function(err, thecon) {
+                        console.log("TCE", fx, thecon);
+                        result.push(thecon);
+                    });
+                }
+            });
+            return result;
+        }
+    };
+
+    //////////////////////////////////////
+    // Graphing connections entails:
+    //  1 collecting all visible connections
+    //  2 collecting triples { source relation target }
+    //  3 writing JSON graph of nodes and edges
+    //      Pay attention to
+    //          Arrow direction
+    //              Account for symmetrical relations
+    //          Arrow label
+    //////////////////////////////////////
+
+    /**
+     * Similar to Tag Clusters but on connections
+     * Arrows as labeled arcs
+     * @param {*} userId 
+     * @param {*} callback 
+     */
+    self.graphConnections = function(userId, callback) {
+        console.log("ConnectionModel.graphConnections");
+        self.listConnections(userId, function(err, connections) {
+            console.log("ConnectionModel.graphConnections-1",err, connections);
+
+            return callback(err, connections);
+
         });
     };
 };

@@ -84,6 +84,7 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
 router.post('/new', helper.isPrivate, function(req, res, next) {
     var title = req.body.title
         isPrivate = req.body.private,
+        isPrivate = (isPrivate === 'true'),
         members = req.body.members,
         creatorId = req.session.theUserId,
         handle =  req.session.theUser;

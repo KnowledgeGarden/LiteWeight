@@ -17,6 +17,7 @@ const HistoryPath = EventLogPath+"history.json";
 const TagPath = DataPath+"tags/";
 const PersonalTagPath = DataPath+"personaltags/";
 const ChannelPath = DataPath+"channels/";
+const ConnectionPath = DataPath+"connections/";
 const UserPath = DataPath+"users/";
 const DM_PATH = UserPath+"dm/";
 const CacheSize = 1000;
@@ -121,8 +122,14 @@ FileDatabase = function() {
                                                     if (data6) {
                                                         return callback(err6, data6);
                                                     } else {
-                                                        self.fetchPersonalTag(nodeId, function(err7, data7) {
-                                                            return callback(err7, data7);
+                                                        self.fetchConnection(nodeId, function(err7, data7) {
+                                                            if (data7) {
+                                                                return callback(err7, data7);
+                                                            } else {
+                                                                self.fetchPersonalTag(nodeId, function(err8, data8) {
+                                                                    return callback(err8, data8);
+                                                                });
+                                                            }
                                                         });
                                                     }
                                                 });
@@ -163,6 +170,11 @@ FileDatabase = function() {
             self.saveBookmarkData(nodeId, json, function(err) {
                 return callback(err);
             });
+        } else if (type === constants.RELATION_NODE_TYPE) {
+            self.saveConnectionData(nodeId, json, function(err) {
+                return callback(err);
+            });
+
         } else if (type === constants.USER_NODE_TYPE) {
             self.saveUserData(nodeId, json, function(err) {
                 return callback(err);
@@ -236,6 +248,27 @@ FileDatabase = function() {
         });
     };
 
+    self.fetchConnection = function(id, callback) {
+        var path = ConnectionPath+id;
+        readFile(path, function(err, data) {
+            return callback(err, data);
+        });
+
+    };
+
+    self.saveConnectionData = function(id, json, callback) {
+        console.log("DatabaseSaveConnectionData",id,json);
+        fs.writeFile(ConnectionPath+id, 
+                JSON.stringify(json), function(err) {
+            return callback(err);
+        }); 
+    };
+
+    self.listConnections = function() {
+        
+        return walkSync(ConnectionPath, []);
+    };
+
     ////////////////////////
     // Users
     ////////////////////////
@@ -253,6 +286,10 @@ FileDatabase = function() {
             return callback(err);
         }); 
     };
+
+   // self.listConnections = function() {
+   //     return walkSync(ConnectionPath, []);
+   // };
 
     /**
      * 
