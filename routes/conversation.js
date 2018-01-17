@@ -202,9 +202,7 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
     console.log("Fetching ",id);
     ConversationModel.fetchView(creatorId, id, function(err, result) {
         console.log("Model returned "+result);
-        if (! req.session.curCon) {
-            req.session.curCon = result.context;
-        }
+        req.session.curCon = result.context;
         var data = helper.startData(req);
         if (err) { // credential issue
             req.flash("error", err);
