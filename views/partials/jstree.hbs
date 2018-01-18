@@ -1,16 +1,16 @@
 <link rel="stylesheet" href="/css/style.min.css" />
-<div id="topbox">
-    <div style="margin-left: 10px;">
+<!--<div id="topbox">
+    <div style="margin-left: 10px;"> -->
         <div id="ajax"></div>
-    </div>
-</div>
+   <!-- </div>
+</div>-->
 <script src="/js/jstree.min.js"></script>
 <script>
     window.onload = function() {
         $('#ajax').jstree({
             'core' : {
                 'data' : {
-                    "url" : "/conversation/ajaxtree/{{ajaxid}}",
+                    "url" : "/conversation/ajaxtree",
                     "dataType" : "json" 
                 }
             }

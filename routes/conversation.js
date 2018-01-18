@@ -43,8 +43,8 @@ router.get('/jstree/:id', helper.isPrivate, function(req, res, next) {
 /**
  * Paint the tree by ajax call
  */
-router.get('/ajaxtree/:id', helper.isPrivate, function (req, res, next) {
-    var id = req.params.id,
+router.get('/ajaxtree', helper.isPrivate, function (req, res, next) {
+    var id =  req.session.curCon,
         creatorId = req.session.theUserId;
     ConversationModel.toJsTree(creatorId, id, null, function(err, tree) {
     //    console.log("Convo.jstree",id,tree);

@@ -34,7 +34,7 @@
                         <li><a href="/users/userindex">Participants</a></li>
                         <li><a href="/tags/tagindex">Tags</a></li>
                         <li><a href="/tags/tagcluster">Tag Cluster</a></li>
-                        <li><a href="/connections/graph">Connections Graph</a></li>
+                        <!--<li><a href="/connections/graph">Connections Graph</a></li>-->
                         {{#if isAuthenticated }}
                             <li><a href="/personaltags/tagindex">Personal Tags</a></li>
                             <li><a href="/personaltags/tagcluster">Personal Tag Cluster</a></li>
@@ -80,9 +80,20 @@
             {{#if curCon}}
                 <div style="margin-left: 50px;">
                     <a href="/grab/{{curCon}}">Current Context</a>
-                    <a style="margin-left:20px;" href="/conversation/jstree/{{curCon}}">Tree View</a>
+                    <a style="margin-left:20px;" href="#" onclick="openNav()">Tree View</a>
                 </div>
             {{/if}}
 
     </div> <!-- /container -->
 </div> <!-- navbar -->
+<script>
+    /* Set the width of the side navigation to 250px */
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "400px";
+    }
+
+    /* Set the width of the side navigation to 0 */
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+</script>
