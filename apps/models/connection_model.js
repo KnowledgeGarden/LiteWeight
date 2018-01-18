@@ -117,7 +117,7 @@ Connection = function() {
                             }
                             
                             //craft a relation node
-                            var label = jsonBody.selected;
+                            var label = sourceNode.statement+" "+resource.inGraph+" "+targetNode.statement;
                             var details = sourceNode.statement+" "+resource.asSource+targetNode.statement;
                             CommonModel.newNode(relnId, creatorId, handle, constants.RELATION_NODE_TYPE,
                                     label, details, isPrivate, function(json) {

@@ -1,5 +1,6 @@
 {
    "inGraph": "IsSimilarRelation",
    "asSource": "is similar ",
-   "asTarget": "is similar "
+   "asTarget": "is similar ",
+   "isSymmetrical": true
 }

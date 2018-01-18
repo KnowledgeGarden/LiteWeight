@@ -9,3 +9,5 @@ Those two are related to the _direction_ of the arrow implied by the connection.
 * Some connections (predicates) are _symmetrical_ in which case both directions say the same thing.
 
 This collection must expand as new connections are added.
+
+"isSymmetrical": true has been added to symmetrical relations
