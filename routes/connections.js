@@ -96,7 +96,7 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
         creatorId = req.session.theUserId,
         isAuth = data.isAuthenticated;
     ConnectionModel.fetchConnection(creatorId, id, function(err, node) {
-        console.log("Connections.get",err);
+        console.log("Connections.get ",id,err);
         if (err) {  // issue of a private node somewhere in the tree -- should not happen
             req.flash("error", err);
             return res.redirect("/");

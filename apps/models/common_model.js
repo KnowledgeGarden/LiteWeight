@@ -138,12 +138,12 @@ Common = function() {
     self.fetchNode = function(userId, nodeId, callback) {
         console.log("CommonModel.fetchNode",nodeId);
         Database.fetchData(nodeId, function(err, node) {
-            console.log("CommonModel.fetchNode-1",nodeId,node);
+            console.log("CommonModel.fetchNode-1",err,nodeId,node);
             if (!node) { // doesn't exist unless there's an err
                 return callback(err, node);
             } else {
                 var canShow = self.canShow(userId, node);
-                console.log("CommonModel.fetchNode-2",userId,canShow);
+                console.log("CommonModel.fetchNode-2",nodeId,userId,canShow);
                 if (canShow) {
                     return callback(err, node);
                 } else {
@@ -169,8 +169,12 @@ Common = function() {
                 
                 
                 if (connection) {
+                    var rlnType = connection.actualRelationType;
+                    if (!rlnType) {
+                        rlnType = connection.statement;
+                    }
                     //Note: we hide the actual relation type in its statement
-                    Database.fetchConnectionResource(connection.statement, function(err, resource) {
+                    Database.fetchConnectionResource(rlnType, function(err, resource) {
                         console.log("CommonModel.populateConnectionStruct-2",err,resource);
                         //is this node a source or target?
                         var isSource = (connection.sourceNode === node.id);
