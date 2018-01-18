@@ -163,6 +163,7 @@ router.get("/newreference/:id", helper.isPrivate, function(req, res, next) {
         data.respondimg = parent.imgsm;
         data.respondlabel = parent.statement;
         data.responddetails = parent.details;
+        data.url = " ";
         data.hidden_1 = id;
         data.hidden_2 = constants.REFERENCE_NODE_TYPE;
         data.formtitle = "New Reference Node";
@@ -239,10 +240,11 @@ router.post("/newnode", helper.isPrivate, function(req, res, next) {
         isPrivate = (isPrivate === 'true');
         parentId = req.body.hidden_1,
         type = req.body.hidden_2,
+        url = req.body.url,
         creatorId = req.session.theUserId,
         handle = req.session.theUser;
     console.log("NN", JSON.stringify(req.body));
-    ConversationModel.newResponseNode(creatorId, handle, parentId, type, title, details, isPrivate, function(err, node) {
+    ConversationModel.newResponseNode(creatorId, handle, parentId, type, title, details, url, isPrivate, function(err, node) {
         return res.redirect(node.id);
     });
  

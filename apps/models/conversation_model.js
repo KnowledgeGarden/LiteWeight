@@ -84,10 +84,11 @@ Conversation = function() {
      * @param {*} type 
      * @param {*} statement 
      * @param {*} details 
+     * @param url
      * @param isPrivate
      * @param {*} callback err node
      */
-    self.newResponseNode = function(creatorId, creatorHandle, parentId, type, statement, details, isPrivate, callback) {
+    self.newResponseNode = function(creatorId, creatorHandle, parentId, type, statement, details, url, isPrivate, callback) {
         var pv = isPrivate;
         //fetch the parent
         Database.fetchData(parentId, function(err, parent) {
@@ -109,6 +110,12 @@ Conversation = function() {
             CommonModel.newNode(null, creatorId, creatorHandle, type, statement, details, pv, function(node) {
                 console.log("ConversationModel.newResponseNode-1",type,node);
                 node.context = context;
+                if (url) {
+                    var urx = url.trim();
+                    if (urx !== "") {
+                        node.url = urx;
+                    }
+                }
                 //wire them together
                 CommonModel.addChildToNode(type, creatorId, node, parent);
                 //update parent's version
