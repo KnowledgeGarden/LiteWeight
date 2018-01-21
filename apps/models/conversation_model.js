@@ -66,6 +66,8 @@ Conversation = function() {
             node.theAnswers = null;
         } else if (nodeType === constants.DECISION_NODE_TYPE) {
             node.theDecisions = null;
+        } else if (nodeType === constants.QUESTION_NODE_TYPE) {
+            node.theQuestions = null;
         } else if (nodeType === constants.CON_NODE_TYPE) {
             node.theCons = null;
         } else if (nodeType === constants.NOTE_NODE_TYPE) {
