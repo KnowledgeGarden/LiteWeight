@@ -100,6 +100,7 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
             var canEdit = helper.canEdit(creatorId, result);
  
             req.session.curCon = result.id;
+            req.session.curSel = result.id;
             var data = helper.startData(req);
             console.log("Model returned "+result);
             data.canEdit = canEdit;

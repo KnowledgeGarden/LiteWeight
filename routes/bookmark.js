@@ -92,6 +92,7 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
             return res.redirect("/");
         } else {
             req.session.curCon = result.id;
+            req.session.curSel = result.id;
             var data = helper.startData(req);
             var canEdit = helper.canEdit(creatorId, result);
             data.canEdit = canEdit;

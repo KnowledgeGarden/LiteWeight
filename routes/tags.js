@@ -44,6 +44,7 @@ router.get("/gettag/:id", helper.isPrivate, function(req, res, next) {
         data = helper.startData(req);
     //console.log("Tags.getTag",id);
     TagModel.fetchTag(creatorId, id, function(err, result) {
+        req.session.curSel = result.id;
         data.result = result;
         console.log("Tags.getTag",result);
         return res.render('tag_view', data);

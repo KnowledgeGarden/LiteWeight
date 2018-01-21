@@ -45,9 +45,10 @@ router.get('/jstree/:id', helper.isPrivate, function(req, res, next) {
  */
 router.get('/ajaxtree', helper.isPrivate, function (req, res, next) {
     var id =  req.session.curCon,
+        curSel = null, //req.session.curSel; Turnng this off for now: it doesn't work
         creatorId = req.session.theUserId;
-    ConversationModel.toJsTree(creatorId, id, null, function(err, tree) {
-    //    console.log("Convo.jstree",id,tree);
+    ConversationModel.toJsTree(creatorId, id, null, curSel, function(err, tree) {
+       // console.log("Convo.jstree",id,JSON.stringify(tree));
         if (err) {  // issue of a private node somewhere in the tree -- should not happen
             req.flash("error", err);
             return res.redirect("/");
@@ -204,6 +205,7 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
     ConversationModel.fetchView(creatorId, id, function(err, result) {
         console.log("Model returned "+result);
         req.session.curCon = result.context;
+        req.session.curSel = result.id;
         var data = helper.startData(req);
         if (err) { // credential issue
             req.flash("error", err);

@@ -183,18 +183,20 @@ Conversation = function() {
      * A recursive tree builder which returns a JSON tree
      * @param userId
      * @param {string} rootNodeId
-     * @param {string} parentNodeId can be null or undefined at first
+     * @param {string} parentNode can be null or undefined at first
+     * @param {string} currentSelection
      * @callback err JSON
      * https://www.jstree.com/docs/json/
      */
-    self.toJsTree = function(userId, rootNodeId, parentNode, callback) {
+    self.toJsTree = function(userId, rootNodeId, parentNode, currentSelection, callback) {
         console.log("ConversationModel.toJsTree",rootNodeId,parentNode);
-        var parentStack = [];
-        parentStack.push(rootNodeId)
+        
         var thisNode,
             childArray,
             childNode,
-            childStruct;
+            childStruct,
+            curSel = currentSelection,
+            shouldOpen = true;
         //fetch this parent
         //NOTE: userId might not be able to see this node
         CommonModel.fetchNode(userId, rootNodeId, function(err, data) {
@@ -208,11 +210,29 @@ Conversation = function() {
                     thisNode = {};
                     thisNode.id = node.id;
                     thisNode.type = node.type;
-                    if (!parentNode) {
+                    ///////////////////////////
+                    // This is a toggle feature.
+                    //  If there is a currentSelection -- the user is viewing a node other than root
+                    //  Then opoen all the nodes above it until you get to that node, then stop opening
+                    //  The issue is that you don't know where where the damned kid is: which branch?
+                    //  The conundrum is that even if you find the kid in the first branch, the second branch
+                    //  is iable to open anyway.
+                    ////////////////////////////
+                    if (shouldOpen && 
+                        (!parentNode || curSel)) {
+                        //make this node opened
                         var state = {};
                         state.opened = true;
                         thisNode.state = state;
                     }
+                    if (curSel  && 
+                        ((curSel === rootNodeId) ||
+                        (curSel === thisNode.id))) {
+                            //turn opening off
+                            curSel = null;
+                            shouldOpen = false;
+                    }
+                    
                     thisNode.text = node.statement;
                     thisNode.icon = CommonModel.nodeToSmallIcon(node.type);
                     //We are now crafting the children of thisNode
@@ -228,9 +248,10 @@ Conversation = function() {
                             snappers.forEach(function(childStruct) {      
                                 if (childStruct) {
                                     //recurse
-                                    self.toJsTree(userId, childStruct.id, thisNode, function(err, tree) {
+                                    self.toJsTree(userId, childStruct.id, thisNode, curSel, function(err, tree, canOpen) {
                                         console.log("ConversationModel.toJsTree-3",rootNodeId,tree);            
                                         parentKids.push(tree);
+                                        shouldOpen = canOpen;
                                     });
                                 }
                                 console.log("ConversationModel.toJsTree-4",len,parentKids);
@@ -242,7 +263,7 @@ Conversation = function() {
                     }
                 });
                 console.log("ConversationModel.toJsTree++",thisNode);
-                return callback(null, thisNode); 
+                return callback(null, thisNode, shouldOpen); 
             }
            
         });

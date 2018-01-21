@@ -101,6 +101,7 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
             req.flash("error", err);
             return res.redirect("/");
         } else {
+            req.session.curSel = node.id;
             data.isRelation = true;
             data.result = node;
             return res.render('view',data);
