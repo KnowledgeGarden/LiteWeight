@@ -342,5 +342,7 @@ var PersonalTags,
 
     };
 };
-instance = new PersonalTags();
+if (!instance) {
+    instance = new PersonalTags();
+}
 module.exports = instance;

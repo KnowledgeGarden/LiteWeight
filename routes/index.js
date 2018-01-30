@@ -43,7 +43,9 @@ router.get('/grab/:id', helper.isPrivate, function(req, res, next) {
       return res.redirect("/");
     } else {
       var type = node.type;
-      if (type === constants.BOOKMARK_NODE_TYPE) {
+      if (node.isProCon) {
+        return res.redirect('/procon/'+id);
+      } else if (type === constants.BOOKMARK_NODE_TYPE) {
         return res.redirect('/bookmark/'+id);
       } else if (type === constants.TAG_NODE_TYPE) {
         return res.redirect('/tags/gettag/'+id);

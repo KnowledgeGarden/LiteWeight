@@ -216,7 +216,11 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
             data.canDelete = helper.canDelete(creatorId, result);
             data.editURL = "/conversation/edit/"+id;
             data.result = result;
-            return res.render('view', data);
+            if (result.isProCon) {
+                return res.render('procon_view', data);
+            } else {
+                return res.render('view', data);
+            }
         }
     });
     

@@ -56,6 +56,7 @@ var Chn = require('./routes/channels');
 var Srch = require('./routes/search');
 var PTags = require('./routes/personaltags');
 var Inbox = require('./routes/inbox');
+var ProCon = require('./routes/procon');
 
 app.use('/users', users);
 app.use('/bookmark/', Bmk);
@@ -70,9 +71,10 @@ app.use('/journal', Jnl);
 app.use('/edit', Ed);
 app.use('/search', Srch);
 app.use('/carrotsearch', Cs);
-app.use('./dbpedia', DbP);
+app.use('/dbpedia', DbP);
 app.use('/personaltags', PTags)
 app.use('/inbox', Inbox);
+app.use('/procon/', ProCon);
 
 // Index has to be last
 app.use('/', Indx);

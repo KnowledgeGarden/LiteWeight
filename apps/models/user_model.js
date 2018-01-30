@@ -236,5 +236,7 @@ User = function() {
         return result;
     };
 };
-instance = new User();
+if (!instance) {
+    instance = new User();
+}
 module.exports = instance;

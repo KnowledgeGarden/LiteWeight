@@ -225,6 +225,9 @@ Common = function() {
                     struct.img = node.imgsm;
                     struct.creatorId = node.creatorId;
                     struct.statement = node.statement;
+                    if (node.isProCon) {
+                        struct.isProCon = true;
+                    }
                     kids.push(struct);
                 }
             });

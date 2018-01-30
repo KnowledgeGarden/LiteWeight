@@ -122,5 +122,7 @@ Inbox = function() {
     };
 };
 
-instance = new Inbox();
+if (!instance) {
+    instance = new Inbox();
+}
 module.exports = instance;

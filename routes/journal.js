@@ -106,7 +106,11 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
             data.canEdit = canEdit;
             data.editURL = "/journal/edit/"+id;
             data.result = result;
-            return res.render('view', data);
+            if (result.isProCon) {
+                return res.render('procon_view', data);
+            } else {
+                return res.render('view', data);
+            }
         }
     });
 });

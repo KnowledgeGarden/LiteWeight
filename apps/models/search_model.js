@@ -126,5 +126,7 @@ Search = function() {
     };
 
 };
-instance = new Search();
+if (!instance) {
+    instance = new Search();
+}
 module.exports = instance;

@@ -232,6 +232,9 @@ Conversation = function() {
                         node.url = urx;
                     }
                 }
+                if (parent.isProCon) {
+                    node.isProCon = true;
+                }
                 //Deal with @mentions
                 var mentions = scanForMentions(details);
                 processMentions(mentions, node.id);

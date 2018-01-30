@@ -23,7 +23,11 @@
                 </td>
                 <td class="channelright">
                     {{#each journallist}}
-                        <a href="/journal/{{id}}"><img style="margin-right: 4px;" src="{{img}}">{{statement}}</a><br/>
+                        {{#if isProCon}}
+                            <a href="/procon/{{id}}"><img style="margin-right: 4px;" src="{{img}}">{{statement}}</a><br/>
+                        {{else}}
+                            <a href="/journal/{{id}}"><img style="margin-right: 4px;" src="{{img}}">{{statement}}</a><br/>
+                        {{/if}}
                     {{/each}}
                 </td>
             </tr>

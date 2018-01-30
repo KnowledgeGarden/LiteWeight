@@ -99,5 +99,7 @@ Admin = function() {
         });
     };
 };
-instance = new Admin();
+if (!instance) {
+    instance = new Admin();
+}
 module.exports = instance;

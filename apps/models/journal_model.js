@@ -81,6 +81,9 @@ Journal = function() {
                 console.log("JournalModel.createFromChannel-1",node,channel);
                 node.acls = acls;
                 channel.version = CommonModel.newId();
+                if (channelId === constants.PROCON_CHANNEL) {
+                    node.isProCon = true;
+                }
                 Database.saveNodeData(node.id, node, function(err) {
                     Database.saveChannelData(channel.id, channel, function(err2) {
                         console.log("JournalModel.createFromChannel-2",node);
@@ -111,5 +114,7 @@ Journal = function() {
 
 
 };
-instance = new Journal();
+if (!instance) {
+    instance = new Journal();
+}
 module.exports = instance;

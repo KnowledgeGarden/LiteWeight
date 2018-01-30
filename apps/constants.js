@@ -30,6 +30,7 @@ module.exports.RELATION_SUFFIX              = "_RLN";
 module.exports.BOOKMARK_CHANNEL            = "bookmarks";
 module.exports.GENERAL_CHANNEL             = "general";
 module.exports.GENERAL_HELP                = "help";
+module.exports.PROCON_CHANNEL               = "procon";
 
 
 /** Node Types */

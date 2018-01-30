@@ -61,6 +61,20 @@ Channel = function() {
             }
         });
     };
+    self.bootstrapProCon = function(callback) {
+        Database.fetchChannel(constants.PROCON_CHANNEL, function(err, data) {
+            if (!data) {
+                CommonModel.newNode(constants.PROCON_CHANNEL, constants.SYSTEM_USER, constants.SYSTEM_USER,
+                    constants.CHANNEL_NODE_TYPE, "ProCon Debate", "", false, function(json) {
+                        Database.saveChannelData(json.id, json, function(err) {
+                            return callback(err);
+                        });
+                    });
+            } else {
+                return callback(null);
+            }
+        });
+    };
 
 
     /**
@@ -211,5 +225,7 @@ Channel = function() {
     }
 
 };
-instance = new Channel();
+if (!instance) {
+    instance = new Channel();
+}
 module.exports = instance;

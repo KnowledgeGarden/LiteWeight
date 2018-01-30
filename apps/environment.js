@@ -18,6 +18,8 @@ var AdminModel = require('./models/admin_model');
 var SearchModel = require('./models/search_model');
 var PersonalTagModel = require('./models/personaltag_model');
 var InboxModel = require('./models/inbox_model');
+var ProConModel = require('./models/procon_model');
+
 
 Environment = function() {
     var self = this;
@@ -34,12 +36,15 @@ Environment = function() {
     SearchModel.inject(CommonModel);
     PersonalTagModel.inject(CommonModel);
     InboxModel.inject(CommonModel, UserModel);
+    ProConModel.inject(CommonModel, ConversationModel);
     
     //Bootstrap channels
     ChannelModel.bootstrapBookmarks(function(err) {
         ChannelModel.bootstrapGeneral(function(err1) {
             ChannelModel.bootstrapHelp(function(err2) {
-                console.log("Channels Bootstrapped",err,err1);
+                ChannelModel.bootstrapProCon(function(err3){
+                    console.log("Channels Bootstrapped",err,err1,err2,err3);
+                });
             });
         });
     });

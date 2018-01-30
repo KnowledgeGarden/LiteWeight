@@ -1,0 +1,100 @@
+{{> sidenav}}
+<div id="topbox">
+    <span style="float:right; font-size:small;">{{result.handle}} {{result.createdDate}}</span>
+    <div style="margin-left: 4px;">
+        {{#if result.theParent}}
+        {{#if result.isProCon}}
+             <h4>Responds to <img style="margin-right:4px;" src="{{result.theParent.img}}"><a href="/procon/{{result.theParent.id}}">{{result.theParent.statement}}</a></h4>
+        {{else}}
+            <h4>Responds to <img style="margin-right:4px;" src="{{result.theParent.img}}"><a href="/conversation/{{result.theParent.id}}">{{result.theParent.statement}}</a></h4>
+        {{/if}}
+        {{/if}}
+        <h2><img style="margin-right:4px;" src="{{result.img}}">{{result.statement}}</h2>
+        {{#if result.url}}
+            <p>
+                <b>URL </b><a href="{{result.url}}">{{result.url}}</a>
+            </p>
+        {{/if}}
+        <div style="overflow-y: auto; height:300px;">
+            {{{result.details}}}
+        </div>
+    </div>
+</div>
+{{#if isRelation}}
+    <span style="margen-left:20px;">
+        <b>Source Node</b>  <a href="/grab/{{result.theSource.id}}"><img style="margin-right:4px;" src="{{result.theSource.img}}">{{result.theSource.statement}}</a>
+        <br/>
+        <b>Target Node</b>  <a href="/grab/{{result.theTarget.id}}"><img style="margin-right:4px;" src="{{result.theTarget.img}}">{{result.theTarget.statement}}</a>    
+    </span>
+    <br/>
+{{/if}}
+{{#if isAuthenticated}}
+    <span style="margen-left:20px;"><b>Remember this node</b>  <a title="Remember" href="/connections/remember/{{result.id}}"><img  src="/images/remember.png"></a>
+    {{#if isRemembered}}
+        <b>Connect this node as Source</b><a title="Connect As Source" href="/connections/newassource/{{result.id}}/{{result.type}}"><img  src="/images/connectsrc.png"></a>
+        <b>Connect this node as Target</b><a title="Connect As Target" href="/connections/newastarget/{{result.id}}/{{result.type}}"><img  src="/images/connect.png"></a>
+    {{/if}}
+    {{#if canEdit}}
+        <a style="margin-left:20px;" href="{{editURL}}"><b>Edit</b></a>
+    {{/if}}
+    <!--{{#if canDelete}}
+        <a style="margin-left:20px;" href="/conversation/delete/{{result.id}}"><b>Delete Node</b></a>
+    {{/if}} -->
+    </span>
+{{/if}}
+<div class="columnscroller">
+    <div class="columncontainer">
+        <div class="column" style="text-align: center;">
+            <img class="headerimage" src="/images/ibis/plus.png">Pro
+            {{#if isAuthenticated}}
+                <a title="Respond" href="/procon/newpro/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+            {{/if}}
+        </div>
+        <div class="column" style="text-align: center;">
+            <img class="headerimage" src="/images/ibis/minus.png">Con
+            {{#if isAuthenticated}}
+                <a href="/procon/newcon/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+            {{/if}}
+        </div>
+         <div class="column" style="text-align: center;">
+            <img class="headerimage" src="/images/tag.png">Tags
+            {{#if isAuthenticated}}
+                <a href="/tags/newtag/{{result.id}}"><img class="respond" src="/images/respond_sm.png"></a>
+            {{/if}}
+        </div>
+        <div class="column" style="text-align: center;">
+            <img class="headerimage" src="/images/cogwheels.png">Connections
+        </div>
+    </div>
+    <div class="datacontainer">
+        <div class="datacolumn">
+            {{#each result.thePros}}
+                <div class="node">
+                    <a style="margin-left:4px;" href="/procon/{{id}}">{{statement}}</a>
+                </div>
+            {{/each}}
+        </div>
+        <div class="datacolumn" >
+            {{#each result.theCons}}
+                <div class="node">
+                    <a style="margin-left:4px;" href="/procon/{{id}}">{{statement}}</a>
+                </div>
+            {{/each}}
+        </div>
+        <div class="datacolumn">
+            {{#each result.theTags}}
+                <div class="node">
+                    <a style="margin-left:4px;" href="/tags/gettag/{{id}}">{{statement}}</a>
+                </div>
+            {{/each}}
+        </div>
+        <div class="datacolumn">
+            {{#each result.theRelations}}
+                <div class="node">
+                    <a style="margin-left:4px;" href="/connections/{{id}}">{{statement}}</a>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+
+</div>
