@@ -213,12 +213,22 @@ router.get("/:id", helper.isPrivate, function(req, res, next) {
         } else {
             var canEdit = helper.canEdit(creatorId, result);
             data.canEdit = canEdit;
+            data.canDelete = helper.canDelete(creatorId, result);
             data.editURL = "/conversation/edit/"+id;
             data.result = result;
             return res.render('view', data);
         }
     });
     
+});
+
+router.get('/delete/:id', helper.isPrivate, function(req, res, next) {
+    var creatorId = req.session.theUserId,
+        id = req.params.id;
+    ConversationModel.deleteNode(creatorId, id, function(err) {
+        console.log("Conversations.delete",id, err);
+        return res.redirect('/');
+    });
 });
 
 

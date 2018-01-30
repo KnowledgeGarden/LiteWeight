@@ -17,10 +17,12 @@ var UserModel = require('./models/user_model');
 var AdminModel = require('./models/admin_model');
 var SearchModel = require('./models/search_model');
 var PersonalTagModel = require('./models/personaltag_model');
+var InboxModel = require('./models/inbox_model');
+
 Environment = function() {
     var self = this;
     CommonModel.inject(EventLogModel);
-    ConversationModel.inject(CommonModel, EventLogModel);
+    ConversationModel.inject(CommonModel, EventLogModel, InboxModel);
     TagModel.inject(CommonModel);
     EventLogModel.inject(CommonModel);
     BookmarkModel.inject(CommonModel);
@@ -31,6 +33,8 @@ Environment = function() {
     AdminModel.inject(CommonModel);
     SearchModel.inject(CommonModel);
     PersonalTagModel.inject(CommonModel);
+    InboxModel.inject(CommonModel, UserModel);
+    
     //Bootstrap channels
     ChannelModel.bootstrapBookmarks(function(err) {
         ChannelModel.bootstrapGeneral(function(err1) {

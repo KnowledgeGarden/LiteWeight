@@ -2,6 +2,7 @@
 var Database = require('../drivers/file_database_driver');
 var CommonModel;
 var EventModel;
+var InboxModel;
 var uuid = require('uuid');
 var constants = require('../constants');
 var Conversation,
@@ -10,9 +11,10 @@ var Conversation,
 Conversation = function() {
     var self = this;
 
-    self.inject = function(commModel, eventModel) {
+    self.inject = function(commModel, eventModel, ibModel) {
         CommonModel = commModel;
         EventModel = eventModel;
+        InboxModel = ibModel;
     };
 
     /**
@@ -54,15 +56,81 @@ Conversation = function() {
     //////////////////////////////
 
     /**
+     * Delete a node by removing it reference from its parent
+     * TODO: not sure we can actually remove the file
+     * fs.unlinkSync(filePath); will remove a file, but we need to create a set of methods
+     * in Database for each nodetype TODO
+     * Removing a node means removing it from all of its *snappers*
+     * And that depends on the node's type
+     * @param {*} userId 
+     * @param {*} nodeId 
+     * @param {*} callback 
+     */             //TODO CHECK FOR CONNECTIONS
+    self.deleteNode = function(userId, nodeId, callback) {
+        CommonModel.fetchNode(userId, nodeId, function(err, node) {
+            var snappers = node.snappers,
+                type = node.type,
+                error = err;
+            snappers.forEach(function(parent) {
+                //here, we get the node whether we are allowed to see it or not
+                Database.fetchData(parent, function(err, pnt) {
+                    error += err;
+                    var kids = CommonModel.getChildList(type, pnt),
+                        where = kids.indexOf(nodeId);
+                        console.log("ConversationModel.deleteNode",nodeId,where,kids,pnt);
+                        if (where > -1) {
+                            kids.splice(where,1);
+                            console.log("ConversationModel.deleteNode-1",kids);
+                            CommonModel.setChildList(type, kids, pnt);
+                            clearPopulation(pnt);
+                            Database.saveData(parent, pnt, function(err) {
+                                error += err;
+                            });
+                        }
+                });
+            });
+            return callback(error);
+        });
+    };
+
+    /**
+     * Completely depopulate this node and remove it from the cache
+     * @param {*} node 
+     */
+    function clearPopulation(node) {
+        console.log("ConversationModel.clearPopulation",node);
+        if (node.type === constants.TAG_NODE_TYPE) {
+            node.theTags = null;
+        } else if (node.type === constants.CHANNEL_NODE_TYPE ||
+                    node.type === constants.DM_NODE_TYPE) {
+
+            node.theJournals = null;
+        } else {
+            node.theAnswers = null;
+            node.theDecisions = null;
+            node.theQuestions = null;
+            node.theCons = null;
+            node.theNotes = null;
+            node.thePros = null;
+            node.theReferences = null;
+            node.theRelations = null;
+        }
+        Database.removeFromCache(node.id);
+    };
+
+    /**
      * We have to "depopulate" this node because it will be persisted,
      * which means the present population is frozen. That's because
      * CommonModel.populateNode checks to see if a childType is already
      * populated to save fetch cycles
+     * //TODO just depopulate entirely?
      * @param {*} nodeType 
      * @param {*} node 
-     */
+     * /
     function removePopulation(nodeType, node) {
-        if (nodeType === constants.ANSWER_NODE_TYPE) {
+        if (node.type === constants.TAG_NODE_TYPE) {
+            node.theTags = null;
+        } else if (nodeType === constants.ANSWER_NODE_TYPE) {
             node.theAnswers = null;
         } else if (nodeType === constants.DECISION_NODE_TYPE) {
             node.theDecisions = null;
@@ -76,6 +144,52 @@ Conversation = function() {
             node.thePros = null;
         } else if (nodeType === constants.REFERENCE_NODE_TYPE) {
             node.theReferences = null;
+        }
+    }; */
+
+    /**
+     * Return a possibly empty list of handles
+     * A nasty example:
+     * <p>This one&#39;s for @joe</p>
+     * @param contents
+     * @returns 
+     */
+    function scanForMentions(contents) {
+        var result = [];
+        var where,
+            start = 0,
+            len = contents.length,
+            temp;
+        while (((where = contents.indexOf('@', start)) > -1) && where < len) {
+            console.log("ConversationModel.scanForMentions",where, start, temp, result, contents);
+            var where2 = contents.indexOf(' ', where);
+            
+            //heuristic -- prove its not just an @ symbol
+            if (where2 === -1) {
+                where = len;
+                start = len;
+                //no space found
+                if ((len - where) > 2) {
+                    temp = contents.substring((where+1), where2).trim();
+                }
+            } else if ((where2 - where) > 2) {
+                start = where2;
+                where = where2;
+                temp = contents.substring((where+1), where2).trim();
+                result.push(temp);
+            } 
+        }
+        return result;
+    };
+
+    function processMentions(mentionlist, nodeId) {
+        var len = mentionlist.length;
+        if (len > 0) {
+            metionlist.forEach(function(handle) {
+                InboxModel.acceptHandleLink(handle, nodeId, function(err) {
+                    console.log("ConversationModel.processMentions",handle, nodeId, err);
+                })
+            });
         }
     };
     /**
@@ -95,7 +209,7 @@ Conversation = function() {
         //fetch the parent
         Database.fetchData(parentId, function(err, parent) {
             console.log("ConversationModel.newResponseNode",type,parentId,parent);
-            removePopulation(type, parent);
+            clearPopulation(parent);
             var acls = parent.acls;
             var context;
             if (parent.type === constants.BLOG_NODE_TYPE ||
@@ -118,6 +232,10 @@ Conversation = function() {
                         node.url = urx;
                     }
                 }
+                //Deal with @mentions
+                var mentions = scanForMentions(details);
+                processMentions(mentions, node.id);
+
                 //wire them together
                 CommonModel.addChildToNode(type, creatorId, node, parent);
                 //update parent's version

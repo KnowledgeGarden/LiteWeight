@@ -55,6 +55,7 @@ var Ed = require('./routes/edit');
 var Chn = require('./routes/channels');
 var Srch = require('./routes/search');
 var PTags = require('./routes/personaltags');
+var Inbox = require('./routes/inbox');
 
 app.use('/users', users);
 app.use('/bookmark/', Bmk);
@@ -71,6 +72,7 @@ app.use('/search', Srch);
 app.use('/carrotsearch', Cs);
 app.use('./dbpedia', DbP);
 app.use('/personaltags', PTags)
+app.use('/inbox', Inbox);
 
 // Index has to be last
 app.use('/', Indx);

@@ -1,0 +1,12 @@
+<div id="topbox">
+    <div style="margin-left: 10px;">
+
+        <h2>My Inbox</h2>
+        <div style="overflow-y: auto; height:300px;">
+            {{#each inboxlist}}
+                <a href="/inbox/fetch/{{id}}/{{userId}}"><img style="margin-right: 4px;" src="{{imgsm}}">{{statement}}</a><br/>
+            {{/each}}
+        </div>
+    </div>
+
+</div>

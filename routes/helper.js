@@ -1,6 +1,7 @@
 /* @author park */
 var config = require('../config/config');
 var AdminModel = require('../apps/models/admin_model');
+var CommonModel = require('../apps/models/common_model');
 var Helper,
     instance;
 
@@ -40,6 +41,7 @@ Helper = function() {
         }
         if (self.isAuthenticated(req)) {
             result.isAuthenticated = true;
+            result.userId = req.session.theUserId;
         }
         result.invitationOnly = config.invitationOnly;
         self.isAdmin(req, function(truth) {
@@ -62,6 +64,11 @@ Helper = function() {
         return (userId === node.creatorId);
     };
     
+    self.canDelete = function(userId, node) {
+        var hasIBISkids = CommonModel.hasIBISChildren(node);
+        return (self.canEdit(userId, node) && !hasIBISkids);
+    };
+
     self.isAuthenticated = function(req) {
 //        console.log("Helper.isAuthenticated",req.session);
         if (req.session.theUser) {

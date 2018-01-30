@@ -1,4 +1,9 @@
-/* @author park */
+/* 
+ * @author park
+ * A user database object uses:
+ *  nodes, theNodes for what this user creates
+ *  inbox, theInbox for inbox
+ */
 var constants = require('../constants');
 var Database = require('../drivers/file_database_driver');
 var CommonModel;

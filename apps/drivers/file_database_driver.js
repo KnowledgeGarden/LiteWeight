@@ -80,6 +80,10 @@ FileDatabase = function() {
         return filelist;
     };
 
+    self.removeFromCache = function(nodeId) {
+        cache.remove(nodeId);
+    };
+
 
     ////////////////////////
     // General purpose
@@ -313,6 +317,20 @@ FileDatabase = function() {
 
     self.listUsers = function() {
         return walkSync(UserPath, []);
+    };
+
+    self.fetchUserByHandle = function(handle) {
+        var usrs = self.listUsers();
+        var len = usrs.length;
+        var ux, result;
+        for (var i=0; i<len; i++) {
+            ux = usrs[i];
+            if (ux.handle === handle) {
+                result =  ux;
+                break;
+            }
+        }
+        return result;
     };
 
     ////////////////////////

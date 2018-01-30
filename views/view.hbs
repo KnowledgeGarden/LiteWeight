@@ -34,6 +34,9 @@
     {{#if canEdit}}
         <a style="margin-left:20px;" href="{{editURL}}"><b>Edit</b></a>
     {{/if}}
+    {{#if canDelete}}
+        <a style="margin-left:20px;" href="/conversation/delete/{{result.id}}"><b>Delete Node</b></a>
+    {{/if}}
     </span>
 {{/if}}
 <ul class="nav nav-tabs">

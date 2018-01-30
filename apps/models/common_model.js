@@ -396,6 +396,9 @@ Common = function() {
                 });
             }
         }
+
+        /////////////////////////////////
+        // TODO might be able to optimize since these only relate to user nodes
         console.log("ABCDE",node.theNodes);
         if (!node.theNodes) {  // user nodes
             childList = node.nodes;
@@ -408,6 +411,20 @@ Common = function() {
                 });
             }
         }
+
+        if (!node.theInbox) {  // user nodes
+            childList = node.inbox;
+            console.log("ABCDE-2",childList);
+            if (childList) {
+                self.grabChildStructs(userId, childList, function(struct) {
+                    if (struct) {
+                        node.theInbox = struct;
+                    }
+                });
+            }
+        }
+        //
+        //////////////////////////////////
  
         //if (!node.thePersonalTags) { THESE ARE PRIVATE--MUST BE POPULATED EACH TIME
             childList = node.personaltags;
@@ -773,13 +790,16 @@ Common = function() {
             self.setChildList(childType, kids, targetNode);
         }
         //snappers are an index into every node that carries the child's struct
-        var snappers = theChildNode.snappers;
-        if (!snappers) {
-            snappers = [];
-        }
-        if (!snappers.includes(targetNode.id)) {
-            snappers.push(targetNode.id);
-            theChildNode.snappers = snappers;
+        //Tag nodes don't get snappers
+        if (theChildNode.type !== constants.TAG_NODE_TYPE) {
+            var snappers = theChildNode.snappers;
+            if (!snappers) {
+                snappers = [];
+            }
+            if (!snappers.includes(targetNode.id)) {
+                snappers.push(targetNode.id);
+                theChildNode.snappers = snappers;
+            }
         }
         var canDo = true;
         if (targetNode.type === constants.TAG_NODE_TYPE ||
@@ -787,7 +807,8 @@ Common = function() {
             targetNode.type === constants.CHANNEL_NODE_TYPE ||
             theChildNode.type === constants.TAG_NODE_TYPE ||
             theChildNode.type === constants.PERSONAL_TAG_NODE_TYPE ||
-            theChildNode === constants.CHANNEL_NODE_TYPE) {
+            theChildNode === constants.CHANNEL_NODE_TYPE ||
+            theChildNode === constants.DM_NODE_TYPE) {
             canDo = false;
         }
         if (canDo) {
