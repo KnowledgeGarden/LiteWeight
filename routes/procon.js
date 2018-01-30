@@ -42,6 +42,7 @@ router.get('/newpro/:id', helper.isPrivate, function(req, res, next) {
         data.formtitle = "New Pro Argument Node";
         data.action = "/conversation/newnode";
         data.checkPrivate = true;
+        data.url = " ";
         data.private = "";
         return res.render('newnode_form', data);
     });
@@ -61,6 +62,7 @@ router.get('/newcon/:id', helper.isPrivate, function(req, res, next) {
         data.formtitle = "New Con Argument Node";
         data.action = "/conversation/newnode";
         data.checkPrivate = true;
+        data.url = " ";
         data.private = "";
         return res.render('newnode_form', data);
     });
