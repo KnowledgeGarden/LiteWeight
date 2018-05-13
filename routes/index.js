@@ -170,7 +170,8 @@ router.post('/signup', function(req, res, next) {
 
 router.post('/login', function(req, res, next) {
   var email = req.body.email,
-      password = req.body.password;
+      password = req.body.password,
+      ip =  helper.checkIP(req, "login", "signup");
   AdminModel.authenticate(email, password, function(err, truth, handle, userId) {
     if (err) {
       req.flash("error", err);
@@ -186,7 +187,15 @@ router.post('/login', function(req, res, next) {
         return res.redirect('/');
       });
     } else {
-      return res.redirect('/');
+      //log to history.json the failed login attempt
+      //NOTE: this does put the password out in text
+      var struct = {};
+      struct.type = constants.LOGIN_FAIL_EVENT;
+      struct.email = email;
+      struct.password = password;
+      EventModel.registerSimpleEvent(struct, function(err) {
+        return res.redirect('/');
+      });
     }
   });
 });

@@ -91,6 +91,7 @@ module.exports.EDIT_NODE_EVENT              = "EditNodeEvent";
 module.exports.ADD_CHILD_EVENT              = "AddChildEvent";
 module.exports.ADD_RELATION_EVENT           = "AddRelationEvent";
 module.exports.LOGIN_EVENT                  = "LoginEvent";
+module.exports.LOGIN_FAIL_EVENT             = "LoginFailEvent";
 module.exports.LOGOUT_EVENT                 = "LogoutEvent";
 module.exports.SIGNUP_EVENT                 = "SignupEvent";
 

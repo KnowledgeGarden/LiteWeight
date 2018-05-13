@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "activitystrea.ms": "^2.0.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.18.2",
     "connect-flash": "^0.1.1",
@@ -15,8 +16,10 @@
     "express": "~4.15.5",
     "express-session": "^1.15.6",
     "hbs": "~4.0.1",
+    "i": "^0.3.6",
     "lru-cache-js": "^1.0.3",
     "morgan": "~1.9.0",
+    "npm": "^5.6.0",
     "serve-favicon": "~2.4.5",
     "uuid": "^3.1.0"
   }

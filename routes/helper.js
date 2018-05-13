@@ -9,12 +9,19 @@ Helper = function() {
     var self = this;
     //console.log("HELPER");
 
+    /**
+     * Returns the ip value
+     * @param {*} req 
+     * @param {*} which 
+     * @return
+     */
     self.checkIP = function(req, which) {
         var ip = 
          req.connection.remoteAddress || 
          req.socket.remoteAddress || 
          req.connection.socket.remoteAddress;
         console.log("Helper.checkIP",ip,which);
+        return ip;
     };
 
     self.isPrivate = function (req, res, next) {
